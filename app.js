@@ -17,7 +17,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// DOM Elementen
+// DOM Elementen koppelen
 const authView = document.getElementById('auth-view');
 const appView = document.getElementById('app-view');
 const btnLogin = document.getElementById('btn-login');
@@ -26,18 +26,14 @@ const balanceAmount = document.getElementById('balance-amount');
 const transferForm = document.getElementById('transfer-form');
 const btnSend = document.getElementById('btn-send');
 
-// Profile & Topbar info
 const userDisplayName = document.getElementById('user-display-name');
 const userEmail = document.getElementById('user-email');
 const userPhoto = document.getElementById('user-photo');
 const topbarUsername = document.getElementById('topbar-username');
 
-// Sidebar Hamburger Elementen
-const sidebar = document.body;
 const btnOpenSidebar = document.getElementById('btn-open-sidebar');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
-// Views navigatie
 const navDashboard = document.getElementById('nav-dashboard');
 const navSettings = document.getElementById('nav-settings');
 const navAdmin = document.getElementById('nav-admin');
@@ -46,13 +42,11 @@ const viewDashboard = document.getElementById('view-dashboard');
 const viewSettings = document.getElementById('view-settings');
 const viewAdmin = document.getElementById('view-admin');
 
-// Formulieren
 const settingsUsernameForm = document.getElementById('settings-username-form');
 const settingsUsernameInput = document.getElementById('settings-username-input');
 const adminBalanceForm = document.getElementById('admin-balance-form');
 const adminPromoteForm = document.getElementById('admin-promote-form');
 
-// Leaderboard elementen
 const leaderboardList = document.getElementById('leaderboard-list');
 const myRankTag = document.getElementById('my-rank-tag');
 const myRankUser = document.getElementById('my-rank-user');
@@ -60,25 +54,27 @@ const myRankBalance = document.getElementById('my-rank-balance');
 
 let leaderboardUnsubscribe = null;
 
-// HAMBURGER BAR CLAUDE/GEMINI STYLE NAVIGATION TOGGLES
-btnOpenSidebar.addEventListener('click', () => sidebar.classList.add('sidebar-open'));
-btnCloseSidebar.addEventListener('click', () => sidebar.classList.remove('sidebar-open'));
+// Snelkoppeling sidebar open/dicht
+if(btnOpenSidebar) btnOpenSidebar.addEventListener('click', () => document.body.classList.add('sidebar-open'));
+if(btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
 
 function switchView(activeNav, activeView) {
-    [viewDashboard, viewSettings, viewAdmin].forEach(v => v.classList.add('hidden'));
-    [navDashboard, navSettings, navAdmin].forEach(n => n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'));
-    [navDashboard, navSettings, navAdmin].forEach(n => n.classList.add('text-slate-400'));
+    const views = [viewDashboard, viewSettings, viewAdmin];
+    const navs = [navDashboard, navSettings, navAdmin];
+    
+    views.forEach(v => { if(v) v.classList.add('hidden'); });
+    navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
 
-    activeView.classList.remove('hidden');
-    activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
-    sidebar.classList.remove('sidebar-open'); // Sluit op mobiel na klik
+    if(activeView) activeView.classList.remove('hidden');
+    if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
+    document.body.classList.remove('sidebar-open');
 }
 
-navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
-navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
-navAdmin.addEventListener('click', () => switchView(navAdmin, viewAdmin));
+if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
+if(navAdmin) navAdmin.addEventListener('click', () => switchView(navAdmin, viewAdmin));
 
-// HULPFUNCTIE: GENEREER UNIEKE DEFAULT GUEST USERNAME
+// Unieke gastnaam generator
 async function generateUniqueGuestName() {
     let exists = true;
     let guestName = "";
@@ -92,25 +88,23 @@ async function generateUniqueGuestName() {
     return guestName;
 }
 
-// AUTH CONTROLLER
+// LOGIN CONFIG & STATE CONTROL
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        authView.classList.add('hidden');
-        appView.classList.remove('hidden');
+        if(authView) authView.classList.add('hidden');
+        if(appView) appView.classList.remove('hidden');
 
-        userEmail.innerText = user.email;
-        userPhoto.src = user.photoURL || 'https://placehold.co/150';
+        if(userEmail) userEmail.innerText = user.email;
+        if(userPhoto) userPhoto.src = user.photoURL || 'https://placehold.co/150';
 
         const userRef = doc(db, "wallets", user.email.toLowerCase());
         let userSnap = await getDoc(userRef);
-
         let currentUsername = "";
 
         if (userSnap.exists() && userSnap.data().username) {
             currentUsername = userSnap.data().username;
-            balanceAmount.innerText = (userSnap.data().balance || 0).toFixed(2);
+            if(balanceAmount) balanceAmount.innerText = (userSnap.data().balance || 0).toFixed(2);
         } else {
-            // Nieuwe account creatie -> unieke gastnaam genereren
             currentUsername = await generateUniqueGuestName();
             const startBalance = 10.00;
             await setDoc(userRef, {
@@ -121,74 +115,60 @@ onAuthStateChanged(auth, async (user) => {
                 isAdmin: user.email.toLowerCase() === 'littendekitten@gmail.com',
                 createdAt: new Date()
             }, { merge: true });
-            balanceAmount.innerText = startBalance.toFixed(2);
-            userSnap = await getDoc(userRef); // Herlaad data
+            if(balanceAmount) balanceAmount.innerText = startBalance.toFixed(2);
+            userSnap = await getDoc(userRef);
         }
 
-        // Update naam weergaven
-        userDisplayName.innerText = `@${currentUsername}`;
-        topbarUsername.innerText = `@${currentUsername}`;
-        settingsUsernameInput.value = currentUsername;
+        if(userDisplayName) userDisplayName.innerText = `@${currentUsername}`;
+        if(topbarUsername) topbarUsername.innerText = `@${currentUsername}`;
+        if(settingsUsernameInput) settingsUsernameInput.value = currentUsername;
 
-        // Admin rechten valideren
         const isAdmin = user.email.toLowerCase() === 'littendekitten@gmail.com' || (userSnap.exists() && userSnap.data().isAdmin === true);
-        if (isAdmin) {
+        if (isAdmin && navAdmin) {
             navAdmin.classList.remove('hidden');
-        } else {
+        } else if(navAdmin) {
             navAdmin.classList.add('hidden');
         }
 
         startLeaderboard(user.email.toLowerCase());
-
     } else {
-        authView.classList.remove('hidden');
-        appView.classList.add('hidden');
+        if(authView) authView.classList.remove('hidden');
+        if(appView) appView.classList.add('hidden');
         if (leaderboardUnsubscribe) leaderboardUnsubscribe();
     }
 });
 
-// SETTINGS: USERNAME VERANDEREN (IEDEREEN STRENG UNIEK!)
-settingsUsernameForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
-    if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
+// GEBRUIKERSNAAM OPSLAAN (UNIEK CHECK)
+if(settingsUsernameForm) {
+    settingsUsernameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
+        if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
 
-    const myEmail = auth.currentUser.email.toLowerCase();
-    const userRef = doc(db, "wallets", myEmail);
+        const myEmail = auth.currentUser.email.toLowerCase();
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", newUsername));
+            const querySnap = await getDocs(q);
+            let isTaken = false;
+            querySnap.forEach((doc) => { if (doc.id !== myEmail) isTaken = true; });
 
-    try {
-        // Controleer of de naam al door iemand anders bezet is
-        const q = query(collection(db, "wallets"), where("username", "==", newUsername));
-        const querySnap = await getDocs(q);
+            if (isTaken) return alert(`Username @${newUsername} is taken! Pick another.`);
 
-        let isTaken = false;
-        querySnap.forEach((doc) => {
-            if (doc.id !== myEmail) isTaken = true; // Naam is bezet door iemand anders
-        });
+            await setDoc(doc(db, "wallets", myEmail), { username: newUsername }, { merge: true });
+            if(userDisplayName) userDisplayName.innerText = `@${newUsername}`;
+            if(topbarUsername) topbarUsername.innerText = `@${newUsername}`;
+            alert(`Public username is now @${newUsername}!`);
+        } catch (err) { alert(err.message); }
+    });
+}
 
-        if (isTaken) {
-            return alert(`😿 Username @${newUsername} is already taken by a teammate! Pick another one.`);
-        }
-
-        await setDoc(userRef, { username: newUsername }, { merge: true });
-        userDisplayName.innerText = `@${newUsername}`;
-        topbarUsername.innerText = `@${newUsername}`;
-        alert(`🎉 Success! Your public unique username is now @${newUsername}`);
-    } catch (err) {
-        alert("Settings error: " + err.message);
-    }
-});
-
-// REALTIME LEADERBOARD LOGICA
+// REALTIME RANKING STREAM
 function startLeaderboard(currentUserEmail) {
     const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
-
     leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
+        if(!leaderboardList) return;
         leaderboardList.innerHTML = "";
-        let currentRank = 1;
-        let userRank = -1;
-        let userCurrentBalance = 0;
-        let userCurrentName = "guest";
+        let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
 
         snapshot.forEach((docSnap) => {
             const data = docSnap.data();
@@ -214,9 +194,7 @@ function startLeaderboard(currentUserEmail) {
                     <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
                         <div class="flex items-center gap-3">
                             <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
-                            <div>
-                                <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
-                            </div>
+                            <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
                         </div>
                         <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
                     </div>`;
@@ -226,104 +204,94 @@ function startLeaderboard(currentUserEmail) {
         });
 
         if (userRank !== -1) {
-            myRankTag.innerText = `#${userRank}`;
-            myRankUser.innerText = `@${userCurrentName}`;
-            myRankBalance.innerText = userCurrentBalance.toFixed(2);
+            if(myRankTag) myRankTag.innerText = `#${userRank}`;
+            if(myRankUser) myRankUser.innerText = `@${userCurrentName}`;
+            if(myRankBalance) myRankBalance.innerText = userCurrentBalance.toFixed(2);
         }
     });
 }
 
-// MUNTEN VERSTUREN MET @USERNAME IN PLAATS VAN EMAIL
-transferForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
-    const amount = parseFloat(document.getElementById('transfer-amount').value);
-    const myEmail = auth.currentUser.email.toLowerCase();
+// COINS VERSTUREN
+if(transferForm) {
+    transferForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
+        const amount = parseFloat(document.getElementById('transfer-amount').value);
+        const myEmail = auth.currentUser.email.toLowerCase();
 
-    if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
+        if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
+        if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
 
-    btnSend.disabled = true;
-    btnSend.innerText = "Processing...";
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+            const querySnap = await getDocs(q);
+            if (querySnap.empty) throw new Error(`@${targetUname} not found!`);
 
-    try {
-        // Zoek de ontvanger via zijn unieke username
-        const q = query(collection(db, "wallets"), where("username", "==", targetUname));
-        const querySnap = await getDocs(q);
+            let receiverEmail = "";
+            querySnap.forEach((doc) => { receiverEmail = doc.id; });
+            if (myEmail === receiverEmail) throw new Error("You cannot send coins to yourself!");
 
-        if (querySnap.empty) {
-            throw new Error(`Account with username @${targetUname} not found! Check spelling.`);
-        }
+            const senderRef = doc(db, "wallets", myEmail);
+            const receiverRef = doc(db, "wallets", receiverEmail);
 
-        let receiverEmail = "";
-        querySnap.forEach((doc) => { receiverEmail = doc.id; });
+            await runTransaction(db, async (transaction) => {
+                const senderDoc = await transaction.get(senderRef);
+                const receiverDoc = await transaction.get(receiverRef);
+                const senderBal = senderDoc.data().balance || 0;
+                if (senderBal < amount) throw new Error("Insufficient funds! 😿");
 
-        if (myEmail === receiverEmail) throw new Error("You cannot send coins to yourself!");
+                transaction.update(senderRef, { balance: senderBal - amount });
+                transaction.update(receiverRef, { balance: (receiverDoc.data().balance || 0) + amount });
+            });
 
-        const senderRef = doc(db, "wallets", myEmail);
-        const receiverRef = doc(db, "wallets", receiverEmail);
+            alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}!`);
+            transferForm.reset();
+        } catch (err) { alert(err.message); }
+        finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
+    });
+}
 
-        await runTransaction(db, async (transaction) => {
-            const senderDoc = await transaction.get(senderRef);
-            const receiverDoc = await transaction.get(receiverRef);
+// ADMIN PANEL ACTIES
+if(adminBalanceForm) {
+    adminBalanceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const targetUname = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
+        const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
 
-            const senderBal = senderDoc.data().balance || 0;
-            if (senderBal < amount) throw new Error("Insufficient funds! 😿");
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("Username not found.");
 
-            transaction.update(senderRef, { balance: senderBal - amount });
-            transaction.update(receiverRef, { balance: (receiverDoc.data().balance || 0) + amount });
-        });
+            let targetEmail = "";
+            snap.forEach(d => targetEmail = d.id);
 
-        alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}! 🚀`);
-        transferForm.reset();
-        const updatedDoc = await getDoc(senderRef);
-        balanceAmount.innerText = (updatedDoc.data().balance).toFixed(2);
+            await setDoc(doc(db, "wallets", targetEmail), { balance: newAmount }, { merge: true });
+            alert(`Overrode balance of @${targetUname}!`);
+            adminBalanceForm.reset();
+        } catch(err) { alert(err.message); }
+    });
+}
 
-    } catch (err) {
-        alert(err.message);
-    } finally {
-        btnSend.disabled = false;
-        btnSend.innerText = "Send Coins";
-    }
-});
+if(adminPromoteForm) {
+    adminPromoteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const targetUname = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
 
-// ADMIN CODES: RECHTEN MANIPULATIE VIA USERNAME
-adminBalanceForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const targetUname = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
-    const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("Username not found.");
 
-    try {
-        const q = query(collection(db, "wallets"), where("username", "==", targetUname));
-        const snap = await getDocs(q);
-        if (snap.empty) return alert("Username not found.");
+            let targetEmail = "";
+            snap.forEach(d => targetEmail = d.id);
 
-        let targetEmail = "";
-        snap.forEach(d => targetEmail = d.id);
+            await setDoc(doc(db, "wallets", targetEmail), { isAdmin: true }, { merge: true });
+            alert(`@${targetUname} promoted to Admin!`);
+            adminPromoteForm.reset();
+        } catch(err) { alert(err.message); }
+    });
+}
 
-        await setDoc(doc(db, "wallets", targetEmail), { balance: newAmount }, { merge: true });
-        alert(`Overrode @${targetUname} balance to ${newAmount} KC!`);
-        adminBalanceForm.reset();
-    } catch(err) { alert(err.message); }
-});
-
-adminPromoteForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const targetUname = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
-
-    try {
-        const q = query(collection(db, "wallets"), where("username", "==", targetUname));
-        const snap = await getDocs(q);
-        if (snap.empty) return alert("Username not found.");
-
-        let targetEmail = "";
-        snap.forEach(d => targetEmail = d.id);
-
-        await setDoc(doc(db, "wallets", targetEmail), { isAdmin: true }, { merge: true });
-        alert(`@${targetUname} has been promoted to Admin! 👑`);
-        adminPromoteForm.reset();
-    } catch(err) { alert(err.message); }
-});
-
-// GOOGLE AUTH ACTIONS
-btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(err => alert(err.message)));
-btnLogout.addEventListener('click', () => signOut(auth));
+if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(err => alert(err.message)));
+if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth));
