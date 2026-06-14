@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KC-Xchange</title>
-    <!-- Icons -->
+    <title>KC-Xchange | KittyCoins Trading</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         /* Custom scrollbar for leaderboard */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        #leaderboard-list::-webkit-scrollbar { width: 6px; }
+        #leaderboard-list::-webkit-scrollbar-track { background: transparent; }
+        #leaderboard-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        #leaderboard-list::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        /* Smooth fade-in animation */
+        /* Smooth fade-in animation for views */
         .animate-fade-in {
             animation: fadeIn 0.4s ease-out forwards;
         }
@@ -23,15 +21,26 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Responsive Sidebar Behavior override for Tailwind v4 */
+        @media (max-width: 1023px) {
+            #sidebar {
+                transform: translateX(-100%) !important;
+            }
+            .sidebar-open #sidebar {
+                transform: translateX(0) !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            #sidebar {
+                transform: translateX(0) !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- ==========================================
-         1. LOGIN SCREEN
-         ========================================== -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
-        <!-- Background decorative grid -->
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
         <div class="max-w-md w-full bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-8 relative z-10">
@@ -59,15 +68,10 @@
     </div>
 
 
-    <!-- ==========================================
-         2. MAIN APPLICATION (HIDDEN BY DEFAULT)
-         ========================================== -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
-        <!-- SIDEBAR -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
-                <!-- Logo Header -->
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20">🐱</div>
@@ -78,7 +82,6 @@
                     </button>
                 </div>
 
-                <!-- Navigation Links -->
                 <nav class="space-y-2">
                     <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
@@ -86,22 +89,21 @@
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
                     </button>
-                    <button id="nav-admin" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-purple-400 hover:bg-purple-950/30 font-bold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
+                    <button id="nav-admin" class="hidden w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-purple-400 hover:bg-purple-950/30 font-bold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
                         <i class="fa-solid fa-crown w-5"></i> Admin Panel
                     </button>
                 </nav>
             </div>
 
-            <!-- User Profile Bottom Area -->
             <div class="p-4 m-4 border border-slate-900 bg-slate-950 rounded-2xl space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="relative">
-                        <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff" alt="Profile" class="w-10 h-10 rounded-xl border border-amber-400 object-cover">
+                        <img id="user-photo" src="" alt="Profile" class="w-10 h-10 rounded-xl border border-amber-400 object-cover">
                         <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full"></span>
                     </div>
                     <div class="truncate max-w-[145px]">
-                        <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@username</p>
-                        <p id="user-email" class="text-[10px] text-slate-500 truncate">user@email.com</p>
+                        <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@loading...</p>
+                        <p id="user-email" class="text-[10px] text-slate-500 truncate">loading...</p>
                     </div>
                 </div>
                 <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 text-slate-400 py-3 rounded-xl text-xs font-bold cursor-pointer transition">
@@ -110,10 +112,8 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
-            <!-- Topbar -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -126,14 +126,10 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
-                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
-                    
                     <div class="grid gap-6 md:grid-cols-3">
-                        <!-- Balance Card -->
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
                             <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 font-black pointer-events-none">🐱</div>
                             <div class="relative z-10">
@@ -145,7 +141,6 @@
                             </div>
                         </div>
 
-                        <!-- Send Coins Card -->
                         <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                             <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
                                 <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
@@ -174,7 +169,6 @@
                         </div>
                     </div>
 
-                    <!-- Global Rankings Leaderboard -->
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
                         <div class="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-4">
                             <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
@@ -186,17 +180,8 @@
                         </div>
                         
                         <div id="leaderboard-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                            <!-- Example dummy item (Replace with JS dynamic injection) -->
-                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 bg-amber-500/20 text-amber-500 font-bold rounded-lg flex items-center justify-center">1</span>
-                                    <p class="font-bold text-white">@kitacat_boss</p>
-                                </div>
-                                <p class="text-amber-400 font-bold">1,500.00 KC</p>
                             </div>
-                        </div>
                         
-                        <!-- My Ranking Anchor -->
                         <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800">
                             <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -209,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- SETTINGS VIEW -->
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -217,7 +201,7 @@
                     
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
                         <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
-                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can send you KittyCoins.</p>
+                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
                         
                         <form id="settings-username-form" class="space-y-4">
                             <div class="relative">
@@ -231,17 +215,15 @@
                     </div>
                 </div>
 
-                <!-- ADMIN VIEW -->
                 <div id="view-admin" class="hidden space-y-6 animate-fade-in">
                     <div class="border-b border-purple-900/40 pb-4 mb-4">
                         <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
                             <i class="fa-solid fa-gavel"></i> Admin Panel
                         </h2>
-                        <p class="text-xs text-purple-300/60 mt-1">Manage user balances and administrative privileges.</p>
+                        <p class="text-xs text-purple-300/60 mt-1">Manage network user allocations and core system administrative privileges.</p>
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-2">
-                        <!-- Override Balance -->
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
                                 <i class="fa-solid fa-coins"></i> Override Balance
@@ -255,7 +237,6 @@
                             </form>
                         </div>
                         
-                        <!-- Appoint Admin -->
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
                                 <i class="fa-solid fa-crown"></i> Appoint Co-Admin
@@ -274,125 +255,334 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         JAVASCRIPT LOGIC (UI & Navigation)
-         ========================================== -->
     <script type="module">
-        // ----------------------------------------------------
-        // DOM Elements
-        // ----------------------------------------------------
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Production Firebase Specifications configuration block
+        const firebaseConfig = {
+            apiKey: "AIzaSyDra6ILu1IGCyZ64fTfxKYGoQqEL6CbUFE",
+            authDomain: "kc-xchange.firebaseapp.com",
+            projectId: "kc-xchange",
+            storageBucket: "kc-xchange.firebasestorage.app",
+            messagingSenderId: "25389828665",
+            appId: "1:25389828665:web:0e42a57c7176e06b499be8",
+            measurementId: "G-G7TY0C4T3X"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // Native DOM Node Interface Selectors
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
-        const sidebar = document.getElementById('sidebar');
-        
-        // Buttons
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
+        const balanceAmount = document.getElementById('balance-amount');
+        const transferForm = document.getElementById('transfer-form');
+        const btnSend = document.getElementById('btn-send');
+
+        const userDisplayName = document.getElementById('user-display-name');
+        const userEmail = document.getElementById('user-email');
+        const userPhoto = document.getElementById('user-photo');
+        const topbarUsername = document.getElementById('topbar-username');
+
         const btnOpenSidebar = document.getElementById('btn-open-sidebar');
         const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
-        // Nav Buttons
         const navDashboard = document.getElementById('nav-dashboard');
         const navSettings = document.getElementById('nav-settings');
         const navAdmin = document.getElementById('nav-admin');
 
-        // Views
         const viewDashboard = document.getElementById('view-dashboard');
         const viewSettings = document.getElementById('view-settings');
         const viewAdmin = document.getElementById('view-admin');
 
-        // ----------------------------------------------------
-        // UI Navigation Logic
-        // ----------------------------------------------------
-        
-        // Mock Login (Replace with real Firebase Auth)
-        btnLogin.addEventListener('click', () => {
-            // TODO: Put Firebase signInWithPopup logic here
-            authView.classList.add('hidden');
-            appView.classList.remove('hidden');
-            
-            // For Demo: Show Admin nav to see what it looks like
-            // Remove this line in production, only show if user.role == admin
-            navAdmin.classList.remove('hidden'); 
-        });
+        const settingsUsernameForm = document.getElementById('settings-username-form');
+        const settingsUsernameInput = document.getElementById('settings-username-input');
+        const adminBalanceForm = document.getElementById('admin-balance-form');
+        const adminPromoteForm = document.getElementById('admin-promote-form');
 
-        // Mock Logout
-        btnLogout.addEventListener('click', () => {
-            // TODO: Put Firebase signOut logic here
-            appView.classList.add('hidden');
-            authView.classList.remove('hidden');
-        });
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const myRankTag = document.getElementById('my-rank-tag');
+        const myRankUser = document.getElementById('my-rank-user');
+        const myRankBalance = document.getElementById('my-rank-balance');
 
-        // Sidebar Toggle (Mobile)
-        btnOpenSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('-translate-x-full');
-        });
-        btnCloseSidebar.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-        });
+        let leaderboardUnsubscribe = null;
 
-        // Helper to reset navigation styles & hide all views
-        function resetViews() {
-            // Hide all content views
-            viewDashboard.classList.add('hidden');
-            viewSettings.classList.add('hidden');
-            viewAdmin.classList.add('hidden');
-
-            // Reset tab styles
-            [navDashboard, navSettings, navAdmin].forEach(btn => {
-                btn.classList.remove('bg-slate-900', 'text-amber-400', 'border-slate-800/80');
-                btn.classList.add('text-slate-400', 'border-transparent');
+        // --- SIDEBAR ACTION & COLLAPSED TRIGGER DECK ---
+        if (btnOpenSidebar) {
+            btnOpenSidebar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.body.classList.add('sidebar-open');
             });
         }
 
-        // Nav Listeners
-        navDashboard.addEventListener('click', () => {
-            resetViews();
-            viewDashboard.classList.remove('hidden');
-            navDashboard.classList.add('bg-slate-900', 'text-amber-400', 'border-slate-800/80');
-            navDashboard.classList.remove('text-slate-400');
-            if(window.innerWidth < 1024) sidebar.classList.add('-translate-x-full'); // Auto-close on mobile
+        if (btnCloseSidebar) {
+            btnCloseSidebar.addEventListener('click', () => {
+                document.body.classList.remove('sidebar-open');
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            const sidebarEl = document.getElementById('sidebar');
+            const btnOpen = document.getElementById('btn-open-sidebar');
+            
+            if (document.body.classList.contains('sidebar-open')) {
+                if (sidebarEl && !sidebarEl.contains(e.target) && btnOpen && !btnOpen.contains(e.target)) {
+                    document.body.classList.remove('sidebar-open');
+                }
+            }
         });
 
-        navSettings.addEventListener('click', () => {
-            resetViews();
-            viewSettings.classList.remove('hidden');
-            navSettings.classList.add('bg-slate-900', 'text-amber-400', 'border-slate-800/80');
-            navSettings.classList.remove('text-slate-400');
-            if(window.innerWidth < 1024) sidebar.classList.add('-translate-x-full');
+        // View Matrix Structural Routing Logic Switching Functions
+        function switchView(activeNav, activeView) {
+            const views = [viewDashboard, viewSettings, viewAdmin];
+            const navs = [navDashboard, navSettings, navAdmin];
+            
+            views.forEach(v => { if(v) v.classList.add('hidden'); });
+            navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
+
+            if(activeView) activeView.classList.remove('hidden');
+            
+            if(activeNav) {
+                if (activeNav === navAdmin) {
+                    activeNav.classList.add('bg-purple-950/30', 'text-purple-400', 'font-bold');
+                } else {
+                    activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
+                }
+            }
+            document.body.classList.remove('sidebar-open');
+        }
+
+        if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+        if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
+        if(navAdmin) navAdmin.addEventListener('click', () => switchView(navAdmin, viewAdmin));
+
+        // Autogenerated String Signature Mapping Routine Checks
+        async function generateUniqueGuestName() {
+            let exists = true;
+            let guestName = "";
+            while (exists) {
+                let rand = Math.floor(1000 + Math.random() * 9000);
+                guestName = `kc-guest-${rand}`;
+                const q = query(collection(db, "wallets"), where("username", "==", guestName));
+                const snap = await getDocs(q);
+                if (snap.empty) exists = false;
+            }
+            return guestName;
+        }
+
+        // IDENTITY PERSISTENCE RUNTIME STREAM
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                if(authView) authView.classList.add('hidden');
+                if(appView) appView.classList.remove('hidden');
+
+                if(userEmail) userEmail.innerText = user.email;
+                if(userPhoto) userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
+
+                const userRef = doc(db, "wallets", user.email.toLowerCase());
+                let userSnap = await getDoc(userRef);
+                let currentUsername = "";
+
+                if (userSnap.exists() && userSnap.data().username) {
+                    currentUsername = userSnap.data().username;
+                    if(balanceAmount) balanceAmount.innerText = (userSnap.data().balance || 0).toFixed(2);
+                } else {
+                    currentUsername = await generateUniqueGuestName();
+                    const startBalance = 10.00;
+                    await setDoc(userRef, {
+                        name: user.displayName,
+                        email: user.email.toLowerCase(),
+                        username: currentUsername,
+                        balance: startBalance,
+                        isAdmin: user.email.toLowerCase() === 'littendekitten@gmail.com',
+                        createdAt: new Date()
+                    }, { merge: true });
+                    if(balanceAmount) balanceAmount.innerText = startBalance.toFixed(2);
+                    userSnap = await getDoc(userRef);
+                }
+
+                if(userDisplayName) userDisplayName.innerText = `@${currentUsername}`;
+                if(topbarUsername) topbarUsername.innerText = `@${currentUsername}`;
+                if(settingsUsernameInput) settingsUsernameInput.value = currentUsername;
+
+                const isAdmin = user.email.toLowerCase() === 'littendekitten@gmail.com' || (userSnap.exists() && userSnap.data().isAdmin === true);
+                if (isAdmin && navAdmin) {
+                    navAdmin.classList.remove('hidden');
+                } else if(navAdmin) {
+                    navAdmin.classList.add('hidden');
+                }
+
+                startLeaderboard(user.email.toLowerCase());
+            } else {
+                if(authView) authView.classList.remove('hidden');
+                if(appView) appView.classList.add('hidden');
+                if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+            }
         });
 
-        navAdmin.addEventListener('click', () => {
-            resetViews();
-            viewAdmin.classList.remove('hidden');
-            // Admin gets special purple active state
-            navAdmin.classList.add('bg-purple-950/30', 'text-purple-400', 'border-purple-900/40');
-            navAdmin.classList.remove('text-slate-400');
-            if(window.innerWidth < 1024) sidebar.classList.add('-translate-x-full');
-        });
+        // RE-ASSIGN IDENTITY CONTEXT (MUTATOR LOGIC)
+        if(settingsUsernameForm) {
+            settingsUsernameForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
+                if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
 
-        // ----------------------------------------------------
-        // FIREBASE / BACKEND PLACEHOLDERS
-        // ----------------------------------------------------
-        
-        /* 
-        TODO: Insert your database/backend logic here:
-        
-        1. Form Submits:
-        document.getElementById('transfer-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('receiver-username').value;
-            const amount = document.getElementById('transfer-amount').value;
-            // Send to DB...
-        });
+                const myEmail = auth.currentUser.email.toLowerCase();
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", newUsername));
+                    const querySnap = await getDocs(q);
+                    let isTaken = false;
+                    querySnap.forEach((doc) => { if (doc.id !== myEmail) isTaken = true; });
 
-        2. Listen for Balance Updates
-        // Update document.getElementById('balance-amount').innerText = newBalance
+                    if (isTaken) return alert(`Username @${newUsername} is taken! Pick another.`);
 
-        3. Listen for Leaderboard Updates
-        // Render inside document.getElementById('leaderboard-list')
-        */
+                    await setDoc(doc(db, "wallets", myEmail), { username: newUsername }, { merge: true });
+                    if(userDisplayName) userDisplayName.innerText = `@${newUsername}`;
+                    if(topbarUsername) topbarUsername.innerText = `@${newUsername}`;
+                    alert(`Public username is now @${newUsername}!`);
+                } catch (err) { alert(err.message); }
+            });
+        }
 
+        // REALTIME LEDGER RANKINGS STREAM PIPELINE
+        function startLeaderboard(currentUserEmail) {
+            const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
+            leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
+                if(!leaderboardList) return;
+                leaderboardList.innerHTML = "";
+                let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const email = data.email || docSnap.id;
+                    const uname = data.username || "guest";
+                    const balance = data.balance || 0;
+
+                    if (email === currentUserEmail) {
+                        userRank = currentRank;
+                        userCurrentBalance = balance;
+                        userCurrentName = uname;
+                    }
+
+                    if (currentRank <= 10) {
+                        let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
+                        if (currentRank === 1) { medal = '🏆 '; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
+                        else if (currentRank === 2) { medal = '🥈 '; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
+                        else if (currentRank === 3) { medal = '🥉 '; rowStyle = "bg-amber-700/10 border border-amber-700/20"; badgeStyle = "bg-amber-700 text-white font-black"; }
+
+                        if (email === currentUserEmail) rowStyle += " ring-1 ring-amber-400";
+
+                        const rowHtml = `
+                            <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
+                                    <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
+                                </div>
+                                <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
+                            </div>`;
+                        leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
+                    }
+                    currentRank++;
+                });
+
+                if (userRank !== -1) {
+                    if(myRankTag) myRankTag.innerText = `#${userRank}`;
+                    if(myRankUser) myRankUser.innerText = `@${userCurrentName}`;
+                    if(myRankBalance) myRankBalance.innerText = userCurrentBalance.toFixed(2);
+                }
+            });
+        }
+
+        // TRANSACTION EXECUTOR HANDLING MUTATION ROUTINES
+        if(transferForm) {
+            transferForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
+                const amount = parseFloat(document.getElementById('transfer-amount').value);
+                const myEmail = auth.currentUser.email.toLowerCase();
+
+                if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
+                if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
+
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const querySnap = await getDocs(q);
+                    if (querySnap.empty) throw new Error(`@${targetUname} not found! Check alignment or spelling.`);
+
+                    let receiverEmail = "";
+                    querySnap.forEach((doc) => { receiverEmail = doc.id; });
+                    if (myEmail === receiverEmail) throw new Error("You cannot send coins to yourself!");
+
+                    const senderRef = doc(db, "wallets", myEmail);
+                    const receiverRef = doc(db, "wallets", receiverEmail);
+
+                    await runTransaction(db, async (transaction) => {
+                        const senderDoc = await transaction.get(senderRef);
+                        const receiverDoc = await transaction.get(receiverRef);
+                        const senderBal = senderDoc.data().balance || 0;
+                        if (senderBal < amount) throw new Error("Insufficient funds! 😿");
+
+                        transaction.update(senderRef, { balance: senderBal - amount });
+                        transaction.update(receiverRef, { balance: (receiverDoc.data().balance || 0) + amount });
+                    });
+
+                    alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}! 🚀`);
+                    transferForm.reset();
+                } catch (err) { alert(err.message); }
+                finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
+            });
+        }
+
+        // CORE ROOT DIRECT MASTER ALLOCATION OVERRIDES
+        if(adminBalanceForm) {
+            adminBalanceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUname = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
+                const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
+
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const snap = await getDocs(q);
+                    if (snap.empty) return alert("Username not found.");
+
+                    let targetEmail = "";
+                    snap.forEach(d => targetEmail = d.id);
+
+                    await setDoc(doc(db, "wallets", targetEmail), { balance: newAmount }, { merge: true });
+                    alert(`Overrode balance of @${targetUname} to ${newAmount} KC!`);
+                    adminBalanceForm.reset();
+                } catch(err) { alert(err.message); }
+            });
+        }
+
+        if(adminPromoteForm) {
+            adminPromoteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUname = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
+
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const snap = await getDocs(q);
+                    if (snap.empty) return alert("Username not found.");
+
+                    let targetEmail = "";
+                    snap.forEach(d => targetEmail = d.id);
+
+                    await setDoc(doc(db, "wallets", targetEmail), { isAdmin: true }, { merge: true });
+                    alert(`@${targetUname} has been promoted to Admin! 👑`);
+                    adminPromoteForm.reset();
+                } catch(err) { alert(err.message); }
+            });
+        }
+
+        if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(err => alert(err.message)));
+        if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth));
     </script>
 </body>
 </html>
