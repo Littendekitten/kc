@@ -98,9 +98,9 @@
                         <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
                             <h3 class="text-xl font-semibold mb-4 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins</h3>
                             <form id="transfer-form" class="space-y-4">
-                                <input type="text" id="receiver-username" required placeholder="Enter recipient's @username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                                <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00 KC" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                                <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">Send Coins</button>
+                                <input type="text" id="receiver-username" required placeholder="Enter recipient's @username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400">
+                                <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00 KC" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400">
+                                <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">Send Coins</button>
                             </form>
                         </div>
                     </div>
@@ -108,16 +108,14 @@
                     <div class="bg-slate-850/60 border border-slate-800 rounded-3xl p-6 shadow-2xl">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> GLOBAL RANKINGS</h3>
-                            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50"><i class="fa-solid fa-rotate animate-spin-slow"></i> Live</span>
+                            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50">Live</span>
                         </div>
                         <div id="leaderboard-list" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1"></div>
                         <div id="my-ranking-container" class="mt-4 pt-4 border-t border-slate-800">
                             <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <span id="my-rank-tag" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm">#-</span>
-                                    <div>
-                                        <p class="text-sm font-bold text-white">You (<span id="my-rank-user">@username</span>)</p>
-                                    </div>
+                                    <p class="text-sm font-bold text-white">You (<span id="my-rank-user">@username</span>)</p>
                                 </div>
                                 <p class="text-lg font-black text-amber-400"><span id="my-rank-balance">0.00</span> KC</p>
                             </div>
@@ -128,10 +126,6 @@
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</h2>
                     <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-2xl max-w-xl space-y-4">
-                        <div>
-                            <h3 class="text-lg font-bold">Change Custom Username</h3>
-                            <p class="text-xs text-slate-400 mt-1">Every legend needs a unique name. Spaces are not allowed, lowercase only.</p>
-                        </div>
                         <form id="settings-username-form" class="space-y-4">
                             <div class="relative">
                                 <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
@@ -146,7 +140,7 @@
                     <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i class="fa-solid fa-gavel"></i> SUPREME CONTROL</h2>
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-2xl space-y-4">
-                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-coins"></i> Override Balance by @username</h3>
+                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-coins"></i> Override Balance</h3>
                             <form id="admin-balance-form" class="space-y-4">
                                 <input type="text" id="admin-target-username" required placeholder="target @username" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
                                 <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance amount" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
