@@ -1,4 +1,6 @@
 /* Custom Sidebar & UI Animations */
+
+/* Slanke scrollbar voor het leaderboard */
 #leaderboard-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -10,6 +12,8 @@
     background: rgba(51, 65, 85, 0.6);
     border-radius: 8px;
 }
+
+/* Live icoon rotatie */
 .animate-spin-slow {
     animation: spin 4s linear infinite;
 }
@@ -27,7 +31,23 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Overlay schaduw als de sidebar opengeklapt is op mobiel */
-.sidebar-open #sidebar {
-    transform: translateX(0);
+/* --- HAMBURGER SIDEBAR LOGICA --- */
+
+/* Op mobiel/tablet staat de sidebar standaard ALTIJD verborgen (buiten het scherm) */
+@media (max-width: 1023px) {
+    #sidebar {
+        transform: translateX(-100%) !important;
+    }
+    
+    /* Als JavaScript de klasse 'sidebar-open' aan de body geeft, schuift hij in beeld */
+    .sidebar-open #sidebar {
+        transform: translateX(0) !important;
+    }
+}
+
+/* Op grote schermen (desktop) staat de sidebar standaard gewoon vast links */
+@media (min-width: 1024px) {
+    #sidebar {
+        transform: translateX(0) !important;
+    }
 }
