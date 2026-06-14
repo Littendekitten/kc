@@ -54,10 +54,33 @@ const myRankBalance = document.getElementById('my-rank-balance');
 
 let leaderboardUnsubscribe = null;
 
-// Snelkoppeling sidebar open/dicht
-if(btnOpenSidebar) btnOpenSidebar.addEventListener('click', () => document.body.classList.add('sidebar-open'));
-if(btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+// --- HAMBURGER SIDEBAR ACTIONS ---
+if (btnOpenSidebar) {
+    btnOpenSidebar.addEventListener('click', (e) => {
+        e.stopPropagation(); // Voorkomt dat de click direct doorslaat naar document
+        document.body.classList.add('sidebar-open');
+    });
+}
 
+if (btnCloseSidebar) {
+    btnCloseSidebar.addEventListener('click', () => {
+        document.body.classList.remove('sidebar-open');
+    });
+}
+
+// Sluit de sidebar automatisch als je ergens buiten het menu klikt
+document.addEventListener('click', (e) => {
+    const sidebarEl = document.getElementById('sidebar');
+    const btnOpen = document.getElementById('btn-open-sidebar');
+    
+    if (document.body.classList.contains('sidebar-open')) {
+        if (sidebarEl && !sidebarEl.contains(e.target) && btnOpen && !btnOpen.contains(e.target)) {
+            document.body.classList.remove('sidebar-open');
+        }
+    }
+});
+
+// Switch tussen Dashboard, Settings en Admin views
 function switchView(activeNav, activeView) {
     const views = [viewDashboard, viewSettings, viewAdmin];
     const navs = [navDashboard, navSettings, navAdmin];
@@ -67,6 +90,8 @@ function switchView(activeNav, activeView) {
 
     if(activeView) activeView.classList.remove('hidden');
     if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
+    
+    // Sluit altijd de sidebar na een navigatieklik op mobiel
     document.body.classList.remove('sidebar-open');
 }
 
@@ -74,7 +99,7 @@ if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDash
 if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
 if(navAdmin) navAdmin.addEventListener('click', () => switchView(navAdmin, viewAdmin));
 
-// Unieke gastnaam generator
+// Unieke gastnaam generator (kc-guest-XXXX)
 async function generateUniqueGuestName() {
     let exists = true;
     let guestName = "";
@@ -88,7 +113,7 @@ async function generateUniqueGuestName() {
     return guestName;
 }
 
-// LOGIN CONFIG & STATE CONTROL
+// AUTH CONTROLLER & STARTUP LOGICA
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         if(authView) authView.classList.add('hidden');
@@ -123,6 +148,7 @@ onAuthStateChanged(auth, async (user) => {
         if(topbarUsername) topbarUsername.innerText = `@${currentUsername}`;
         if(settingsUsernameInput) settingsUsernameInput.value = currentUsername;
 
+        // Admin rechten valideren
         const isAdmin = user.email.toLowerCase() === 'littendekitten@gmail.com' || (userSnap.exists() && userSnap.data().isAdmin === true);
         if (isAdmin && navAdmin) {
             navAdmin.classList.remove('hidden');
@@ -138,7 +164,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// GEBRUIKERSNAAM OPSLAAN (UNIEK CHECK)
+// SETTINGS: GEBRUIKERSNAAM OPSLAAN (UNIEK CHECK)
 if(settingsUsernameForm) {
     settingsUsernameForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -211,7 +237,7 @@ function startLeaderboard(currentUserEmail) {
     });
 }
 
-// COINS VERSTUREN
+// COINS VERSTUREN (VIA @USERNAME)
 if(transferForm) {
     transferForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -225,7 +251,7 @@ if(transferForm) {
         try {
             const q = query(collection(db, "wallets"), where("username", "==", targetUname));
             const querySnap = await getDocs(q);
-            if (querySnap.empty) throw new Error(`@${targetUname} not found!`);
+            if (querySnap.empty) throw new Error(`@${targetUname} not found! Check alignment or spelling.`);
 
             let receiverEmail = "";
             querySnap.forEach((doc) => { receiverEmail = doc.id; });
@@ -244,14 +270,14 @@ if(transferForm) {
                 transaction.update(receiverRef, { balance: (receiverDoc.data().balance || 0) + amount });
             });
 
-            alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}!`);
+            alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}! 🚀`);
             transferForm.reset();
         } catch (err) { alert(err.message); }
         finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
     });
 }
 
-// ADMIN PANEL ACTIES
+// ADMIN PANEL: RECHTEN MANIPULATIE VIA USERNAME
 if(adminBalanceForm) {
     adminBalanceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -267,7 +293,7 @@ if(adminBalanceForm) {
             snap.forEach(d => targetEmail = d.id);
 
             await setDoc(doc(db, "wallets", targetEmail), { balance: newAmount }, { merge: true });
-            alert(`Overrode balance of @${targetUname}!`);
+            alert(`Overrode balance of @${targetUname} to ${newAmount} KC!`);
             adminBalanceForm.reset();
         } catch(err) { alert(err.message); }
     });
@@ -287,7 +313,7 @@ if(adminPromoteForm) {
             snap.forEach(d => targetEmail = d.id);
 
             await setDoc(doc(db, "wallets", targetEmail), { isAdmin: true }, { merge: true });
-            alert(`@${targetUname} promoted to Admin!`);
+            alert(`@${targetUname} has been promoted to Admin! 👑`);
             adminPromoteForm.reset();
         } catch(err) { alert(err.message); }
     });
