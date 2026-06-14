@@ -4,359 +4,376 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+<body>
 
-    <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 to-slate-950">
-        <div class="max-w-md w-full bg-slate-900/60 backdrop-blur-md border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-6">
-            
-            <div class="space-y-2">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-4xl shadow-inner animate-bounce">
-                    🐱
-                </div>
-                <h1 class="text-3xl font-black tracking-wider text-amber-400">KC-XCHANGE</h1>
-                <p class="text-slate-400 text-sm">The official KittyCoins trading platform for legends.</p>
-            </div>
+<!-- LOGIN SCREEN -->
 
-            <div class="border-t border-slate-800/60 my-4"></div>
+<section id="auth-screen">
 
-            <div class="space-y-4">
-                <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-100 transition shadow-lg cursor-pointer transform active:scale-98">
-                    <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
-                    Sign in with Google
-                </button>
-                <p class="text-xs text-slate-500">Use your Google account to sign/log in securely.</p>
-            </div>
+    <div class="login-card">
+
+        <div class="logo">
+            🐱
         </div>
-        
-        <p class="text-xs text-slate-600 mt-8">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
+
+        <h1>KC-XCHANGE</h1>
+
+        <p>
+            The Ultimate KittyCoins Platform
+        </p>
+
+        <button id="login-btn">
+            <i class="fa-brands fa-google"></i>
+            Sign In With Google
+        </button>
+
     </div>
 
+</section>
 
-    <div id="app-view" class="hidden min-h-screen flex flex-col bg-slate-900">
-        
-        <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
-            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">🐱</span>
-                    <h2 class="text-xl font-bold tracking-wider text-amber-400">KC-XCHANGE</h2>
+<!-- APP -->
+
+<div id="app" class="hidden">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <button id="menu-btn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="topbar-logo">
+            🐱 KC-XCHANGE
+        </div>
+
+        <div class="user-preview">
+
+            <img
+            id="user-avatar"
+            src="assets/default-avatar.png">
+
+            <span id="user-username">
+                Loading...
+            </span>
+
+        </div>
+
+    </header>
+
+    <!-- SIDEBAR -->
+
+    <aside id="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>KC-XCHANGE</h2>
+
+        </div>
+
+        <nav>
+
+            <button class="nav-btn active"
+            data-page="dashboard">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </button>
+
+            <button class="nav-btn"
+            data-page="leaderboard">
+                <i class="fa-solid fa-trophy"></i>
+                Leaderboard
+            </button>
+
+            <button class="nav-btn"
+            data-page="send">
+                <i class="fa-solid fa-paper-plane"></i>
+                Send Coins
+            </button>
+
+            <button class="nav-btn"
+            data-page="transactions">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Transactions
+            </button>
+
+            <button class="nav-btn"
+            data-page="settings">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </button>
+
+            <button
+            id="admin-nav-btn"
+            class="nav-btn hidden"
+            data-page="admin">
+
+                <i class="fa-solid fa-crown"></i>
+                Admin Panel
+
+            </button>
+
+        </nav>
+
+        <button id="logout-btn">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+
+        </button>
+
+    </aside>
+
+    <!-- OVERLAY -->
+
+    <div id="sidebar-overlay"></div>
+
+    <!-- MAIN -->
+
+    <main>
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard-page"
+        class="page active-page">
+
+            <h1>Dashboard</h1>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h3>Balance</h3>
+
+                    <span id="balance">
+                        0 KC
+                    </span>
+
                 </div>
-                
-                <div class="flex items-center gap-3">
-                    <button id="btn-admin-panel" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-3.5 rounded-xl text-xs cursor-pointer transition flex items-center gap-1.5 shadow-lg shadow-purple-950/50">
-                        <i class="fa-solid fa-crown text-purple-200"></i> Admin Panel
+
+                <div class="stat-card">
+
+                    <h3>Rank</h3>
+
+                    <span id="rank">
+                        #?
+                    </span>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <h3>Transactions</h3>
+
+                    <span id="transaction-count">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="dashboard-panels">
+
+                <div class="panel">
+
+                    <h2>Recent Activity</h2>
+
+                    <div id="recent-activity">
+
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <h2>Leaderboard Preview</h2>
+
+                    <div id="leaderboard-preview">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- LEADERBOARD -->
+
+        <section id="leaderboard-page"
+        class="page">
+
+            <h1>Leaderboard</h1>
+
+            <div id="leaderboard-list">
+
+            </div>
+
+            <div id="your-rank-card">
+
+                Loading...
+
+            </div>
+
+        </section>
+
+        <!-- SEND -->
+
+        <section id="send-page"
+        class="page">
+
+            <h1>Send KittyCoins</h1>
+
+            <form id="send-form">
+
+                <input
+                type="email"
+                id="receiver-email"
+                placeholder="Receiver Email">
+
+                <input
+                type="number"
+                id="amount"
+                placeholder="Amount">
+
+                <button type="submit">
+
+                    Send Coins
+
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- TRANSACTIONS -->
+
+        <section id="transactions-page"
+        class="page">
+
+            <h1>Transactions</h1>
+
+            <div id="transactions-list">
+
+            </div>
+
+        </section>
+
+        <!-- SETTINGS -->
+
+        <section id="settings-page"
+        class="page">
+
+            <h1>Settings</h1>
+
+            <div class="panel">
+
+                <h2>Username</h2>
+
+                <p>
+                    Current:
+                    <span id="current-username">
+                        Loading...
+                    </span>
+                </p>
+
+                <input
+                type="text"
+                id="new-username"
+                placeholder="New Username">
+
+                <button id="save-username">
+
+                    Save Username
+
+                </button>
+
+            </div>
+
+            <div class="panel">
+
+                <h2>Account</h2>
+
+                <p id="user-email-display">
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- ADMIN -->
+
+        <section id="admin-page"
+        class="page">
+
+            <h1>
+                👑 God Mode Control Panel
+            </h1>
+
+            <div class="admin-grid">
+
+                <div class="panel">
+
+                    <h2>Promote Admin</h2>
+
+                    <input
+                    type="email"
+                    id="promote-email"
+                    placeholder="Email">
+
+                    <button id="promote-btn">
+
+                        Promote
+
                     </button>
 
-                    <div class="text-right hidden sm:block">
-                        <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
-                        <p id="user-email" class="text-xs text-slate-400">Loading...</p>
-                    </div>
-                    <img id="user-photo" src="" alt="Profile" class="w-9 h-9 rounded-full border border-amber-400">
-                    <button id="btn-logout" class="ml-2 text-slate-400 hover:text-rose-400 transition cursor-pointer text-sm p-2 bg-slate-800 rounded-lg border border-slate-700/50" title="Sign Out">
-                        <i class="fa-solid fa-right-from-bracket"></i>
+                </div>
+
+                <div class="panel">
+
+                    <h2>Change Balance</h2>
+
+                    <input
+                    type="email"
+                    id="balance-email"
+                    placeholder="Email">
+
+                    <input
+                    type="number"
+                    id="balance-value"
+                    placeholder="Balance">
+
+                    <button id="change-balance-btn">
+
+                        Update
+
                     </button>
-                </div>
-            </div>
-        </header>
 
-        <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8">
-            
-            <div id="user-content" class="grid gap-8 md:grid-cols-3">
-                <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                    <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
-                    <div>
-                        <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
-                        <div class="flex items-baseline gap-2">
-                            <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
-                            <span class="text-xl font-bold text-amber-200">KC</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-amber-100/70 mt-4"><i class="fa-solid fa-shield-halved"></i> Secured by Firebase & Firestore</p>
                 </div>
 
-                <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
-                    </h3>
-                    
-                    <form id="transfer-form" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Recipient's Email</label>
-                            <input type="email" id="receiver-email" required placeholder="classmate@school.com" 
-                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount of KittyCoins</label>
-                            <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" 
-                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                        </div>
-
-                        <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">
-                            Send Coins
-                        </button>
-                    </form>
-                </div>
             </div>
 
-            <div id="admin-content" class="hidden space-y-6">
-                <div class="flex justify-between items-center border-b border-purple-900/40 pb-4">
-                    <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
-                        <i class="fa-solid fa-gavel"></i> KITA-CAT SUPREME CONTROL
-                    </h2>
-                    <button id="btn-admin-back" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs cursor-pointer transition">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                    </button>
-                </div>
+        </section>
 
-                <div class="grid gap-6 md:grid-cols-2">
-                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
-                            <i class="fa-solid fa-coins"></i> Manipulate User Balance
-                        </h3>
-                        <form id="admin-balance-form" class="space-y-4">
-                            <input type="email" id="admin-target-email" required placeholder="victim@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance (e.g. 9999)" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
-                                Override Balance
-                            </button>
-                        </form>
-                    </div>
+    </main>
 
-                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
-                            <i class="fa-solid fa-crown"></i> Appoint New Admin
-                        </h3>
-                        <form id="admin-promote-form" class="space-y-4">
-                            <input type="email" id="admin-promote-email" required placeholder="co-pilot@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
-                                Grant Admin Status
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+</div>
 
-        </main>
+<!-- TOASTS -->
 
-        <footer class="border-t border-slate-800/60 bg-slate-950/20 py-4 text-center text-xs text-slate-500">
-            &copy; 2026 KittyCoins Exchange &bull; Made by KitaCat
-        </footer>
-    </div>
+<div id="toast-container">
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+</div>
 
-        // Jouw geverifieerde Firebase Configuratie
-        const firebaseConfig = {
-            apiKey: "AIzaSyDra6ILu1IGCyZ64fTfxKYGoQqEL6CbUFE",
-            authDomain: "kc-xchange.firebaseapp.com",
-            projectId: "kc-xchange",
-            storageBucket: "kc-xchange.firebasestorage.app",
-            messagingSenderId: "25389828665",
-            appId: "1:25389828665:web:0e42a57c7176e06b499be8",
-            measurementId: "G-G7TY0C4T3X"
-        };
+<script type="module" src="js/app.js"></script>
 
-        // Firebase & Services starten
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        // Elementen koppelen
-        const authView = document.getElementById('auth-view');
-        const appView = document.getElementById('app-view');
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const userName = document.getElementById('user-name');
-        const userEmail = document.getElementById('user-email');
-        const userPhoto = document.getElementById('user-photo');
-        const balanceAmount = document.getElementById('balance-amount');
-        const transferForm = document.getElementById('transfer-form');
-        const btnSend = document.getElementById('btn-send');
-
-        // Admin elementen
-        const btnAdminPanel = document.getElementById('btn-admin-panel');
-        const btnAdminBack = document.getElementById('btn-admin-back');
-        const userContent = document.getElementById('user-content');
-        const adminContent = document.getElementById('admin-content');
-        const adminBalanceForm = document.getElementById('admin-balance-form');
-        const adminPromoteForm = document.getElementById('admin-promote-form');
-
-        // 1. LOGIN STATUS LIVE CONTROLEREN + ADMIN FILTER
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                authView.classList.add('hidden');
-                appView.classList.remove('hidden');
-
-                userName.innerText = user.displayName;
-                userEmail.innerText = user.email;
-                userPhoto.src = user.photoURL || 'https://placehold.co/150';
-
-                const userRef = doc(db, "wallets", user.email.toLowerCase());
-                const userSnap = await getDoc(userRef);
-
-                // Controleer superadmin status óf database vlag
-                const isSuperAdmin = user.email.toLowerCase() === 'littendekitten@gmail.com';
-                const hasAdminFlag = userSnap.exists() && userSnap.data().isAdmin === true;
-
-                if (userSnap.exists() && userSnap.data().balance !== undefined) {
-                    balanceAmount.innerText = userSnap.data().balance.toFixed(2);
-                    // Update admin vlag als die in db staat maar nog niet lokaal gesynct is
-                    if (isSuperAdmin && !userSnap.data().isAdmin) {
-                        await setDoc(userRef, { isAdmin: true }, { merge: true });
-                    }
-                } else {
-                    // Welkomstbonus voor reguliere speler of superadmin initialisatie
-                    const startBalance = 10.00;
-                    await setDoc(userRef, {
-                        name: user.displayName,
-                        email: user.email.toLowerCase(),
-                        balance: startBalance,
-                        isAdmin: isSuperAdmin, // Direct true als jij het bent!
-                        createdAt: new Date()
-                    }, { merge: true });
-                    balanceAmount.innerText = startBalance.toFixed(2);
-                    alert("Welcome to KC-Xchange! You received a starter bonus of 10 free KittyCoins! 🐱🎉");
-                }
-
-                // Paarse Admin Knop tonen/verbergen
-                if (isSuperAdmin || hasAdminFlag) {
-                    btnAdminPanel.classList.remove('hidden');
-                } else {
-                    btnAdminPanel.classList.add('hidden');
-                }
-
-            } else {
-                authView.classList.remove('hidden');
-                appView.classList.add('hidden');
-                // Schermen resetten bij uitloggen
-                userContent.classList.remove('hidden');
-                adminContent.classList.add('hidden');
-            }
-        });
-
-        // Toggles voor Admin weergave
-        btnAdminPanel.addEventListener('click', () => {
-            userContent.classList.add('hidden');
-            adminContent.classList.remove('hidden');
-        });
-
-        btnAdminBack.addEventListener('click', () => {
-            adminContent.classList.add('hidden');
-            userContent.classList.remove('hidden');
-        });
-
-        // 2. ADMIN POWER 1: SALDO OVERRIDE
-        adminBalanceForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const targetEmail = document.getElementById('admin-target-email').value.trim().toLowerCase();
-            const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
-
-            if (isNaN(newAmount) || newAmount < 0) return alert("Enter a valid amount.");
-
-            const targetRef = doc(db, "wallets", targetEmail);
-            
-            try {
-                // Overschrijf of maak wallet aan met de nieuwe waarde
-                await setDoc(targetRef, {
-                    balance: newAmount,
-                    email: targetEmail,
-                    name: targetEmail.split('@')[0] // Tijdelijke naam mochten ze nog nooit ingelogd zijn
-                }, { merge: true });
-
-                alert(`Machtig! ${targetEmail} balance updated to ${newAmount.toFixed(2)} KC! ⚡`);
-                adminBalanceForm.reset();
-
-                // Als je je eigen saldo hebt aangepast, update direct je scherm
-                if (targetEmail === auth.currentUser.email.toLowerCase()) {
-                    balanceAmount.innerText = newAmount.toFixed(2);
-                }
-            } catch (err) {
-                alert("Error manipulation: " + err.message);
-            }
-        });
-
-        // 3. ADMIN POWER 2: ADMIN PROMOTEN
-        adminPromoteForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const targetEmail = document.getElementById('admin-promote-email').value.trim().toLowerCase();
-            const targetRef = doc(db, "wallets", targetEmail);
-
-            try {
-                await setDoc(targetRef, {
-                    isAdmin: true,
-                    email: targetEmail,
-                    name: targetEmail.split('@')[0]
-                }, { merge: true });
-
-                alert(`Success! ${targetEmail} is now a co-admin! 👑`);
-                adminPromoteForm.reset();
-            } catch (err) {
-                alert("Error promoting: " + err.message);
-            }
-        });
-
-        // 4. REGULIER: COINS VERSTUREN
-        transferForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const senderEmail = auth.currentUser.email.toLowerCase();
-            const receiverEmail = document.getElementById('receiver-email').value.trim().toLowerCase();
-            const amount = parseFloat(document.getElementById('transfer-amount').value);
-
-            if (senderEmail === receiverEmail) return alert("You cannot send KittyCoins to yourself, ya goofy cat! 🐱");
-            if (isNaN(amount) || amount <= 0) return alert("Please enter a valid amount higher than 0.");
-
-            btnSend.disabled = true;
-            btnSend.innerText = "Processing...";
-
-            const senderRef = doc(db, "wallets", senderEmail);
-            const receiverRef = doc(db, "wallets", receiverEmail);
-
-            try {
-                await runTransaction(db, async (transaction) => {
-                    const senderDoc = await transaction.get(senderRef);
-                    const receiverDoc = await transaction.get(receiverRef);
-
-                    if (!receiverDoc.exists()) {
-                        throw new Error("Recipient account not found! Your classmate needs to log into KC-Xchange at least once.");
-                    }
-
-                    const currentSenderBalance = senderDoc.data().balance;
-                    if (currentSenderBalance < amount) {
-                        throw new Error("Transaction denied: Insufficient funds! 😿");
-                    }
-
-                    transaction.update(senderRef, { balance: currentSenderBalance - amount });
-                    transaction.update(receiverRef, { balance: receiverDoc.data().balance + amount });
-                });
-
-                alert(`Boom! Successfully sent ${amount.toFixed(2)} KC! 🚀`);
-                transferForm.reset();
-                const updatedSenderDoc = await getDoc(senderRef);
-                balanceAmount.innerText = updatedSenderDoc.data().balance.toFixed(2);
-
-            } catch (error) {
-                alert(error.message);
-            } finally {
-                btnSend.disabled = false;
-                btnSend.innerText = "Send Coins";
-            }
-        });
-
-        // 5. GOOGLE AUTHENTICATION EVENT LISTENERS
-        btnLogin.addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch((error) => alert("Login failed: " + error.message));
-        });
-
-        btnLogout.addEventListener('click', () => {
-            signOut(auth).catch((error) => alert("Logout failed: " + error.message));
-        });
-    </script>
 </body>
 </html>
