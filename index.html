@@ -4,204 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange</title>
-    <!-- FontAwesome voor vette icoontjes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Link naar jouw losse CSS-bestand -->
     <link rel="stylesheet" href="style.css">
-    <!-- Tailwind CSS compiler via de browser -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden">
 
-    <!-- LOGIN SCREEN -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 to-slate-950">
         <div class="max-w-md w-full bg-slate-900/60 backdrop-blur-md border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-6">
-            
             <div class="space-y-2">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-4xl shadow-inner animate-bounce">
-                    🐱
-                </div>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-4xl shadow-inner animate-bounce">🐱</div>
                 <h1 class="text-3xl font-black tracking-wider text-amber-400">KC-XCHANGE</h1>
                 <p class="text-slate-400 text-sm">The official KittyCoins trading platform for legends.</p>
             </div>
-
             <div class="border-t border-slate-800/60 my-4"></div>
-
             <div class="space-y-4">
                 <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-100 transition shadow-lg cursor-pointer transform active:scale-98">
                     <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
                     Sign in with Google
                 </button>
-                <p class="text-xs text-slate-500">Use your Google account to sign/log in securely.</p>
             </div>
         </div>
-        
         <p class="text-xs text-slate-600 mt-8">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
     </div>
 
-
-    <!-- MAIN DASHBOARD (Hidden by default) -->
-    <div id="app-view" class="hidden min-h-screen flex flex-col bg-slate-900">
+    <div id="app-view" class="hidden min-h-screen flex bg-slate-900">
         
-        <!-- HEADER -->
-        <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
-            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">🐱</span>
-                    <h2 class="text-xl font-bold tracking-wider text-amber-400">KC-XCHANGE</h2>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <!-- Geheime Admin Knop -->
-                    <button id="btn-admin-panel" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-3.5 rounded-xl text-xs cursor-pointer transition flex items-center gap-1.5 shadow-lg shadow-purple-950/50">
-                        <i class="fa-solid fa-crown text-purple-200"></i> Admin Panel
-                    </button>
-
-                    <div class="text-right hidden sm:block">
-                        <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
-                        <p id="user-email" class="text-xs text-slate-400">Loading...</p>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800/80 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+            <div class="p-4 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🐱</span>
+                        <h2 class="font-black tracking-wider text-amber-400 text-sm">KC-XCHANGE</h2>
                     </div>
-                    <img id="user-photo" src="" alt="Profile" class="w-9 h-9 rounded-full border border-amber-400">
-                    <button id="btn-logout" class="ml-2 text-slate-400 hover:text-rose-400 transition cursor-pointer text-sm p-2 bg-slate-800 rounded-lg border border-slate-700/50" title="Sign Out">
-                        <i class="fa-solid fa-right-from-bracket"></i>
+                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
+
+                <nav class="space-y-1.5">
+                    <button id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 text-amber-400 font-bold transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                    </button>
+                    <button id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-gear w-5"></i> Settings
+                    </button>
+                    <button id="nav-admin" class="hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-950/30 font-semibold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
+                        <i class="fa-solid fa-crown w-5"></i> Admin Panel
+                    </button>
+                </nav>
             </div>
-        </header>
 
-        <!-- DASHBOARD CONTAINER -->
-        <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
-            
-            <!-- STANDAARD GEBRUIKERS INTERFACE -->
-            <div id="user-content" class="space-y-8">
-                
-                <!-- Bovenste grid: Wallet + Verzenden -->
-                <div class="grid gap-8 md:grid-cols-3">
-                    
-                    <!-- Balance Card -->
-                    <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                        <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
-                        <div>
-                            <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
-                            <div class="flex items-baseline gap-2">
-                                <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
-                                <span class="text-xl font-bold text-amber-200">KC</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-amber-100/70 mt-4"><i class="fa-solid fa-shield-halved"></i> Secured by Firebase & Firestore</p>
-                    </div>
-
-                    <!-- Transfer Card -->
-                    <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
-                        </h3>
-                        
-                        <form id="transfer-form" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Recipient's Email</label>
-                                <input type="email" id="receiver-email" required placeholder="classmate@school.com" 
-                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount of KittyCoins</label>
-                                <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" 
-                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                            </div>
-
-                            <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">
-                                Send Coins
-                            </button>
-                        </form>
+            <div class="p-4 border-t border-slate-800/60 bg-slate-950/50 space-y-3">
+                <div class="flex items-center gap-3">
+                    <img id="user-photo" src="" alt="Profile" class="w-9 h-9 rounded-full border border-amber-400">
+                    <div class="truncate max-w-[140px]">
+                        <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@loading...</p>
+                        <p id="user-email" class="text-[10px] text-slate-500 truncate">loading...</p>
                     </div>
                 </div>
+                <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 text-slate-400 border border-slate-800 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
 
-                <!-- PROFESSIONAL LEADERBOARD CARD -->
-                <div class="bg-slate-850/60 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
-                            <i class="fa-solid fa-trophy animate-pulse"></i> GLOBAL RANKINGS (TOP 10)
-                        </h3>
-                        <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50">
-                            <i class="fa-solid fa-rotate animate-spin-slow"></i> Live Updates
-                        </span>
-                    </div>
+        <div class="flex-1 lg:pl-65 min-h-screen flex flex-col">
+            
+            <header class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur sticky top-0 z-40 p-4 flex items-center justify-between">
+                <button id="btn-open-sidebar" class="text-slate-400 hover:text-white p-1.5 bg-slate-800 rounded-xl border border-slate-700/40 cursor-pointer transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 font-mono bg-slate-950 px-3 py-1 rounded-full border border-slate-800/60" id="topbar-username">@guest</span>
+                </div>
+            </header>
 
-                    <!-- De Ranglijst lijst (wordt gevuld via JS) -->
-                    <div id="leaderboard-list" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-                        <p class="text-slate-500 text-sm text-center py-4">Loading top legends...</p>
-                    </div>
-
-                    <!-- Sticky onderbalk voor je eigen professionele positie -->
-                    <div id="my-ranking-container" class="mt-4 pt-4 border-t border-slate-800">
-                        <div id="my-ranking-card" class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between shadow-inner">
-                            <div class="flex items-center gap-3">
-                                <span id="my-rank-tag" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm shadow-md">#-</span>
-                                <div>
-                                    <p class="text-sm font-bold text-white flex items-center gap-1">You <span class="text-xs font-normal text-amber-400">(Your Profile)</span></p>
-                                    <p id="my-rank-email" class="text-xs text-slate-400">Loading...</p>
+            <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
+                
+                <div id="view-dashboard" class="space-y-8 animate-fade-in">
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                            <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
+                            <div>
+                                <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
+                                <div class="flex items-baseline gap-2">
+                                    <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
+                                    <span class="text-xl font-bold text-amber-200">KC</span>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-lg font-black text-amber-400 tracking-tight"><span id="my-rank-balance">0.00</span> <span class="text-xs font-bold text-slate-400">KC</span></p>
-                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins</h3>
+                            <form id="transfer-form" class="space-y-4">
+                                <input type="text" id="receiver-username" required placeholder="Enter recipient's @username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                                <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00 KC" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                                <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">Send Coins</button>
+                            </form>
                         </div>
                     </div>
 
-                </div>
-            </div>
-
-            <!-- GEHEIME ADMIN PANEL INTERFACE -->
-            <div id="admin-content" class="hidden space-y-6">
-                <div class="flex justify-between items-center border-b border-purple-900/40 pb-4">
-                    <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
-                        <i class="fa-solid fa-gavel"></i> KITA-CAT SUPREME CONTROL
-                    </h2>
-                    <button id="btn-admin-back" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs cursor-pointer transition">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                    </button>
-                </div>
-
-                <div class="grid gap-6 md:grid-cols-2">
-                    <!-- Systeem Macht: Saldo Aanpassen -->
-                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
-                            <i class="fa-solid fa-coins"></i> Manipulate User Balance
-                        </h3>
-                        <form id="admin-balance-form" class="space-y-4">
-                            <input type="email" id="admin-target-email" required placeholder="victim@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance (e.g. 9999)" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
-                                Override Balance
-                            </button>
-                        </form>
+                    <div class="bg-slate-850/60 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> GLOBAL RANKINGS</h3>
+                            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50"><i class="fa-solid fa-rotate animate-spin-slow"></i> Live</span>
+                        </div>
+                        <div id="leaderboard-list" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1"></div>
+                        <div id="my-ranking-container" class="mt-4 pt-4 border-t border-slate-800">
+                            <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span id="my-rank-tag" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm">#-</span>
+                                    <div>
+                                        <p class="text-sm font-bold text-white">You (<span id="my-rank-user">@username</span>)</p>
+                                    </div>
+                                </div>
+                                <p class="text-lg font-black text-amber-400"><span id="my-rank-balance">0.00</span> KC</p>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Systeem Macht: Admin Toevoegen -->
-                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
-                            <i class="fa-solid fa-crown"></i> Appoint New Admin
-                        </h3>
-                        <form id="admin-promote-form" class="space-y-4">
-                            <input type="email" id="admin-promote-email" required placeholder="co-pilot@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
-                                Grant Admin Status
-                            </button>
+                <div id="view-settings" class="hidden space-y-6 animate-fade-in">
+                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</h2>
+                    <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-2xl max-w-xl space-y-4">
+                        <div>
+                            <h3 class="text-lg font-bold">Change Custom Username</h3>
+                            <p class="text-xs text-slate-400 mt-1">Every legend needs a unique name. Spaces are not allowed, lowercase only.</p>
+                        </div>
+                        <form id="settings-username-form" class="space-y-4">
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                <input type="text" id="settings-username-input" required placeholder="username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-xl hover:bg-amber-400 cursor-pointer transition">Save Username</button>
                         </form>
                     </div>
                 </div>
-            </div>
 
-        </main>
+                <div id="view-admin" class="hidden space-y-6 animate-fade-in">
+                    <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i class="fa-solid fa-gavel"></i> SUPREME CONTROL</h2>
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-2xl space-y-4">
+                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-coins"></i> Override Balance by @username</h3>
+                            <form id="admin-balance-form" class="space-y-4">
+                                <input type="text" id="admin-target-username" required placeholder="target @username" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
+                                <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance amount" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
+                                <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl cursor-pointer">Override Balance</button>
+                            </form>
+                        </div>
+                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-2xl space-y-4">
+                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-crown"></i> Appoint Co-Admin</h3>
+                            <form id="admin-promote-form" class="space-y-4">
+                                <input type="text" id="admin-promote-username" required placeholder="target @username" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
+                                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl cursor-pointer">Grant Admin Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- FOOTER -->
-        <footer class="border-t border-slate-800/60 bg-slate-950/20 py-4 text-center text-xs text-slate-500">
-            &copy; 2026 KittyCoins Exchange &bull; Made by KitaCat
-        </footer>
+            </main>
+        </div>
     </div>
 
-    <!-- Link naar jouw losse JavaScript bestand (ingeladen als module voor Firebase) -->
     <script type="module" src="app.js"></script>
 </body>
 </html>
