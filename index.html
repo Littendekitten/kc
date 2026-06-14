@@ -45,6 +45,10 @@
                 </div>
                 
                 <div class="flex items-center gap-3">
+                    <button id="btn-admin-panel" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-3.5 rounded-xl text-xs cursor-pointer transition flex items-center gap-1.5 shadow-lg shadow-purple-950/50">
+                        <i class="fa-solid fa-crown text-purple-200"></i> Admin Panel
+                    </button>
+
                     <div class="text-right hidden sm:block">
                         <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
                         <p id="user-email" class="text-xs text-slate-400">Loading...</p>
@@ -57,42 +61,82 @@
             </div>
         </header>
 
-        <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 grid gap-8 md:grid-cols-3">
+        <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8">
             
-            <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
-                <div>
-                    <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
-                    <div class="flex items-baseline gap-2">
-                        <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
-                        <span class="text-xl font-bold text-amber-200">KC</span>
+            <div id="user-content" class="grid gap-8 md:grid-cols-3">
+                <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                    <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
+                    <div>
+                        <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
+                        <div class="flex items-baseline gap-2">
+                            <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
+                            <span class="text-xl font-bold text-amber-200">KC</span>
+                        </div>
                     </div>
+                    <p class="text-xs text-amber-100/70 mt-4"><i class="fa-solid fa-shield-halved"></i> Secured by Firebase & Firestore</p>
                 </div>
-                <p class="text-xs text-amber-100/70 mt-4"><i class="fa-solid fa-shield-halved"></i> Secured by Firebase & Firestore</p>
+
+                <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
+                    </h3>
+                    
+                    <form id="transfer-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Recipient's Email</label>
+                            <input type="email" id="receiver-email" required placeholder="classmate@school.com" 
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount of KittyCoins</label>
+                            <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" 
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                        </div>
+
+                        <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">
+                            Send Coins
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
-                </h3>
-                
-                <form id="transfer-form" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Recipient's Email</label>
-                        <input type="email" id="receiver-email" required placeholder="classmate@school.com" 
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount of KittyCoins</label>
-                        <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" 
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+            <div id="admin-content" class="hidden space-y-6">
+                <div class="flex justify-between items-center border-b border-purple-900/40 pb-4">
+                    <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
+                        <i class="fa-solid fa-gavel"></i> KITA-CAT SUPREME CONTROL
+                    </h2>
+                    <button id="btn-admin-back" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs cursor-pointer transition">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
+                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
+                            <i class="fa-solid fa-coins"></i> Manipulate User Balance
+                        </h3>
+                        <form id="admin-balance-form" class="space-y-4">
+                            <input type="email" id="admin-target-email" required placeholder="victim@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                            <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance (e.g. 9999)" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
+                                Override Balance
+                            </button>
+                        </form>
                     </div>
 
-                    <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">
-                        Send Coins
-                    </button>
-                </form>
+                    <div class="bg-purple-950/20 border border-purple-900/40 p-6 rounded-2xl shadow-xl space-y-4">
+                        <h3 class="text-lg font-bold text-purple-300 flex items-center gap-2">
+                            <i class="fa-solid fa-crown"></i> Appoint New Admin
+                        </h3>
+                        <form id="admin-promote-form" class="space-y-4">
+                            <input type="email" id="admin-promote-email" required placeholder="co-pilot@school.com" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-md cursor-pointer">
+                                Grant Admin Status
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -136,7 +180,15 @@
         const transferForm = document.getElementById('transfer-form');
         const btnSend = document.getElementById('btn-send');
 
-        // 1. LOGIN STATUS LIVE CONTROLEREN
+        // Admin elementen
+        const btnAdminPanel = document.getElementById('btn-admin-panel');
+        const btnAdminBack = document.getElementById('btn-admin-back');
+        const userContent = document.getElementById('user-content');
+        const adminContent = document.getElementById('admin-content');
+        const adminBalanceForm = document.getElementById('admin-balance-form');
+        const adminPromoteForm = document.getElementById('admin-promote-form');
+
+        // 1. LOGIN STATUS LIVE CONTROLEREN + ADMIN FILTER
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 authView.classList.add('hidden');
@@ -146,47 +198,122 @@
                 userEmail.innerText = user.email;
                 userPhoto.src = user.photoURL || 'https://placehold.co/150';
 
-                // Check of wallet bestaat in Firestore, anders aanmaken
                 const userRef = doc(db, "wallets", user.email.toLowerCase());
                 const userSnap = await getDoc(userRef);
 
-                if (userSnap.exists()) {
+                // Controleer superadmin status óf database vlag
+                const isSuperAdmin = user.email.toLowerCase() === 'littendekitten@gmail.com';
+                const hasAdminFlag = userSnap.exists() && userSnap.data().isAdmin === true;
+
+                if (userSnap.exists() && userSnap.data().balance !== undefined) {
                     balanceAmount.innerText = userSnap.data().balance.toFixed(2);
+                    // Update admin vlag als die in db staat maar nog niet lokaal gesynct is
+                    if (isSuperAdmin && !userSnap.data().isAdmin) {
+                        await setDoc(userRef, { isAdmin: true }, { merge: true });
+                    }
                 } else {
-                    // Welkomstbonus!
+                    // Welkomstbonus voor reguliere speler of superadmin initialisatie
                     const startBalance = 10.00;
                     await setDoc(userRef, {
                         name: user.displayName,
                         email: user.email.toLowerCase(),
                         balance: startBalance,
+                        isAdmin: isSuperAdmin, // Direct true als jij het bent!
                         createdAt: new Date()
-                    });
+                    }, { merge: true });
                     balanceAmount.innerText = startBalance.toFixed(2);
                     alert("Welcome to KC-Xchange! You received a starter bonus of 10 free KittyCoins! 🐱🎉");
                 }
+
+                // Paarse Admin Knop tonen/verbergen
+                if (isSuperAdmin || hasAdminFlag) {
+                    btnAdminPanel.classList.remove('hidden');
+                } else {
+                    btnAdminPanel.classList.add('hidden');
+                }
+
             } else {
                 authView.classList.remove('hidden');
                 appView.classList.add('hidden');
+                // Schermen resetten bij uitloggen
+                userContent.classList.remove('hidden');
+                adminContent.classList.add('hidden');
             }
         });
 
-        // 2. COINS VERSTUREN VIA FIRESTORE TRANSACTIE
+        // Toggles voor Admin weergave
+        btnAdminPanel.addEventListener('click', () => {
+            userContent.classList.add('hidden');
+            adminContent.classList.remove('hidden');
+        });
+
+        btnAdminBack.addEventListener('click', () => {
+            adminContent.classList.add('hidden');
+            userContent.classList.remove('hidden');
+        });
+
+        // 2. ADMIN POWER 1: SALDO OVERRIDE
+        adminBalanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const targetEmail = document.getElementById('admin-target-email').value.trim().toLowerCase();
+            const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
+
+            if (isNaN(newAmount) || newAmount < 0) return alert("Enter a valid amount.");
+
+            const targetRef = doc(db, "wallets", targetEmail);
+            
+            try {
+                // Overschrijf of maak wallet aan met de nieuwe waarde
+                await setDoc(targetRef, {
+                    balance: newAmount,
+                    email: targetEmail,
+                    name: targetEmail.split('@')[0] // Tijdelijke naam mochten ze nog nooit ingelogd zijn
+                }, { merge: true });
+
+                alert(`Machtig! ${targetEmail} balance updated to ${newAmount.toFixed(2)} KC! ⚡`);
+                adminBalanceForm.reset();
+
+                // Als je je eigen saldo hebt aangepast, update direct je scherm
+                if (targetEmail === auth.currentUser.email.toLowerCase()) {
+                    balanceAmount.innerText = newAmount.toFixed(2);
+                }
+            } catch (err) {
+                alert("Error manipulation: " + err.message);
+            }
+        });
+
+        // 3. ADMIN POWER 2: ADMIN PROMOTEN
+        adminPromoteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const targetEmail = document.getElementById('admin-promote-email').value.trim().toLowerCase();
+            const targetRef = doc(db, "wallets", targetEmail);
+
+            try {
+                await setDoc(targetRef, {
+                    isAdmin: true,
+                    email: targetEmail,
+                    name: targetEmail.split('@')[0]
+                }, { merge: true });
+
+                alert(`Success! ${targetEmail} is now a co-admin! 👑`);
+                adminPromoteForm.reset();
+            } catch (err) {
+                alert("Error promoting: " + err.message);
+            }
+        });
+
+        // 4. REGULIER: COINS VERSTUREN
         transferForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const senderEmail = auth.currentUser.email.toLowerCase();
             const receiverEmail = document.getElementById('receiver-email').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('transfer-amount').value);
 
-            if (senderEmail === receiverEmail) {
-                return alert("You cannot send KittyCoins to yourself, ya goofy cat! 🐱");
-            }
-            if (isNaN(amount) || amount <= 0) {
-                return alert("Please enter a valid amount higher than 0.");
-            }
+            if (senderEmail === receiverEmail) return alert("You cannot send KittyCoins to yourself, ya goofy cat! 🐱");
+            if (isNaN(amount) || amount <= 0) return alert("Please enter a valid amount higher than 0.");
 
             btnSend.disabled = true;
-            btnSend.innerText = "Processing Transaction...";
+            btnSend.innerText = "Processing...";
 
             const senderRef = doc(db, "wallets", senderEmail);
             const receiverRef = doc(db, "wallets", receiverEmail);
@@ -197,7 +324,7 @@
                     const receiverDoc = await transaction.get(receiverRef);
 
                     if (!receiverDoc.exists()) {
-                        throw new Error("Recipient account not found! Your classmate needs to log into KC-Xchange at least once to create a wallet.");
+                        throw new Error("Recipient account not found! Your classmate needs to log into KC-Xchange at least once.");
                     }
 
                     const currentSenderBalance = senderDoc.data().balance;
@@ -209,14 +336,12 @@
                     transaction.update(receiverRef, { balance: receiverDoc.data().balance + amount });
                 });
 
-                alert(`Boom! Successfully sent ${amount.toFixed(2)} KC to ${receiverEmail}! 🚀`);
+                alert(`Boom! Successfully sent ${amount.toFixed(2)} KC! 🚀`);
                 transferForm.reset();
-
                 const updatedSenderDoc = await getDoc(senderRef);
                 balanceAmount.innerText = updatedSenderDoc.data().balance.toFixed(2);
 
             } catch (error) {
-                console.error("Transaction failed: ", error);
                 alert(error.message);
             } finally {
                 btnSend.disabled = false;
@@ -224,17 +349,13 @@
             }
         });
 
-        // 3. GOOGLE AUTHENTICATION EVENT LISTENERS
+        // 5. GOOGLE AUTHENTICATION EVENT LISTENERS
         btnLogin.addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch((error) => {
-                alert("Login failed: " + error.message);
-            });
+            signInWithPopup(auth, provider).catch((error) => alert("Login failed: " + error.message));
         });
 
         btnLogout.addEventListener('click', () => {
-            signOut(auth).catch((error) => {
-                alert("Logout failed: " + error.message);
-            });
+            signOut(auth).catch((error) => alert("Logout failed: " + error.message));
         });
     </script>
 </body>
