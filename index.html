@@ -4,109 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KittyCoins Exchange (KC-Xchange)</title>
-    <!-- Tailwind CSS for a sleek look -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
 
-    <!-- Navbar -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🐱</span>
-                <h1 class="text-xl font-bold tracking-wider text-amber-400">KC-XCHANGE</h1>
+    <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 to-slate-950">
+        <div class="max-w-md w-full bg-slate-900/60 backdrop-blur-md border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-6">
+            
+            <div class="space-y-2">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-4xl shadow-inner animate-bounce-short">
+                    🐱
+                </div>
+                <h1 class="text-3xl font-black tracking-wider text-amber-400">KC-XCHANGE</h1>
+                <p class="text-slate-400 text-sm">The official KittyCoins trading platform for legends.</p>
             </div>
-            <div id="user-status" class="text-sm text-slate-400">
-                Not logged in
+
+            <div class="border-t border-slate-800/60 my-4"></div>
+
+            <div class="space-y-4">
+                <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-100 transition shadow-lg cursor-pointer transform active:scale-98">
+                    <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
+                    Sign in with Google
+                </button>
+                <p class="text-xs text-slate-500">Use your school or personal Google account to sign in securely.</p>
             </div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 grid gap-8 md:grid-cols-3">
         
-        <!-- Left Column: Login & Account (1/3 width on desktop) -->
-        <section class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-xl flex flex-col justify-between">
-            <div>
-                <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-user text-amber-400"></i> Your Account
-                </h2>
+        <p class="text-xs text-slate-600 mt-8">&copy; 2026 KittyCoins Exchange &bull; Made by a legend</p>
+    </div>
+
+
+    <div id="app-view" class="hidden min-h-screen flex flex-col bg-slate-900">
+        
+        <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+            <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🐱</span>
+                    <h2 class="text-xl font-bold tracking-wider text-amber-400">KC-XCHANGE</h2>
+                </div>
                 
-                <!-- Login Section (Visible when NOT logged in) -->
-                <div id="login-section" class="space-y-4">
-                    <p class="text-slate-400 text-sm">Sign in with your Google account to manage and transfer your KittyCoins.</p>
-                    <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-medium py-3 px-4 rounded-xl hover:bg-slate-100 transition shadow-lg cursor-pointer">
-                        <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
-                        Sign in with Google
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p id="user-name" class="text-sm font-medium text-white">Loading...</p>
+                        <p id="user-email" class="text-xs text-slate-400">Loading...</p>
+                    </div>
+                    <img id="user-photo" src="" alt="Profile" class="w-9 h-9 rounded-full border border-amber-400">
+                    <button id="btn-logout" class="ml-2 text-slate-400 hover:text-rose-400 transition cursor-pointer text-sm p-2 bg-slate-800 rounded-lg border border-slate-700/50" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
+            </div>
+        </header>
 
-                <!-- Profile Section (Visible when logged in) -->
-                <div id="profile-section" class="hidden space-y-4">
-                    <div class="flex items-center gap-3">
-                        <img id="user-photo" src="" alt="Profile picture" class="w-12 h-12 rounded-full border-2 border-amber-400">
-                        <div>
-                            <p id="user-name" class="font-medium text-white">Loading...</p>
-                            <p id="user-email" class="text-xs text-slate-400">Loading...</p>
-                        </div>
+        <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 grid gap-8 md:grid-cols-3">
+            
+            <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
+                    <div class="flex items-baseline gap-2">
+                        <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
+                        <span class="text-xl font-bold text-amber-200">KC</span>
                     </div>
                 </div>
+                <p class="text-xs text-amber-100/70 mt-4"><i class="fa-solid fa-shield-halved"></i> Secured by Firebase</p>
             </div>
 
-            <!-- Logout Button -->
-            <button id="btn-logout" class="hidden mt-6 w-full text-sm text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-900/50 py-2 rounded-xl transition cursor-pointer">
-                Sign out
-            </button>
-        </section>
-
-        <!-- Right Column: Dashboard & Transactions (2/3 width on desktop) -->
-        <section class="md:col-span-2 space-y-8">
-            
-            <!-- Balance Card -->
-            <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden">
-                <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
-                <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
-                <div class="flex items-baseline gap-2">
-                    <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
-                    <span class="text-xl font-bold text-amber-200">KC</span>
-                </div>
-            </div>
-
-            <!-- Transfer Coins Form -->
-            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
-                </h2>
+                </h3>
                 
                 <form id="transfer-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Recipient's Email</label>
                         <input type="email" id="receiver-email" required placeholder="classmate@school.com" 
-                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
                     </div>
                     
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Amount of KittyCoins</label>
                         <input type="number" id="transfer-amount" required min="1" placeholder="0" 
-                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
                     </div>
 
-                    <button type="submit" id="btn-send" disabled class="w-full bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer">
+                    <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition shadow-lg cursor-pointer transform active:scale-99">
                         Send Coins
                     </button>
                 </form>
             </div>
 
-        </section>
-    </main>
+        </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800 bg-slate-950/20 py-4 text-center text-xs text-slate-500">
-        &copy; 2026 KittyCoins Exchange &bull; Made by a legend
-    </footer>
+        <footer class="border-t border-slate-800/60 bg-slate-950/20 py-4 text-center text-xs text-slate-500">
+            &copy; 2026 KittyCoins Exchange &bull; Made by a legend
+        </footer>
+    </div>
 
-    <!-- Firebase SDKs and our custom logic -->
     <script type="module" src="app.js"></script>
 </body>
 </html>
