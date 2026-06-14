@@ -1,55 +1,33 @@
-/* Custom CSS Tweaks voor KC-Xchange */
-
-/* 1. Maak de scrollbar van het leaderboard mooi slank en donker */
+/* Custom Sidebar & UI Animations */
 #leaderboard-list::-webkit-scrollbar {
     width: 6px;
 }
-
 #leaderboard-list::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3); /* Slate-900 met opacity */
+    background: rgba(15, 23, 42, 0.3);
     border-radius: 8px;
 }
-
 #leaderboard-list::-webkit-scrollbar-thumb {
-    background: rgba(51, 65, 85, 0.6); /* Slate-700 met opacity */
+    background: rgba(51, 65, 85, 0.6);
     border-radius: 8px;
 }
-
-#leaderboard-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(251, 191, 36, 0.5); /* Amber-400 gloed bij hover */
-}
-
-/* 2. Extra animatie voor het 'Live Updates' icoontje */
 .animate-spin-slow {
     animation: spin 4s linear infinite;
 }
-
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(350deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* 3. Smooth transitions voor acties in de interface */
-.transition-all-custom {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Tabwissel fade-in effect */
+.animate-fade-in {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Voorkom dat de bounce-animatie van de kat haperig overkomt */
-.animate-bounce {
-    animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(-5%);
-        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-    }
-    50% {
-        transform: translateY(0);
-        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
+/* Overlay schaduw als de sidebar opengeklapt is op mobiel */
+.sidebar-open #sidebar {
+    transform: translateX(0);
 }
