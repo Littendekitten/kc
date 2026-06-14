@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange | KittyCoins Trading</title>
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         /* Custom scrollbar for leaderboard */
@@ -40,6 +42,9 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- ==========================================
+         1. LOGIN VIEW
+         ========================================== -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -68,10 +73,15 @@
     </div>
 
 
+    <!-- ==========================================
+         2. MAIN APP VIEW
+         ========================================== -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
+        <!-- SIDEBAR -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
+                <!-- Logo -->
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20">🐱</div>
@@ -82,6 +92,7 @@
                     </button>
                 </div>
 
+                <!-- Navigation Tabs -->
                 <nav class="space-y-2">
                     <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
@@ -95,6 +106,7 @@
                 </nav>
             </div>
 
+            <!-- User Info (Bottom Sidebar) -->
             <div class="p-4 m-4 border border-slate-900 bg-slate-950 rounded-2xl space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="relative">
@@ -112,8 +124,10 @@
             </div>
         </aside>
 
+        <!-- CONTENT AREA -->
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
+            <!-- Top Header Bar -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -126,10 +140,13 @@
                 </div>
             </header>
 
+            <!-- Main Dynamic Container -->
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
+                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
+                        <!-- Balance Box -->
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
                             <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 font-black pointer-events-none">🐱</div>
                             <div class="relative z-10">
@@ -141,6 +158,7 @@
                             </div>
                         </div>
 
+                        <!-- Send Coins Box -->
                         <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                             <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
                                 <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
@@ -169,6 +187,7 @@
                         </div>
                     </div>
 
+                    <!-- Rankings Leaderboard -->
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
                         <div class="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-4">
                             <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
@@ -181,6 +200,7 @@
                         
                         <div id="leaderboard-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
                         
+                        <!-- Your Personal Rank Footer Sticky Box -->
                         <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800">
                             <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -193,6 +213,7 @@
                     </div>
                 </div>
 
+                <!-- SETTINGS VIEW -->
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -214,6 +235,7 @@
                     </div>
                 </div>
 
+                <!-- ADMIN PANEL -->
                 <div id="view-admin" class="hidden space-y-6 animate-fade-in">
                     <div class="border-b border-purple-900/40 pb-4 mb-4">
                         <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
@@ -223,6 +245,7 @@
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-2">
+                        <!-- Set Coins Balance Form -->
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
                                 <i class="fa-solid fa-coins"></i> Override Balance
@@ -236,6 +259,7 @@
                             </form>
                         </div>
                         
+                        <!-- Add New Admins -->
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
                                 <i class="fa-solid fa-crown"></i> Appoint Co-Admin
@@ -254,7 +278,11 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         3. BACKEND SYSTEM & INTERACTION LOGIC
+         ========================================== -->
     <script type="module">
+        // FIXED: All SDK URLs use explicit secure HTTPS protocol to bypass GitHub Pages Mixed Content blocks
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -381,19 +409,23 @@
                 userEmail.innerText = user.email;
                 userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
 
-                const userRef = doc(db, "wallets", user.email.toLowerCase());
+                const targetEmailClean = user.email.toLowerCase().trim();
+                const isMasterAdminEmail = targetEmailClean === 'littendekitten@gmail.com';
+
+                // FIXED: Instant local fallback override for master admin UI so it doesn't wait for database read 
+                if (isMasterAdminEmail && navAdmin) {
+                    navAdmin.classList.remove('hidden');
+                }
+
+                const userRef = doc(db, "wallets", targetEmailClean);
                 let userSnap = await getDoc(userRef);
                 let currentUsername = "";
-
-                // Force admin flag true if email is the master admin account
-                const isMasterAdminEmail = user.email.toLowerCase() === 'littendekitten@gmail.com';
 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
                     currentUsername = data.username || await generateUniqueGuestName();
                     balanceAmount.innerText = (data.balance || 0).toFixed(2);
                     
-                    // Auto update master admin field if it's missing in DB profile
                     if (isMasterAdminEmail && !data.isAdmin) {
                         await setDoc(userRef, { isAdmin: true }, { merge: true });
                     }
@@ -402,7 +434,7 @@
                     const startBalance = 10.00;
                     await setDoc(userRef, {
                         name: user.displayName,
-                        email: user.email.toLowerCase(),
+                        email: targetEmailClean,
                         username: currentUsername,
                         balance: startBalance,
                         isAdmin: isMasterAdminEmail,
@@ -415,7 +447,7 @@
                 topbarUsername.innerText = `@${currentUsername}`;
                 settingsUsernameInput.value = currentUsername;
 
-                // Re-fetch or evaluate role to instantly open Admin view menu option
+                // Secondary cloud-role validation update
                 const freshSnap = await getDoc(userRef);
                 const showAdminConsole = isMasterAdminEmail || (freshSnap.exists() && freshSnap.data().isAdmin === true);
                 
@@ -425,7 +457,7 @@
                     navAdmin.classList.add('hidden');
                 }
 
-                startLeaderboard(user.email.toLowerCase());
+                startLeaderboard(targetEmailClean);
             } else {
                 authView.classList.remove('hidden');
                 appView.classList.add('hidden');
@@ -475,7 +507,6 @@
                         userRank = currentRank;
                         userCurrentBalance = balance;
                         userCurrentName = uname;
-                        // Keep main view balance updated in realtime too
                         balanceAmount.innerText = balance.toFixed(2);
                     }
 
