@@ -3,155 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KC-Xchange</title>
+    <title>KC-Xchange — The Legendary KittyCoins Trading Protocol</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 to-slate-950">
-        <div class="max-w-md w-full bg-slate-900/60 backdrop-blur-md border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-6">
-            <div class="space-y-2">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-4xl shadow-inner animate-bounce">🐱</div>
-                <h1 class="text-3xl font-black tracking-wider text-amber-400">KC-XCHANGE</h1>
-                <p class="text-slate-400 text-sm">The official KittyCoins trading platform for legends.</p>
+    <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
+        
+        <div class="max-w-md w-full bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 p-8 rounded-3xl shadow-2xl text-center space-y-8 relative z-10 transition-all duration-300 hover:border-slate-700/60">
+            <div class="space-y-3">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400/10 to-orange-500/10 rounded-2xl border border-amber-500/20 text-5xl shadow-xl animate-bounce relative group">
+                    <div class="absolute inset-0 bg-amber-400/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <span class="relative z-10">🐱</span>
+                </div>
+                <h1 class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500">KC-XCHANGE</h1>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">The sovereign decentralized transaction platform engineered exclusively for KitaCat elites.</p>
             </div>
-            <div class="border-t border-slate-800/60 my-4"></div>
+
+            <div class="border-t border-slate-800/60 relative">
+                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/40 px-3 text-xs text-slate-500 uppercase tracking-widest font-mono">Secure Access</span>
+            </div>
+
             <div class="space-y-4">
-                <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-100 transition shadow-lg cursor-pointer transform active:scale-98">
-                    <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
-                    Sign in with Google
+                <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 hover:text-white font-bold py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-600 transition-all duration-300 shadow-xl shadow-slate-950/50 cursor-pointer transform active:scale-98 group">
+                    <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5 group-hover:brightness-200 transition-all">
+                    Establish Google Session
                 </button>
+                <div class="flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
+                    <i class="fa-solid fa-lock text-emerald-500"></i> End-to-End Cryptographic Validation
+                </div>
             </div>
         </div>
-        <p class="text-xs text-slate-600 mt-8">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
+        
+        <p class="text-xs text-slate-600 font-mono tracking-wider mt-12 relative z-10">&copy; 2026 KittyCoins Centralized Ledger Services &bull; Protocol by KitaCat</p>
     </div>
 
-    <div id="app-view" class="hidden min-h-screen flex bg-slate-900">
+
+    <div id="app-view" class="hidden min-h-screen flex bg-slate-900/20 relative">
         
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800/80 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
-            <div class="p-4 space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl">🐱</span>
-                        <h2 class="font-black tracking-wider text-amber-400 text-sm">KC-XCHANGE</h2>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/80 backdrop-blur-xl border-r border-slate-800/80 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out flex flex-col justify-between shadow-2xl lg:shadow-none">
+            <div class="p-6 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-900 pb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20 shadow-inner">🐱</div>
+                        <h2 class="font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 text-sm">KC CORE INDEX</h2>
                     </div>
-                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-1">
+                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-rose-400 p-2 hover:bg-slate-900 rounded-xl transition duration-200 cursor-pointer">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
 
-                <nav class="space-y-1.5">
-                    <button id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 text-amber-400 font-bold transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                <nav class="space-y-2">
+                    <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-black border border-slate-800/80 shadow-inner transition text-sm text-left cursor-pointer group">
+                        <i class="fa-solid fa-chart-pie w-5 text-center group-hover:scale-110 transition-transform"></i> Unified Terminal
                     </button>
-                    <button id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-gear w-5"></i> Settings
+                    <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer group">
+                        <i class="fa-solid fa-sliders w-5 text-center group-hover:rotate-45 transition-transform"></i> User Configuration
                     </button>
-                    <button id="nav-admin" class="hidden w-full flex items-center gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-950/30 font-semibold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
-                        <i class="fa-solid fa-crown w-5"></i> Admin Panel
+                    <button id="nav-admin" class="hidden w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-purple-400 hover:bg-purple-950/20 font-black transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40 shadow-lg shadow-transparent hover:shadow-purple-950/20 group">
+                        <i class="fa-solid fa-crown w-5 text-center group-hover:scale-110 text-purple-400 animate-pulse"></i> Root Protocol Authority
                     </button>
                 </nav>
             </div>
 
-            <div class="p-4 border-t border-slate-800/60 bg-slate-950/50 space-y-3">
-                <div class="flex items-center gap-3">
-                    <img id="user-photo" src="" alt="Profile" class="w-9 h-9 rounded-full border border-amber-400">
-                    <div class="truncate max-w-[140px]">
-                        <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@loading...</p>
-                        <p id="user-email" class="text-[10px] text-slate-500 truncate">loading...</p>
+            <div class="p-4 m-4 border border-slate-900 bg-slate-950/60 rounded-2xl space-y-4 shadow-2xl shadow-black/40">
+                <div class="flex items-center gap-3 p-1">
+                    <div class="relative">
+                        <img id="user-photo" src="" alt="Operator Avatar" class="w-10 h-10 rounded-xl border-2 border-amber-400 object-cover shadow-md shadow-amber-500/10">
+                        <span class="absolute bottom-[-2px] right-[-2px] w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full animate-pulse"></span>
+                    </div>
+                    <div class="truncate max-w-[145px] space-y-0.5">
+                        <p id="user-display-name" class="text-xs font-black text-amber-400 tracking-wide truncate">@resolving...</p>
+                        <p id="user-email" class="text-[10px] text-slate-500 font-mono truncate">resolving...</p>
                     </div>
                 </div>
-                <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 text-slate-400 border border-slate-800 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition">
-                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-rose-950/30 hover:text-rose-400 hover:border-rose-900/40 text-slate-400 border border-slate-800/60 py-3 rounded-xl text-xs font-bold cursor-pointer transition-all duration-300">
+                    <i class="fa-solid fa-power-off text-xs"></i> Sever Session Connection
                 </button>
             </div>
         </aside>
 
-        <div class="flex-1 lg:pl-65 min-h-screen flex flex-col">
+
+        <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
-            <header class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur sticky top-0 z-40 p-4 flex items-center justify-between">
-                <button id="btn-open-sidebar" class="text-slate-400 hover:text-white p-1.5 bg-slate-800 rounded-xl border border-slate-700/40 cursor-pointer transition">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
+            <header class="border-b border-slate-900 bg-slate-950/30 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between shadow-lg shadow-black/10">
+                <div class="flex items-center gap-4">
+                    <button id="btn-open-sidebar" class="text-slate-400 hover:text-white p-2.5 bg-slate-900/80 rounded-xl border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all duration-200 shadow-inner group">
+                        <i class="fa-solid fa-align-left text-base group-hover:scale-105 transition-transform"></i>
+                    </button>
+                    <div class="h-5 w-[1px] bg-slate-800 hidden sm:block"></div>
+                    <h2 class="text-sm font-bold tracking-tight text-slate-400 hidden sm:block font-mono">System Status: <span class="text-emerald-500">Operational</span></h2>
+                </div>
+                
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-500 font-mono bg-slate-950 px-3 py-1 rounded-full border border-slate-800/60" id="topbar-username">@guest</span>
+                    <div class="flex items-center gap-1.5 text-xs text-amber-400 font-mono bg-slate-950 border border-slate-800/80 px-4 py-2 rounded-xl shadow-inner">
+                        <i class="fa-solid fa-at text-[10px] text-slate-500"></i>
+                        <span id="topbar-username" class="font-black tracking-wide">guest_node</span>
+                    </div>
                 </div>
             </header>
 
-            <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
+
+            <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto space-y-8">
                 
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
+                    
                     <div class="grid gap-6 md:grid-cols-3">
-                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                            <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 pointer-events-none">🐱</div>
-                            <div>
-                                <p class="text-xs uppercase tracking-widest text-amber-100 font-semibold mb-1">My Balance</p>
-                                <div class="flex items-baseline gap-2">
-                                    <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
-                                    <span class="text-xl font-bold text-amber-200">KC</span>
+                        
+                        <div class="bg-gradient-to-br from-amber-500 via-orange-500 to-orange-600 p-8 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[180px] group transition-transform duration-300 hover:-translate-y-1 hover:shadow-orange-950/20">
+                            <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 font-black tracking-tighter pointer-events-none select-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">🐱</div>
+                            <div class="absolute -left-12 -top-12 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                            
+                            <div class="space-y-1 relative z-10">
+                                <p class="text-[10px] uppercase tracking-widest text-amber-100/80 font-mono font-black flex items-center gap-1.5">
+                                    <i class="fa-solid fa-vault text-amber-200"></i> Audited Capital Balance
+                                </p>
+                                <div class="flex items-baseline gap-2 pt-2">
+                                    <span id="balance-amount" class="text-5xl font-black tracking-tight drop-shadow-md font-mono">0.00</span>
+                                    <span class="text-lg font-black text-amber-100 tracking-widest border-b-2 border-amber-300/40 pb-0.5">KC</span>
                                 </div>
+                            </div>
+                            <div class="text-[10px] font-mono text-amber-100/60 flex items-center gap-1 relative z-10">
+                                <i class="fa-solid fa-circle-check text-amber-200"></i> Real-time Ledger Consensus Active
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 bg-slate-800/40 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins</h3>
+                        <div class="md:col-span-2 bg-slate-900/20 backdrop-blur-md border border-slate-800/60 p-6 rounded-3xl shadow-xl space-y-5 relative">
+                            <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
+                                <h3 class="text-lg font-black tracking-tight text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-paper-plane text-amber-400 text-base"></i> Execute Capital Transfer Protocol
+                                </h3>
+                                <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">P2P Network</span>
+                            </div>
+                            
                             <form id="transfer-form" class="space-y-4">
-                                <input type="text" id="receiver-username" required placeholder="Enter recipient's @username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400">
-                                <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00 KC" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400">
-                                <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">Send Coins</button>
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <div class="space-y-1.5">
+                                        <label class="block text-[10px] font-mono font-black uppercase text-slate-400 tracking-wider">Destination Signature</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3.5 text-slate-600 font-bold font-mono text-sm">@</span>
+                                            <input type="text" id="receiver-username" required placeholder="recipient_alias" class="w-full bg-slate-950 border border-slate-800/80 rounded-xl pl-9 pr-4 py-3 text-white text-sm font-mono placeholder-slate-700 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="block text-[10px] font-mono font-black uppercase text-slate-400 tracking-wider">Transaction Quantity</label>
+                                        <div class="relative">
+                                            <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" class="w-full bg-slate-950 border border-slate-800/80 rounded-xl pl-4 pr-12 py-3 text-white text-sm font-mono placeholder-slate-700 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
+                                            <span class="absolute right-4 top-3.5 text-xs text-slate-500 font-mono font-bold">KC</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" id="btn-send" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all duration-300 shadow-xl shadow-orange-950/10 cursor-pointer transform active:scale-99 tracking-wider text-xs uppercase flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bolt"></i> Authorize Block Transaction
+                                </button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="bg-slate-850/60 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> GLOBAL RANKINGS</h3>
-                            <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full border border-slate-700/50">Live</span>
+                    <div class="bg-slate-900/20 backdrop-blur-md border border-slate-800/60 rounded-3xl p-6 shadow-2xl relative">
+                        <div class="flex items-center justify-between mb-6 border-b border-slate-800/60 pb-4">
+                            <div class="space-y-0.5">
+                                <h3 class="text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-crown text-base text-amber-400"></i> VALHALLA LEDGER INDEX — TOP 10
+                                </h3>
+                                <p class="text-xs text-slate-400">Real-time classification ranking list of network capital operators.</p>
+                            </div>
+                            <span class="text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-inner">
+                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> STREAMING LIVE
+                            </span>
                         </div>
-                        <div id="leaderboard-list" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1"></div>
-                        <div id="my-ranking-container" class="mt-4 pt-4 border-t border-slate-800">
-                            <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span id="my-rank-tag" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm">#-</span>
-                                    <p class="text-sm font-bold text-white">You (<span id="my-rank-user">@username</span>)</p>
+                        
+                        <div id="leaderboard-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                            <div class="text-center py-8 space-y-2">
+                                <i class="fa-solid fa-circle-notch text-amber-500 animate-spin text-xl"></i>
+                                <p class="text-slate-500 text-xs font-mono">Syncing blockchain nodes database...</p>
+                            </div>
+                        </div>
+                        
+                        <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800/80">
+                            <div class="bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-transparent border-2 border-amber-500/20 rounded-2xl p-4 flex items-center justify-between shadow-inner relative group hover:border-amber-400/40 transition-all duration-300">
+                                <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-amber-500/5 to-transparent rounded-r-2xl pointer-events-none"></div>
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <span id="my-rank-tag" class="w-10 h-10 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm shadow-lg shadow-amber-500/10 font-mono">#-</span>
+                                    <div class="space-y-0.5">
+                                        <p class="text-sm font-black text-white flex items-center gap-1.5">Individual Matrix Footprint</p>
+                                        <p id="my-rank-user" class="text-xs font-mono text-amber-400/80 font-bold">@identity_resolving</p>
+                                    </div>
                                 </div>
-                                <p class="text-lg font-black text-amber-400"><span id="my-rank-balance">0.00</span> KC</p>
+                                <div class="text-right relative z-10">
+                                    <p class="text-[10px] font-mono uppercase text-slate-500 font-bold tracking-wider">Isolated Capital Assets</p>
+                                    <p class="text-xl font-black text-amber-400 font-mono tracking-tight"><span id="my-rank-balance">0.00</span> <span class="text-xs font-bold text-slate-500 font-sans">KC</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
-                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Account Settings</h2>
-                    <div class="bg-slate-800/40 border border-slate-800 p-6 rounded-2xl max-w-xl space-y-4">
+                    <div class="space-y-1 border-b border-slate-800 pb-4">
+                        <h2 class="text-2xl font-black tracking-tight text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-xl"></i> User Account Configuration
+                        </h2>
+                        <p class="text-xs text-slate-400">Modify global parameters, access signatures, and custom network identifiers.</p>
+                    </div>
+                    
+                    <div class="bg-slate-900/20 backdrop-blur-md border border-slate-800 p-6 rounded-3xl max-w-xl space-y-6 shadow-xl">
+                        <div class="space-y-1">
+                            <h3 class="text-base font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-fingerprint text-slate-400 text-sm"></i> Identity Alias Mutator
+                            </h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Assign a unique cryptographic operational alias. Spaces are disallowed. Lowercase strings only. This directly overrides your guest string mapping identifier node across peer transactions.</p>
+                        </div>
+                        
                         <form id="settings-username-form" class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
-                                <input type="text" id="settings-username-input" required placeholder="username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400">
+                            <div class="space-y-2">
+                                <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">Alphanumeric Public Signature</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-3.5 text-slate-500 font-bold font-mono">@</span>
+                                    <input type="text" id="settings-username-input" required placeholder="alias_node" class="w-full bg-slate-950 border border-slate-800/80 rounded-xl pl-9 pr-4 py-3.5 text-white font-mono text-sm placeholder-slate-700 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
+                                </div>
                             </div>
-                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-xl hover:bg-amber-400 cursor-pointer transition">Save Username</button>
+                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-black px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition-all shadow-lg shadow-amber-500/5 font-mono text-xs uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-signature"></i> Commit Signature Mutation
+                            </button>
                         </form>
                     </div>
                 </div>
 
+
                 <div id="view-admin" class="hidden space-y-6 animate-fade-in">
-                    <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2"><i class="fa-solid fa-gavel"></i> SUPREME CONTROL</h2>
+                    <div class="space-y-1 border-b border-purple-900/40 pb-4">
+                        <h2 class="text-2xl font-black tracking-tight text-purple-400 flex items-center gap-2">
+                            <i class="fa-solid fa-gavel text-xl"></i> Root Protocol Management Deck
+                        </h2>
+                        <p class="text-xs text-purple-300/60">High-tier operational core console overrides. Exercise total absolute authority with infinite discretion.</p>
+                    </div>
+                    
                     <div class="grid gap-6 md:grid-cols-2">
-                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-2xl space-y-4">
-                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-coins"></i> Override Balance</h3>
+                        
+                        <div class="bg-purple-950/5 border border-purple-900/20 p-6 rounded-3xl space-y-4 shadow-xl shadow-purple-950/5">
+                            <div class="space-y-1 border-b border-purple-900/20 pb-3">
+                                <h3 class="text-sm font-black text-purple-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-coins"></i> Force Adjust Wallet Allocation
+                                </h3>
+                                <p class="text-[11px] text-purple-300/50">Direct execution algorithm to write a definitive balance integer to any target string identifier.</p>
+                            </div>
                             <form id="admin-balance-form" class="space-y-4">
-                                <input type="text" id="admin-target-username" required placeholder="target @username" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
-                                <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance amount" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
-                                <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl cursor-pointer">Override Balance</button>
+                                <input type="text" id="admin-target-username" required placeholder="Target @username node" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-purple-500">
+                                <input type="number" id="admin-target-amount" required step="0.01" placeholder="Absolute allocation amount (e.g. 50000.00)" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-purple-500">
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3.5 rounded-xl cursor-pointer transition shadow-lg shadow-purple-950/20 text-xs font-mono uppercase tracking-wider">
+                                    Override Node Capital Assets
+                                </button>
                             </form>
                         </div>
-                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-2xl space-y-4">
-                            <h3 class="text-md font-bold text-purple-300"><i class="fa-solid fa-crown"></i> Appoint Co-Admin</h3>
+                        
+                        <div class="bg-purple-950/5 border border-purple-900/20 p-6 rounded-3xl space-y-4 shadow-xl shadow-purple-950/5">
+                            <div class="space-y-1 border-b border-purple-900/20 pb-3">
+                                <h3 class="text-sm font-black text-purple-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-key"></i> Delegate Administrative Clearance
+                                </h3>
+                                <p class="text-[11px] text-purple-300/50">Elevate an external identity node signature to possess equal database configuration clearance permissions.</p>
+                            </div>
                             <form id="admin-promote-form" class="space-y-4">
-                                <input type="text" id="admin-promote-username" required placeholder="target @username" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white">
-                                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl cursor-pointer">Grant Admin Status</button>
+                                <input type="text" id="admin-promote-username" required placeholder="Target @username node" class="w-full bg-slate-950 border border-purple-900/30 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-purple-500">
+                                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-3.5 rounded-xl cursor-pointer transition shadow-lg shadow-indigo-950/20 text-xs font-mono uppercase tracking-wider">
+                                    Appoint Co-Pilot Operational Access
+                                </button>
                             </form>
                         </div>
                     </div>
