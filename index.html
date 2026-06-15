@@ -61,7 +61,7 @@
 
             <div class="space-y-4">
                 <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-bold py-4 px-4 rounded-xl hover:bg-amber-400 transition-all duration-300 shadow-xl cursor-pointer transform active:scale-95">
-                    <img src="https://fonts.gstatic.com/ea/icon/v1/google_noto_sans_mono/1.0.0/72.png" alt="Google" class="w-5 h-5">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-5 h-5">
                     Sign in with Google
                 </button>
             </div>
@@ -375,8 +375,13 @@
                 let rand = Math.floor(1000 + Math.random() * 9000);
                 guestName = `kc-guest-${rand}`;
                 const q = query(collection(db, "wallets"), where("username", "==", guestName));
-                const snap = await getDocs(q);
-                if (snap.empty) exists = false;
+                try {
+                    const snap = await getDocs(q);
+                    if (snap.empty) exists = false;
+                } catch(e) {
+                    console.error("Rules blocked check, using temporary fallback");
+                    exists = false; // Prevents infinite loop if rules break
+                }
             }
             return guestName;
         }
@@ -400,45 +405,50 @@
                 }
 
                 const userRef = doc(db, "wallets", targetEmailClean);
-                let userSnap = await getDoc(userRef);
                 let currentUsername = "";
 
-                if (userSnap.exists()) {
-                    const data = userSnap.data();
-                    currentUsername = data.username || await generateUniqueGuestName();
-                    balanceAmount.innerText = (data.balance || 0).toFixed(2);
-                    
-                    if (isMasterAdminEmail && !data.isAdmin) {
-                        await setDoc(userRef, { isAdmin: true }, { merge: true });
+                try {
+                    let userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        currentUsername = data.username || await generateUniqueGuestName();
+                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                        
+                        if (isMasterAdminEmail && !data.isAdmin) {
+                            await setDoc(userRef, { isAdmin: true }, { merge: true });
+                        }
+                    } else {
+                        currentUsername = await generateUniqueGuestName();
+                        const startBalance = 10.00;
+                        await setDoc(userRef, {
+                            name: user.displayName,
+                            email: targetEmailClean,
+                            username: currentUsername,
+                            balance: startBalance,
+                            isAdmin: isMasterAdminEmail,
+                            createdAt: new Date()
+                        }, { merge: true });
+                        balanceAmount.innerText = startBalance.toFixed(2);
                     }
-                } else {
-                    currentUsername = await generateUniqueGuestName();
-                    const startBalance = 10.00;
-                    await setDoc(userRef, {
-                        name: user.displayName,
-                        email: targetEmailClean,
-                        username: currentUsername,
-                        balance: startBalance,
-                        isAdmin: isMasterAdminEmail,
-                        createdAt: new Date()
-                    }, { merge: true });
-                    balanceAmount.innerText = startBalance.toFixed(2);
+
+                    userDisplayName.innerText = `@${currentUsername}`;
+                    topbarUsername.innerText = `@${currentUsername}`;
+                    settingsUsernameInput.value = currentUsername;
+
+                    const freshSnap = await getDoc(userRef);
+                    const showAdminConsole = isMasterAdminEmail || (freshSnap.exists() && freshSnap.data().isAdmin === true);
+                    
+                    if (showAdminConsole && navAdmin) {
+                        navAdmin.classList.remove('hidden');
+                    } else if(navAdmin) {
+                        navAdmin.classList.add('hidden');
+                    }
+
+                    startLeaderboard(targetEmailClean);
+                } catch (error) {
+                    console.error("Firestore database connection failed: ", error);
+                    alert("Database Error: Check your Firebase Console Firestore Security Rules!");
                 }
-
-                userDisplayName.innerText = `@${currentUsername}`;
-                topbarUsername.innerText = `@${currentUsername}`;
-                settingsUsernameInput.value = currentUsername;
-
-                const freshSnap = await getDoc(userRef);
-                const showAdminConsole = isMasterAdminEmail || (freshSnap.exists() && freshSnap.data().isAdmin === true);
-                
-                if (showAdminConsole && navAdmin) {
-                    navAdmin.classList.remove('hidden');
-                } else if(navAdmin) {
-                    navAdmin.classList.add('hidden');
-                }
-
-                startLeaderboard(targetEmailClean);
             } else {
                 authView.classList.remove('hidden');
                 appView.classList.add('hidden');
@@ -541,6 +551,8 @@
                     myRankUser.innerText = `@${userCurrentName}`;
                     myRankBalance.innerText = userCurrentBalance.toFixed(2);
                 }
+            }, (error) => {
+                console.error("Leaderboard subscription failed:", error);
             });
         }
 
