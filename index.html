@@ -120,11 +120,10 @@
                 </nav>
             </div>
 
-            <!-- AD ZONE INSIDE SIDEBAR (Hier kun je een kleine banner kwijt) -->
+            <!-- AD ZONE INSIDE SIDEBAR -->
             <div class="px-4 text-center">
                 <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-2 min-h-[60px] flex items-center justify-center text-[10px] text-slate-600 relative overflow-hidden">
                     <span class="absolute top-0.5 left-1 text-[7px] uppercase tracking-wider text-slate-700">Ad Space</span>
-                    <!-- JOUW ADSTERRA BANNER SCRIPT CODE HIER PLAATSEN -->
                     <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertentie Module</span>
                 </div>
             </div>
@@ -210,7 +209,6 @@
                     <!-- AD ZONE BELOW BALANCE -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 text-center relative overflow-hidden min-h-[90px] flex items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        <!-- JOUW ADSTERRA 728x90 BANNER CODE HIER IN DE PLAATS SETTEN -->
                         <div class="text-xs text-slate-500 flex items-center gap-2 italic">
                             <i class="fa-solid fa-rectangle-ad text-amber-500/70"></i> Programmatic Banner Display Active
                         </div>
@@ -238,7 +236,7 @@
                     </div>
                 </div>
 
-                <!-- NEW: GET KC / INTERACTIVE KITTY LOTTO VIEW -->
+                <!-- GET KC / INTERACTIVE KITTY LOTTO VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
                     <div class="space-y-1">
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
@@ -253,7 +251,6 @@
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-3">
-                        <!-- Left explanation block -->
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
                             <div class="space-y-3">
                                 <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
@@ -272,7 +269,6 @@
                             </div>
                         </div>
 
-                        <!-- Main Interative Lotto Engine -->
                         <div class="md:col-span-2 bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[320px]">
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)] pointer-events-none"></div>
                             
@@ -523,8 +519,7 @@
             if (user) {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
                     authView.classList.add('hidden');
-                    appView.remove('hidden');
-                    appView.classList.remove('hidden');
+                    appView.classList.remove('hidden'); // HERSTELD: appView.remove() is hersteld naar classList.remove!
                 }
 
                 const targetEmailClean = user.email.toLowerCase().trim();
@@ -719,7 +714,7 @@
             });
         }
 
-        // NEW: INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
+        // INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
         const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
         const lottoIcon = document.getElementById('lotto-icon');
         const lottoStatusTitle = document.getElementById('lotto-status-title');
@@ -729,32 +724,26 @@
             btnTriggerLotto.addEventListener('click', async () => {
                 if(!auth.currentUser) return;
                 
-                // Schakel knop uit tijdens animatie en verwerking
                 btnTriggerLotto.disabled = true;
                 btnTriggerLotto.innerText = "Kraslot openen...";
                 lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
                 lottoStatusTitle.innerText = "Trekking is bezig...";
                 lottoStatusDesc.innerText = "Je kraslot wordt gecontroleerd in de database...";
 
-                // Genereer winst op basis van kansverdeling
                 const rand = Math.random() * 100;
                 let winAmount = 0;
 
                 if (rand < 70) {
-                    // 70% kans: Tussen 0.10 en 0.50 KC
                     winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
                 } else if (rand < 95) {
-                    // 25% kans: Tussen 1.00 en 5.00 KC
                     winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
                 } else {
-                    // 5% kans: De Grote Jackpot!
                     winAmount = 25.00;
                 }
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, "wallets", myEmail);
 
-                // Vertraging voor de spanning (1.5 seconde animatie)
                 setTimeout(async () => {
                     try {
                         await runTransaction(db, async (transaction) => {
@@ -765,7 +754,6 @@
                             transaction.update(myDocRef, { balance: currentBal + winAmount });
                         });
 
-                        // Succes weergave updaten
                         if (winAmount === 25.00) {
                             lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
                             lottoStatusTitle.innerText = "🚨 JACKPOT WINST! 🚨";
