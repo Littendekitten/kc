@@ -99,7 +99,7 @@
                         </div>
                         <h2 class="font-black tracking-widest text-amber-400 text-sm">KC-XCHANGE</h2>
                     </div>
-                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl cursor-pointer">
+                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2 bg-slate-900 rounded-xl cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -113,6 +113,9 @@
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
+                    </button>
+                    <button id="nav-admin" class="hidden w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-purple-400 hover:bg-purple-950/30 font-bold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
+                        <i class="fa-solid fa-crown w-5"></i> Admin Panel
                     </button>
                 </nav>
             </div>
@@ -311,6 +314,41 @@
                     </div>
                 </div>
 
+                <!-- ADMIN VIEW -->
+                <div id="view-admin" class="hidden space-y-6 animate-fade-in">
+                    <div class="border-b border-purple-900/40 pb-4 mb-4">
+                        <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
+                            <i class="fa-solid fa-gavel"></i> Admin Panel
+                        </h2>
+                        <p class="text-xs text-purple-300/60 mt-1">Manage user coins and system roles.</p>
+                    </div>
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
+                            <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
+                                <i class="fa-solid fa-coins"></i> Override Balance
+                            </h3>
+                            <form id="admin-balance-form" class="space-y-4">
+                                <input type="text" id="admin-target-username" required placeholder="Target @username" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                                <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance Amount" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl cursor-pointer transition">
+                                    Update Balance
+                                </button>
+                            </form>
+                        </div>
+                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
+                            <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
+                                <i class="fa-solid fa-crown"></i> Appoint Co-Admin
+                            </h3>
+                            <form id="admin-promote-form" class="space-y-4">
+                                <input type="text" id="admin-promote-username" required placeholder="Target @username" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl cursor-pointer transition">
+                                    Grant Admin Status
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
@@ -390,13 +428,17 @@
         const navDashboard = document.getElementById('nav-dashboard');
         const navGetKc = document.getElementById('nav-get-kc');
         const navSettings = document.getElementById('nav-settings');
+        const navAdmin = document.getElementById('nav-admin');
 
         const viewDashboard = document.getElementById('view-dashboard');
         const viewGetKc = document.getElementById('view-get-kc');
         const viewSettings = document.getElementById('view-settings');
+        const viewAdmin = document.getElementById('view-admin');
 
         const settingsUsernameForm = document.getElementById('settings-username-form');
         const settingsUsernameInput = document.getElementById('settings-username-input');
+        const adminBalanceForm = document.getElementById('admin-balance-form');
+        const adminPromoteForm = document.getElementById('admin-promote-form');
 
         const leaderboardList = document.getElementById('leaderboard-list');
         const myRankTag = document.getElementById('my-rank-tag');
@@ -429,8 +471,8 @@
         });
 
         // View Switcher Handlers
-        const views = [viewDashboard, viewGetKc, viewSettings];
-        const tabs = [navDashboard, navGetKc, navSettings];
+        const views = [viewDashboard, viewGetKc, viewSettings, viewAdmin];
+        const tabs = [navDashboard, navGetKc, navSettings, navAdmin];
 
         function switchView(targetView, targetTab) {
             views.forEach(v => v.classList.add('hidden'));
@@ -447,6 +489,7 @@
         navDashboard.addEventListener('click', () => switchView(viewDashboard, navDashboard));
         navGetKc.addEventListener('click', () => switchView(viewGetKc, navGetKc));
         navSettings.addEventListener('click', () => switchView(viewSettings, navSettings));
+        navAdmin.addEventListener('click', () => switchView(viewAdmin, navAdmin));
 
         // Firebase Auth handlers
         btnLogin.addEventListener('click', () => {
@@ -490,6 +533,12 @@
                         userEmail.innerText = data.email;
                         userPhoto.src = data.photoURL;
                         topbarUsername.innerText = "@" + data.username;
+
+                        if (data.role === 'admin') {
+                            navAdmin.classList.remove('hidden');
+                        } else {
+                            navAdmin.classList.add('hidden');
+                        }
                     }
                 });
 
@@ -651,7 +700,7 @@
                     lottoStatusTitle.innerText = "Ready for the draw?";
                     lottoStatusDesc.innerText = "Purchase a scratch box to test your luck immediately.";
                     lottoIcon.innerHTML = '<i class="fa-solid fa-gift text-amber-500"></i>';
-                } finally {
+                } finaly {
                     btnTriggerLotto.disabled = false;
                 }
             });
@@ -678,6 +727,43 @@
                 settingsUsernameForm.reset();
             } catch(err) {
                 alert("Error saving username: " + err.message);
+            }
+        });
+
+        // Admin Engine: Balance Manipulation Override
+        adminBalanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tUsername = document.getElementById('admin-target-username').value.trim().toLowerCase();
+            const tAmount = parseFloat(document.getElementById('admin-target-amount').value);
+
+            try {
+                const q = query(collection(db, "users"), where("username", "==", tUsername));
+                const snap = await getDocs(q);
+                if (snap.empty) return alert("Target user not found!");
+
+                await setDoc(snap.docs[0].ref, { balance: tAmount }, { merge: true });
+                alert(`Balance of @${tUsername} overridden to ${tAmount.toFixed(2)} KC.`);
+                adminBalanceForm.reset();
+            } catch(err) {
+                alert(err.message);
+            }
+        });
+
+        // Admin Engine: Promote account to System Admin status
+        adminPromoteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pUsername = document.getElementById('admin-promote-username').value.trim().toLowerCase();
+
+            try {
+                const q = query(collection(db, "users"), where("username", "==", pUsername));
+                const snap = await getDocs(q);
+                if (snap.empty) return alert("Target user not found!");
+
+                await setDoc(snap.docs[0].ref, { role: "admin" }, { merge: true });
+                alert(`@${pUsername} is now officially an Admin!`);
+                adminPromoteForm.reset();
+            } catch(err) {
+                alert(err.message);
             }
         });
 
