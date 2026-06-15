@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange</title>
     
-    <!-- Favicon Configuration -->
     <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
@@ -32,13 +30,11 @@
             #sidebar { transform: translateX(0) !important; }
         }
 
-        /* HYBRID RESPONSIVE AD WRAPPER ENGINE */
         .ad-slot-wrapper {
             transform-origin: center center;
             flex-shrink: 0;
             transition: transform 0.2s ease-in-out;
         }
-        /* Micro plan fallback layer for ultra-narrow compact displays */
         @media (max-width: 350px) {
             #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard {
                 transform: scale(0.88);
@@ -127,7 +123,13 @@
                         <i class="fa-solid fa-trophy w-5 text-amber-500"></i> Global Leaderboard
                     </button>
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">NEW</span>
+                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto
+                    </button>
+                    <button id="nav-shop" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-shop w-5 text-amber-500"></i> KC-Shop
+                    </button>
+                    <button id="nav-stats" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-chart-line w-5 text-amber-500"></i> KC-Stats
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
