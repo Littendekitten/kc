@@ -350,6 +350,9 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
+            // Clear old iframes/scripts completely before mounting a fresh load
+            container.innerHTML = '';
+
             // Determine if viewport matches mobile width thresholds
             const isMobile = window.innerWidth < 768;
             const activeKey = isMobile ? mobileKey : desktopKey;
@@ -429,17 +432,6 @@
             }, 250);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            runAdBlockCheck();
-            
-            // Injects Desktop Key (728x90) or Mobile Key (320x50) depending on display footprint natively
-            injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-            injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-            injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-        });
-        
-        setInterval(runAdBlockCheck, 6000);
-
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
         const btnLogin = document.getElementById('btn-login');
@@ -474,6 +466,36 @@
 
         let leaderboardUnsubscribe = null;
 
+        // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
+        function switchView(activeNav, activeView) {
+            const views = [viewDashboard, viewGetKc, viewSettings];
+            const navs = [navDashboard, navGetKc, navSettings];
+            
+            views.forEach(v => { if(v) v.classList.add('hidden'); });
+            navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
+
+            if(activeView) activeView.classList.remove('hidden');
+            if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
+            
+            document.body.classList.remove('sidebar-open');
+
+            // Trigger script evaluation ONLY when elements have an active layout footprint (display: block)
+            if (activeView === viewGetKc) {
+                injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+                injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            } else if (activeView === viewDashboard) {
+                injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            runAdBlockCheck();
+            // Initial load for default active dashboard layer
+            injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+        });
+        
+        setInterval(runAdBlockCheck, 6000);
+
         if (btnOpenSidebar) {
             btnOpenSidebar.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -494,19 +516,6 @@
                 }
             }
         });
-
-        function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewGetKc, viewSettings];
-            const navs = [navDashboard, navGetKc, navSettings];
-            
-            views.forEach(v => { if(v) v.classList.add('hidden'); });
-            navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
-
-            if(activeView) activeView.classList.remove('hidden');
-            if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
-            
-            document.body.classList.remove('sidebar-open');
-        }
 
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
