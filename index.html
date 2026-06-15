@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange | KittyCoins Trading</title>
     
+    <!-- Favicon Configuration -->
     <link rel="icon" type="image/png" href="favicon.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* Custom scrollbar for leaderboard */
         #leaderboard-list::-webkit-scrollbar { width: 6px; }
         #leaderboard-list::-webkit-scrollbar-track { background: transparent; }
         #leaderboard-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         #leaderboard-list::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        /* Smooth fade-in animation for views */
         .animate-fade-in {
             animation: fadeIn 0.4s ease-out forwards;
         }
@@ -25,40 +24,42 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sidebar Responsive Settings */
         @media (max-width: 1023px) {
-            #sidebar {
-                transform: translateX(-100%) !important;
-            }
-            .sidebar-open #sidebar {
-                transform: translateX(0) !important;
-            }
+            #sidebar { transform: translateX(-100%) !important; }
+            .sidebar-open #sidebar { transform: translateX(0) !important; }
         }
         @media (min-width: 1024px) {
-            #sidebar {
-                transform: translateX(0) !important;
-            }
+            #sidebar { transform: translateX(0) !important; }
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <div id="ad-modal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4">
-        <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-8 rounded-3xl text-center space-y-6 shadow-2xl relative">
-            <div class="w-16 h-16 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto animate-spin">
-                <i class="fa-solid fa-spinner"></i>
+    <!-- NEW: ANTI-ADBLOCK OVERLAY (SLAAT DE SITE OP SLOT) -->
+    <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
+        <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
+                <i class="fa-solid fa-shield-halved animate-pulse"></i>
             </div>
-            <div class="space-y-2">
-                <h3 class="text-xl font-black tracking-tight text-white">Sponsor Video Loading...</h3>
-                <p class="text-xs text-slate-400">Do not close this screen or refresh the page.</p>
+            <div class="space-y-2 pt-6">
+                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Gedetecteerd!</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Om de servers van <span class="text-amber-400 font-bold">KC-Xchange</span> gratis in de lucht te houden, zijn advertenties verplicht. Schakel je adblocker uit voor deze website om verder te gaan.
+                </p>
             </div>
-            <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
-                <div id="ad-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
+            <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-left text-[11px] text-slate-400 space-y-1.5 font-mono">
+                <p class="text-amber-400 font-bold mb-1">// Hoe zet ik het uit?</p>
+                <p>1. Klik op het AdBlock icoontje in je browserbalk.</p>
+                <p>2. Schakel de switch om voor deze website.</p>
+                <p>3. Klik hieronder op de herlaadknop.</p>
             </div>
-            <div id="ad-countdown-timer" class="text-sm font-mono text-amber-400 font-bold">10s remaining</div>
+            <button onclick="window.location.reload();" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-950/50 cursor-pointer text-xs uppercase tracking-wider transform active:scale-98">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Ik heb hem uitgezet
+            </button>
         </div>
     </div>
 
+    <!-- 1. AUTH VIEW -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -82,12 +83,13 @@
                 </button>
             </div>
         </div>
-        
         <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
     </div>
 
+    <!-- 2. MAIN APP VIEW -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
+        <!-- SIDEBAR CONTAINER -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
@@ -107,7 +109,7 @@
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
                     </button>
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-video w-5 text-amber-500"></i> Get KC <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">+5 KC</span>
+                        <i class="fa-solid fa-rectangle-ad w-5 text-amber-500"></i> Get KC <span class="ml-auto text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold">ADS</span>
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
@@ -137,6 +139,7 @@
 
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
+            <!-- APPLICATION HEADER -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -151,6 +154,7 @@
 
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
+                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
@@ -194,6 +198,18 @@
                         </div>
                     </div>
 
+                    <!-- ADSTERRA ZONE 1: NATIVE BANNER PLACEHOLDER (DASHBOARD) -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 text-center relative overflow-hidden min-h-[90px] flex items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        
+                        <div id="adsterra-banner-1" class="w-full flex justify-center">
+                            <div class="text-xs text-slate-500 flex items-center gap-2 italic">
+                                <i class="fa-solid fa-circle-info text-amber-500/70"></i> 
+                                Adsterra Smart Banner active pipeline &bull; Securing connection...
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
                         <div class="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-4">
                             <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
@@ -203,9 +219,7 @@
                                 <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live
                             </span>
                         </div>
-                        
                         <div id="leaderboard-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
-                        
                         <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800">
                             <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -218,38 +232,53 @@
                     </div>
                 </div>
 
+                <!-- GET KC VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
-                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-video"></i> Get Free KittyCoins
-                    </h2>
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-rectangle-ad"></i> Partner Ad Zones
+                        </h2>
+                        <p class="text-xs text-slate-400">Support the KittyCoins infrastructure by interacting with our verified ad channels.</p>
+                    </div>
                     
-                    <div class="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl max-w-xl shadow-lg border-dashed border-amber-500/30 text-center space-y-6">
-                        <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-3xl text-amber-400 shadow-inner">
-                            <i class="fa-solid fa-coins animate-pulse"></i>
-                        </div>
-                        <div class="space-y-2">
-                            <h3 class="text-xl font-bold text-white">Watch Sponsor Ad</h3>
-                            <p class="text-sm text-slate-400 max-w-sm mx-auto">Watch a short 10-second sponsor video script to support the community platform and instantly claim <span class="text-amber-400 font-bold">5.00 KC</span>!</p>
-                        </div>
-                        
-                        <div id="ad-placement-zone" class="hidden text-xs text-slate-600 bg-black/40 p-2 rounded-xl">
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl text-center space-y-4 flex flex-col justify-between min-h-[300px]">
+                            <div class="space-y-2">
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl mx-auto border border-amber-500/20">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <h3 class="text-md font-bold text-white">Direct Popunder Asset</h3>
+                                <p class="text-xs text-slate-400">Click below to open a verified secure sponsor page in a new link tab to instantly support coin pools.</p>
                             </div>
+                            <a href="https://www.highperformanceformat.com/YOUR_POPUNDER_HASH" target="_blank" class="w-full bg-slate-950 hover:bg-amber-500 hover:text-slate-950 text-amber-400 border border-slate-800 hover:border-transparent font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Launch Sponsor Link
+                            </a>
+                        </div>
 
-                        <button id="btn-watch-ad" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-8 py-4 rounded-xl hover:from-amber-400 hover:to-orange-400 cursor-pointer shadow-lg transform transition active:scale-95 inline-flex items-center gap-2">
-                            <i class="fa-solid fa-circle-play"></i> Stream Ad & Earn 5 KC
-                        </button>
+                        <div class="md:col-span-2 bg-slate-900/30 border border-slate-800/80 rounded-3xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[300px]">
+                            <span class="absolute top-2 right-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Programmatic Ad Unit</span>
+                            
+                            <div id="adsterra-square-container" class="w-full flex items-center justify-center">
+                                <div id="fallback-mock-ad" class="space-y-4 border border-dashed border-amber-500/20 p-6 rounded-2xl bg-slate-950/60 max-w-xs shadow-inner">
+                                    <div class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 text-2xl font-black tracking-wider animate-pulse">KITTY CASINO</div>
+                                    <p class="text-[11px] text-slate-400">Multiplier engine ready. Play roulette modules and multiply assets securely.</p>
+                                    <button onclick="alert('Mock Ad Interaction Verified!')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 text-xs font-black px-5 py-2.5 rounded-xl shadow-md cursor-pointer hover:brightness-110 transition">
+                                        Launch Module
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- SETTINGS VIEW -->
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
                     </h2>
-                    
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
                         <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
                         <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
-                        
                         <form id="settings-username-form" class="space-y-4">
                             <div class="relative">
                                 <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
@@ -262,6 +291,7 @@
                     </div>
                 </div>
 
+                <!-- ADMIN VIEW -->
                 <div id="view-admin" class="hidden space-y-6 animate-fade-in">
                     <div class="border-b border-purple-900/40 pb-4 mb-4">
                         <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
@@ -269,7 +299,6 @@
                         </h2>
                         <p class="text-xs text-purple-300/60 mt-1">Manage user coins and system roles.</p>
                     </div>
-                    
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
@@ -283,7 +312,6 @@
                                 </button>
                             </form>
                         </div>
-                        
                         <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
                             <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
                                 <i class="fa-solid fa-crown"></i> Appoint Co-Admin
@@ -302,6 +330,7 @@
         </div>
     </div>
 
+    <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -322,7 +351,47 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // DOM Elements Mapping
+        // NEW: ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
+        function runAdBlockCheck() {
+            // Maak een lokaal valstrik element aan
+            const bait = document.createElement('div');
+            bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
+            bait.style.cssText = 'width:1px !important; height:1px !important; position:absolute !important; left:-9999px !important; top:-9999px !important;';
+            document.body.appendChild(bait);
+            
+            setTimeout(() => {
+                const overlay = document.getElementById('adblock-overlay');
+                let isBlocked = false;
+
+                // Check 1: Heeft een adblock stylesheet de div onzichtbaar gemaakt?
+                if (window.getComputedStyle) {
+                    const styles = window.getComputedStyle(bait);
+                    if (styles.getPropertyValue('display') === 'none' || styles.getPropertyValue('visibility') === 'hidden') {
+                        isBlocked = true;
+                    }
+                }
+                // Check 2: Is de hoogte naar 0 geforceerd?
+                if (bait.offsetHeight === 0) {
+                    isBlocked = true;
+                }
+
+                document.body.removeChild(bait);
+
+                // Als AdBlock aanstaat, gooi de site direct op slot!
+                if (isBlocked && overlay) {
+                    overlay.classList.remove('hidden');
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-view').classList.add('hidden');
+                }
+            }, 250);
+        }
+
+        // Voer de scanner direct uit bij laden
+        window.addEventListener('DOMContentLoaded', runAdBlockCheck);
+        // Extra controle-check om de paar seconden (tegen sneaky toggles)
+        setInterval(runAdBlockCheck, 6000);
+
+
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
         const btnLogin = document.getElementById('btn-login');
@@ -359,14 +428,8 @@
         const myRankUser = document.getElementById('my-rank-user');
         const myRankBalance = document.getElementById('my-rank-balance');
 
-        const btnWatchAd = document.getElementById('btn-watch-ad');
-        const adModal = document.getElementById('ad-modal');
-        const adProgressBar = document.getElementById('ad-progress-bar');
-        const adCountdownTimer = document.getElementById('ad-countdown-timer');
-
         let leaderboardUnsubscribe = null;
 
-        // Interactive View Controller Functions
         if (btnOpenSidebar) {
             btnOpenSidebar.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -429,18 +492,19 @@
                     const snap = await getDocs(q);
                     if (snap.empty) exists = false;
                 } catch(e) {
-                    console.error("Rules blocked check, using temporary fallback");
                     exists = false;
                 }
             }
             return guestName;
         }
 
-        // Authentication State Listener Pipeline
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                authView.classList.add('hidden');
-                appView.classList.remove('hidden');
+                // Toon de app weergave pas als AdBlock-check niet blokkeert
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
+                    authView.classList.add('hidden');
+                    appView.classList.remove('hidden');
+                }
 
                 const targetEmailClean = user.email.toLowerCase().trim();
                 userEmail.innerText = targetEmailClean;
@@ -469,7 +533,6 @@
                         }
                     } else {
                         currentUsername = await generateUniqueGuestName();
-                        // EVERYONE STARTS WITH 0.00 KC NOW!
                         const startBalance = 0.00;
                         await setDoc(userRef, {
                             name: user.displayName,
@@ -486,104 +549,38 @@
                     topbarUsername.innerText = `@${currentUsername}`;
                     settingsUsernameInput.value = currentUsername;
 
-                    const freshSnap = await getDoc(userRef);
-                    const showAdminConsole = isMasterAdminEmail || (freshSnap.exists() && freshSnap.data().isAdmin === true);
-                    
-                    if (showAdminConsole && navAdmin) {
-                        navAdmin.classList.remove('hidden');
-                    } else if(navAdmin) {
-                        navAdmin.classList.add('hidden');
-                    }
-
                     startLeaderboard(targetEmailClean);
                 } catch (error) {
-                    console.error("Firestore database connection failed: ", error);
-                    alert("Database Error: Check your Firebase Console Firestore Security Rules!");
+                    console.error("Firestore loading fault: ", error);
                 }
             } else {
-                authView.classList.remove('hidden');
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
+                    authView.classList.remove('hidden');
+                }
                 appView.classList.add('hidden');
                 if (navAdmin) navAdmin.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
             }
         });
 
-        // Trigger Google Authentication Sign In Popup Interface 
         if (btnLogin) {
             btnLogin.addEventListener('click', async () => {
                 try {
                     await signInWithPopup(auth, provider);
                 } catch (error) {
-                    console.error("Authentication process error:", error);
                     alert("Authentication failure occurred: " + error.message);
                 }
             });
         }
 
-        // Process User Disconnection Sequence
         if (btnLogout) {
             btnLogout.addEventListener('click', async () => {
                 try {
                     await signOut(auth);
-                } catch (error) {
-                    console.error("Sign out process error:", error);
-                }
+                } catch (error) {}
             });
         }
 
-        // Ad monetization logic execution framework
-        if (btnWatchAd) {
-            btnWatchAd.addEventListener('click', () => {
-                if (!auth.currentUser) return alert("You must be signed in to earn KC.");
-                
-                // Open visual layout block overlay
-                adModal.classList.remove('hidden');
-                adProgressBar.style.width = '0%';
-                
-                let timeRemaining = 10; // 10-second sponsor ad runtime constraint
-                adCountdownTimer.innerText = `${timeRemaining}s remaining`;
-
-                // Force layout recalculation for transition rendering engine
-                void adProgressBar.offsetWidth;
-                adProgressBar.style.width = '100%';
-
-                const timerInterval = setInterval(() => {
-                    timeRemaining--;
-                    adCountdownTimer.innerText = `${timeRemaining}s remaining`;
-
-                    if (timeRemaining <= 0) {
-                        clearInterval(timerInterval);
-                        grantAdReward();
-                    }
-                }, 1000);
-            });
-        }
-
-        async function grantAdReward() {
-            const myEmail = auth.currentUser.email.toLowerCase();
-            const userDocRef = doc(db, "wallets", myEmail);
-
-            try {
-                // Secure atomic transaction injection to safely append 5.00 KC
-                await runTransaction(db, async (transaction) => {
-                    const freshSnap = await transaction.get(userDocRef);
-                    if (!freshSnap.exists()) throw new Error("Profile node not verified.");
-                    
-                    const oldBal = freshSnap.data().balance || 0;
-                    transaction.update(userDocRef, { balance: oldBal + 5.00 });
-                });
-
-                alert("Sponsor script execution verified! +5.00 KittyCoins added to your secure wallet storage.");
-            } catch (err) {
-                console.error("Reward injection fault:", err);
-                alert("Transaction processing fault dropped reward allocation.");
-            } finally {
-                adModal.classList.add('hidden');
-                adProgressBar.style.width = '0%';
-            }
-        }
-
-        // Change Account Public Username Record Identity
         if(settingsUsernameForm) {
             settingsUsernameForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -597,7 +594,7 @@
                     let isTaken = false;
                     querySnap.forEach((doc) => { if (doc.id !== myEmail) isTaken = true; });
 
-                    if (isTaken) return alert(`Username @${newUsername} is taken! Pick another.`);
+                    if (isTaken) return alert(`Username @${newUsername} is taken!`);
 
                     await setDoc(doc(db, "wallets", myEmail), { username: newUsername }, { merge: true });
                     userDisplayName.innerText = `@${newUsername}`;
@@ -607,7 +604,6 @@
             });
         }
 
-        // Sync Leaderboard Engine Live Database Tracker Updates
         function startLeaderboard(currentUserEmail) {
             const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -654,12 +650,9 @@
                     myRankUser.innerText = `@${userCurrentName}`;
                     myRankBalance.innerText = userCurrentBalance.toFixed(2);
                 }
-            }, (error) => {
-                console.error("Leaderboard subscription failed:", error);
             });
         }
 
-        // Coin Trading Transaction Exchange Processor
         if(transferForm) {
             transferForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -674,30 +667,21 @@
                     const q = query(collection(db, "wallets"), where("username", "==", targetUname));
                     const targetQuerySnap = await getDocs(q);
 
-                    if (targetQuerySnap.empty) {
-                        throw new Error(`Recipient profile @${targetUname} could not be resolved.`);
-                    }
+                    if (targetQuerySnap.empty) throw new Error(`Profile @${targetUname} not found.`);
 
                     let targetEmail = "";
                     targetQuerySnap.forEach((doc) => { targetEmail = doc.id; });
-
-                    if (targetEmail === myEmail) {
-                        throw new Error("Self-transfer transactions are prohibited.");
-                    }
+                    if (targetEmail === myEmail) throw new Error("Self-transfers are prohibited.");
 
                     const myDocRef = doc(db, "wallets", myEmail);
                     const targetDocRef = doc(db, "wallets", targetEmail);
 
                     await runTransaction(db, async (transaction) => {
                         const mySnap = await transaction.get(myDocRef);
-                        if (!mySnap.exists()) throw new Error("Sender records initialized empty.");
-
                         const myCurrentBal = mySnap.data().balance || 0;
-                        if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets available.");
+                        if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets.");
 
                         const targetSnap = await transaction.get(targetDocRef);
-                        if (!targetSnap.exists()) throw new Error("Recipient database entry dropped.");
-
                         const targetCurrentBal = targetSnap.data().balance || 0;
 
                         transaction.update(myDocRef, { balance: myCurrentBal - amount });
@@ -714,14 +698,11 @@
             });
         }
 
-        // Administrative Global Balance Override Controller
         if (adminBalanceForm) {
             adminBalanceForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const rawInputName = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
                 const targetAmount = parseFloat(document.getElementById('admin-target-amount').value);
-
-                if (isNaN(targetAmount) || targetAmount < 0) return alert("Enter a structural balance setting.");
 
                 try {
                     const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
@@ -732,13 +713,12 @@
                     snap.forEach(d => userEmailId = d.id);
 
                     await setDoc(doc(db, "wallets", userEmailId), { balance: targetAmount }, { merge: true });
-                    alert(`Balance forced override execution for @${rawInputName} configured to ${targetAmount.toFixed(2)} KC.`);
+                    alert(`Balance forced override for @${rawInputName} set to ${targetAmount.toFixed(2)} KC.`);
                     adminBalanceForm.reset();
                 } catch (err) { alert(err.message); }
             });
         }
 
-        // Administrative Rights Grant Configuration Form
         if (adminPromoteForm) {
             adminPromoteForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -747,13 +727,13 @@
                 try {
                     const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
                     const snap = await getDocs(q);
-                    if (snap.empty) return alert("User handle resolved empty.");
+                    if (snap.empty) return alert("User handle empty.");
 
                     let userEmailId = "";
                     snap.forEach(d => userEmailId = d.id);
 
                     await setDoc(doc(db, "wallets", userEmailId), { isAdmin: true }, { merge: true });
-                    alert(`Administrative authorization successfully assigned to profile @${rawInputName}.`);
+                    alert(`Admin rights granted to @${rawInputName}.`);
                     adminPromoteForm.reset();
                 } catch (err) { alert(err.message); }
             });
