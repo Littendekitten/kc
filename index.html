@@ -714,112 +714,132 @@
             });
         }
 
-        // INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
-        const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
-        const lottoIcon = document.getElementById('lotto-icon');
-        const lottoStatusTitle = document.getElementById('lotto-status-title');
-        const lottoStatusDesc = document.getElementById('lotto-status-desc');
+// INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
+const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
+const lottoIcon = document.getElementById('lotto-icon');
+const lottoStatusTitle = document.getElementById('lotto-status-title');
+const lottoStatusDesc = document.getElementById('lotto-status-desc');
 
-        if(btnTriggerLotto) {
-            btnTriggerLotto.addEventListener('click', async () => {
-                if(!auth.currentUser) return;
-                
-                btnTriggerLotto.disabled = true;
-                btnTriggerLotto.innerText = "Kraslot openen...";
-                lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
-                lottoStatusTitle.innerText = "Trekking is bezig...";
-                lottoStatusDesc.innerText = "Je kraslot wordt gecontroleerd in de database...";
+if (btnTriggerLotto) {
+    btnTriggerLotto.addEventListener('click', async () => {
+        if (!auth.currentUser) return;
 
-                const rand = Math.random() * 100;
-                let winAmount = 0;
+        btnTriggerLotto.disabled = true;
+        btnTriggerLotto.innerText = "Opening scratch card...";
+        lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+        lottoStatusTitle.innerText = "Drawing result...";
+        lottoStatusDesc.innerText = "Checking your scratch card in the database...";
 
-                if (rand < 70) {
-                    winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
-                } else if (rand < 95) {
-                    winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+        const cost = 2;
+
+        const rand = Math.random() * 100;
+        let winAmount = 0;
+
+        if (rand < 70) {
+            winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
+        } else if (rand < 95) {
+            winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+        } else {
+            winAmount = 25.00;
+        }
+
+        const myEmail = auth.currentUser.email.toLowerCase();
+        const myDocRef = doc(db, "wallets", myEmail);
+
+        setTimeout(async () => {
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const mySnap = await transaction.get(myDocRef);
+                    if (!mySnap.exists()) throw new Error("Wallet does not exist.");
+
+                    const currentBal = mySnap.data().balance || 0;
+
+                    // check balance
+                    if (currentBal < cost) {
+                        throw new Error("Not enough KC to play (cost is 2 KC).");
+                    }
+
+                    // deduct cost + add winnings
+                    const newBalance = currentBal - cost + winAmount;
+                    transaction.update(myDocRef, { balance: newBalance });
+                });
+
+                if (winAmount === 25.00) {
+                    lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
+                    lottoStatusTitle.innerText = "🚨 JACKPOT WIN! 🚨";
+                    lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
                 } else {
-                    winAmount = 25.00;
+                    lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
+                    lottoStatusTitle.innerText = `You won +${winAmount.toFixed(2)} KC!`;
+                    lottoStatusTitle.className = "text-xl font-black text-emerald-400";
                 }
 
-                const myEmail = auth.currentUser.email.toLowerCase();
-                const myDocRef = doc(db, "wallets", myEmail);
+                lottoStatusDesc.innerText = "Success! Your balance has been updated.";
+                btnTriggerLotto.innerText = "Play again";
 
-                setTimeout(async () => {
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const mySnap = await transaction.get(myDocRef);
-                            if (!mySnap.exists()) throw new Error("Wallet bestaat niet.");
-                            
-                            const currentBal = mySnap.data().balance || 0;
-                            transaction.update(myDocRef, { balance: currentBal + winAmount });
-                        });
+            } catch (err) {
+                alert("Lotto Error: " + err.message);
+                lottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                lottoStatusTitle.innerText = "Draw failed";
+                lottoStatusDesc.innerText = "Something went wrong while processing your result.";
+                btnTriggerLotto.innerText = "Try again";
+            } finally {
+                btnTriggerLotto.disabled = false;
+            }
+        }, 1500);
+    });
+}
 
-                        if (winAmount === 25.00) {
-                            lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
-                            lottoStatusTitle.innerText = "🚨 JACKPOT WINST! 🚨";
-                            lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
-                        } else {
-                            lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
-                            lottoStatusTitle.innerText = `+${winAmount.toFixed(2)} KC GEWONNEN!`;
-                            lottoStatusTitle.className = "text-xl font-black text-emerald-400";
-                        }
-                        lottoStatusDesc.innerText = "Gefeliciteerd! De munten zijn direct bijgeschreven op je balans.";
-                        btnTriggerLotto.innerText = "Nog een keer spelen";
 
-                    } catch (err) {
-                        alert("Lotto Fout: " + err.message);
-                        lottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
-                        lottoStatusTitle.innerText = "Trekking mislukt";
-                        lottoStatusDesc.innerText = "Er ging iets fout bij het verwerken van je winst.";
-                        btnTriggerLotto.innerText = "Probeer Opnieuw";
-                    } finally {
-                        btnTriggerLotto.disabled = false;
-                    }
-                }, 1500);
-            });
+// ADMIN: SET BALANCE
+if (adminBalanceForm) {
+    adminBalanceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const rawInputName = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
+        const targetAmount = parseFloat(document.getElementById('admin-target-amount').value);
+
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("User not found.");
+
+            let userEmailId = "";
+            snap.forEach(d => userEmailId = d.id);
+
+            await setDoc(doc(db, "wallets", userEmailId), { balance: targetAmount }, { merge: true });
+
+            alert(`Balance override for @${rawInputName} set to ${targetAmount.toFixed(2)} KC.`);
+            adminBalanceForm.reset();
+        } catch (err) {
+            alert(err.message);
         }
+    });
+}
 
 
-        if (adminBalanceForm) {
-            adminBalanceForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const rawInputName = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
-                const targetAmount = parseFloat(document.getElementById('admin-target-amount').value);
+// ADMIN: PROMOTE USER
+if (adminPromoteForm) {
+    adminPromoteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const rawInputName = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
 
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
-                    const snap = await getDocs(q);
-                    if (snap.empty) return alert("User not located.");
+        try {
+            const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("User not found.");
 
-                    let userEmailId = "";
-                    snap.forEach(d => userEmailId = d.id);
+            let userEmailId = "";
+            snap.forEach(d => userEmailId = d.id);
 
-                    await setDoc(doc(db, "wallets", userEmailId), { balance: targetAmount }, { merge: true });
-                    alert(`Balance forced override for @${rawInputName} set to ${targetAmount.toFixed(2)} KC.`);
-                    adminBalanceForm.reset();
-                } catch (err) { alert(err.message); }
-            });
+            await setDoc(doc(db, "wallets", userEmailId), { isAdmin: true }, { merge: true });
+
+            alert(`Admin rights granted to @${rawInputName}.`);
+            adminPromoteForm.reset();
+        } catch (err) {
+            alert(err.message);
         }
-
-        if (adminPromoteForm) {
-            adminPromoteForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const rawInputName = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
-
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
-                    const snap = await getDocs(q);
-                    if (snap.empty) return alert("User handle empty.");
-
-                    let userEmailId = "";
-                    snap.forEach(d => userEmailId = d.id);
-
-                    await setDoc(doc(db, "wallets", userEmailId), { isAdmin: true }, { merge: true });
-                    alert(`Admin rights granted to @${rawInputName}.`);
-                    adminPromoteForm.reset();
-                } catch (err) { alert(err.message); }
-            });
-        }
-    </script>
+    });
+}
+</script>
 </body>
 </html>
