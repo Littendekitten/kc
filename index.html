@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange | KittyCoins Trading</title>
     
-    <!-- Favicon Configuration -->
     <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,31 +34,29 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- ANTI-ADBLOCK OVERLAY (LOCKS THE SITE) -->
     <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
         <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
                 <i class="fa-solid fa-shield-halved animate-pulse"></i>
             </div>
             <div class="space-y-2 pt-6">
-                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Detected!</h2>
+                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Gedetecteerd!</h2>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    To keep the servers of <span class="text-amber-400 font-bold">KC-Xchange</span> running for free, advertisements are required. Please disable your adblocker for this website to continue.
+                    Om de servers van <span class="text-amber-400 font-bold">KC-Xchange</span> gratis in de lucht te houden, zijn advertenties verplicht. Schakel je adblocker uit voor deze website om verder te gaan.
                 </p>
             </div>
             <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-left text-[11px] text-slate-400 space-y-1.5 font-mono">
-                <p class="text-amber-400 font-bold mb-1">// How do I turn it off?</p>
-                <p>1. Click on the AdBlock icon in your browser toolbar.</p>
-                <p>2. Toggle the switch off for this website.</p>
-                <p>3. Click the reload button below.</p>
+                <p class="text-amber-400 font-bold mb-1">// Hoe zet ik het uit?</p>
+                <p>1. Klik op het AdBlock icoontje in je browserbalk.</p>
+                <p>2. Schakel de switch om voor deze website.</p>
+                <p>3. Klik hieronder op de herlaadknop.</p>
             </div>
             <button onclick="window.location.reload();" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-950/50 cursor-pointer text-xs uppercase tracking-wider transform active:scale-98">
-                <i class="fa-solid fa-rotate-right mr-2"></i> I have disabled it
+                <i class="fa-solid fa-rotate-right mr-2"></i> Ik heb hem uitgezet
             </button>
         </div>
     </div>
 
-    <!-- 1. AUTH VIEW -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -86,10 +83,8 @@
         <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
     </div>
 
-    <!-- 2. MAIN APP VIEW -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
-        <!-- SIDEBAR CONTAINER -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
@@ -120,11 +115,10 @@
                 </nav>
             </div>
 
-            <!-- AD ZONE INSIDE SIDEBAR -->
             <div class="px-4 text-center">
                 <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-2 min-h-[60px] flex items-center justify-center text-[10px] text-slate-600 relative overflow-hidden">
                     <span class="absolute top-0.5 left-1 text-[7px] uppercase tracking-wider text-slate-700">Ad Space</span>
-                    <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertisement Module</span>
+                    <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertentie Module</span>
                 </div>
             </div>
 
@@ -147,7 +141,6 @@
 
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
-            <!-- APPLICATION HEADER -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -162,7 +155,6 @@
 
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
-                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
@@ -206,7 +198,6 @@
                         </div>
                     </div>
 
-                    <!-- AD ZONE BELOW BALANCE -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 text-center relative overflow-hidden min-h-[90px] flex items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div class="text-xs text-slate-500 flex items-center gap-2 italic">
@@ -236,16 +227,14 @@
                     </div>
                 </div>
 
-                <!-- GET KC / INTERACTIVE KITTY LOTTO VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
                     <div class="space-y-1">
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Test your luck in the Kitty Lottery! Each entry costs 2 KC.</p>
+                        <p class="text-xs text-slate-400">Beproef je geluk in de Kitty Loterij! Elke deelname kost 2 KC.</p>
                     </div>
 
-                    <!-- AD ZONE ABOVE LOTTO BOX -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
                         <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Top Banner Space (Adsterra 468x60 / 728x90)</span>
                     </div>
@@ -258,12 +247,12 @@
                                 </div>
                                 <h3 class="text-md font-bold text-white">Kitty Lotto Draw</h3>
                                 <p class="text-xs text-slate-400 leading-relaxed">
-                                    Click the button below to purchase a scratch card for 2 KC. You are guaranteed to win a small or massive cash prize back!
+                                    Klik op de knop om een kraslot te kopen voor 2 KC. Je wint gegarandeerd een kleine of grote geldprijs terug!
                                 </p>
                                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
-                                    <p class="text-amber-500 font-bold">// Odds Distribution:</p>
-                                    <p>&bull; 70% chance of: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
-                                    <p>&bull; 25% chance of: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
+                                    <p class="text-amber-500 font-bold">// Kansverdeling:</p>
+                                    <p>&bull; 70% kans op: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
+                                    <p>&bull; 25% kans op: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
                                     <p>&bull; 5% JACKPOT: <span class="text-emerald-400">25.00 KC!</span></p>
                                 </div>
                             </div>
@@ -277,24 +266,22 @@
                                     <i class="fa-solid fa-gift"></i>
                                 </div>
                                 <div class="space-y-1">
-                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Ready for the draw?</h4>
-                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Purchase a scratch box to test your luck immediately.</p>
+                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Klaar voor de trekking?</h4>
+                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Koop een krasbox om direct je geluk te beproeven.</p>
                                 </div>
                                 
                                 <button id="btn-trigger-lotto" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
-                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activate Lotto (2 KC)
+                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activeer Lotto (2 KC)
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- AD ZONE BELOW LOTTO BOX -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
                         <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Bottom Banner Space (Adsterra 468x60 / 728x90)</span>
                     </div>
                 </div>
 
-                <!-- SETTINGS VIEW -->
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -314,7 +301,6 @@
                     </div>
                 </div>
 
-                <!-- ADMIN VIEW -->
                 <div id="view-admin" class="hidden space-y-6 animate-fade-in">
                     <div class="border-b border-purple-900/40 pb-4 mb-4">
                         <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
@@ -353,7 +339,6 @@
         </div>
     </div>
 
-    <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -374,7 +359,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // ANTI-ADBLOCK DETECTOR ENGINE
+        // ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
         function runAdBlockCheck() {
             const bait = document.createElement('div');
             bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
@@ -408,7 +393,7 @@
         window.addEventListener('DOMContentLoaded', runAdBlockCheck);
         setInterval(runAdBlockCheck, 6000);
 
-        // UI Reference Elements
+        // UI Elementen koppelen
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
         const btnLogin = document.getElementById('btn-login');
@@ -493,11 +478,11 @@
 
         // Firebase Auth handlers
         btnLogin.addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch(err => alert("Login failed: " + err.message));
+            signInWithPopup(auth, provider).catch(err => alert("Login gefaald: " + err.message));
         });
 
         btnLogout.addEventListener('click', () => {
-            signOut(auth).catch(err => alert("Logout failed: " + err.message));
+            signOut(auth).catch(err => alert("Logout gefaald: " + err.message));
         });
 
         onAuthStateChanged(auth, async (user) => {
@@ -505,7 +490,7 @@
                 authView.classList.add('hidden');
                 appView.classList.remove('hidden');
 
-                // Sync user with Firestore
+                // User synchronisatie met Firestore
                 const userDocRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userDocRef);
 
@@ -517,13 +502,13 @@
                         email: user.email,
                         displayName: user.displayName || generatedUsername,
                         photoURL: user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80",
-                        balance: 10.00, // Starter package to test out the paid lotto module
+                        balance: 10.00, // Gratis startbudget om de lotto direct te proberen
                         role: "user"
                     };
                     await setDoc(userDocRef, currentUserData);
                 }
 
-                // Listen to Realtime Database user data updates
+                // Realtime luisteren naar gebruikersdata
                 onSnapshot(userDocRef, (snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.data();
@@ -556,10 +541,12 @@
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
                 leaderboardList.innerHTML = "";
                 let rank = 1;
+                let userRanked = false;
 
                 snapshot.forEach((userDoc) => {
                     const u = userDoc.data();
                     
+                    // Render list element
                     const item = document.createElement('div');
                     item.className = `flex items-center justify-between p-3 rounded-2xl border ${u.uid === auth.currentUser.uid ? 'bg-amber-500/5 border-amber-500/20' : 'bg-slate-900/40 border-slate-800/80'}`;
                     
@@ -580,35 +567,37 @@
                     `;
                     leaderboardList.appendChild(item);
 
-                    // Update local user position bottom component
+                    // Update 'Mijn Positie' onderaan
                     if (u.uid === auth.currentUser.uid) {
                         myRankTag.innerText = `#${rank}`;
                         myRankUser.innerText = `@${u.username}`;
                         myRankBalance.innerText = u.balance.toFixed(2);
+                        userRanked = true;
                     }
                     rank++;
                 });
             });
         }
 
-        // Send Coins (Atomic Firestore Transaction Guarded)
+        // Send Coins (Veilige Firestore Transactie)
         transferForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const rUsername = document.getElementById('receiver-username').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('transfer-amount').value);
 
-            if (rUsername === currentUserData.username) return alert("You cannot transfer coins to yourself!");
-            if (amount <= 0 || isNaN(amount)) return alert("Please enter a valid amount!");
+            if (rUsername === currentUserData.username) return alert("Je kunt geen geld naar jezelf overmaken!");
+            if (amount <= 0 || isNaN(amount)) return alert("Voer een geldig bedrag in!");
 
             btnSend.disabled = true;
             btnSend.innerText = "Processing transfer...";
 
             try {
+                // Zoek receiver op via username query
                 const q = query(collection(db, "users"), where("username", "==", rUsername));
                 const querySnap = await getDocs(q);
 
                 if (querySnap.empty) {
-                    throw new Error("User @" + rUsername + " not found!");
+                    throw new Error("Gebruiker @" + rUsername + " niet gevonden!");
                 }
 
                 const receiverDocRef = querySnap.docs[0].ref;
@@ -616,16 +605,17 @@
 
                 await runTransaction(db, async (transaction) => {
                     const senderDoc = await transaction.get(senderDocRef);
+                    const receiverDoc = await transaction.get(receiverDocRef);
+
                     if (senderDoc.data().balance < amount) {
-                        throw new Error("Insufficient balance in your account!");
+                        throw new Error("Onvoldoende saldo op je account!");
                     }
 
-                    const receiverDoc = await transaction.get(receiverDocRef);
                     transaction.update(senderDocRef, { balance: parseFloat((senderDoc.data().balance - amount).toFixed(2)) });
                     transaction.update(receiverDocRef, { balance: parseFloat((receiverDoc.data().balance + amount).toFixed(2)) });
                 });
 
-                alert(`Successfully transferred ${amount.toFixed(2)} KC to @${rUsername}!`);
+                alert(`Succesvol ${amount.toFixed(2)} KC overgemaakt naar @${rUsername}!`);
                 transferForm.reset();
             } catch (err) {
                 alert(err.message);
@@ -635,7 +625,7 @@
             }
         });
 
-        // 2 KC KITTY LOTTO LOGIC (Server-side validation & Atomic subtraction)
+        // 2 KC KITTY LOTTO LOGIC (Met database validatie en afschrijving)
         const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
         const lottoStatusTitle = document.getElementById('lotto-status-title');
         const lottoStatusDesc = document.getElementById('lotto-status-desc');
@@ -644,10 +634,10 @@
         if (btnTriggerLotto) {
             btnTriggerLotto.addEventListener('click', async () => {
                 const user = auth.currentUser;
-                if (!user) return alert("You must be logged in to participate!");
+                if (!user) return alert("Je moet ingelogd zijn!");
 
                 btnTriggerLotto.disabled = true;
-                lottoStatusTitle.innerText = "Lotto rolling...";
+                lottoStatusTitle.innerText = "Lotto aan het rollen...";
                 lottoIcon.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-amber-500"></i>';
 
                 try {
@@ -656,81 +646,82 @@
 
                     await runTransaction(db, async (transaction) => {
                         const userDoc = await transaction.get(userDocRef);
-                        if (!userDoc.exists()) throw new Error("User profile not found!");
+                        if (!userDoc.exists()) throw new Error("Gebruikersprofiel niet gevonden!");
 
                         const currentBalance = userDoc.data().balance || 0;
                         if (currentBalance < 2) {
-                            throw new Error("Insufficient balance! You need at least 2 KC to play.");
+                            throw new Error("Onvoldoende saldo! Je hebt minimaal 2 KC nodig om mee te spelen.");
                         }
 
-                        // Distribution probabilities calculation
+                        // Prijsberekening via kansverdeling
                         const rand = Math.random() * 100;
                         if (rand < 70) {
-                            // 70% probability: 0.10 - 0.50 KC
+                            // 70% kans: 0.10 - 0.50 KC
                             prizeWon = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
                         } else if (rand < 95) {
-                            // 25% probability: 1.00 - 5.00 KC
+                            // 25% kans: 1.00 - 5.00 KC
                             prizeWon = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
                         } else {
-                            // 5% Probability JACKPOT: 25.00 KC
+                            // 5% JACKPOT: 25.00 KC
                             prizeWon = 25.00;
                         }
 
-                        // Atomic mathematical transformation: balance - 2 + prize Won
+                        // Transactie: -2 KC kosten, + de gewonnen prijs
                         const newBalance = parseFloat((currentBalance - 2 + prizeWon).toFixed(2));
                         transaction.update(userDocRef, { balance: newBalance });
                     });
 
-                    // UI Updates after execution success
+                    // UI update na succesvolle database afhandeling
                     if (prizeWon === 25.00) {
                         lottoIcon.innerHTML = '<i class="fa-solid fa-trophy text-emerald-400 text-6xl animate-bounce"></i>';
-                        lottoStatusTitle.innerText = "🚨 JACKPOT WON! 🚨";
+                        lottoStatusTitle.innerText = "🚨 JACKPOT GEWONNEN! 🚨";
                     } else if (prizeWon >= 2.00) {
                         lottoIcon.innerHTML = '<i class="fa-solid fa-coins text-amber-400 text-5xl"></i>';
-                        lottoStatusTitle.innerText = "Nice! You made a profit!";
+                        lottoStatusTitle.innerText = "Lekker! Winst gemaakt!";
                     } else {
                         lottoIcon.innerHTML = '<i class="fa-solid fa-heart-crack text-slate-500 text-5xl"></i>';
-                        lottoStatusTitle.innerText = "Unlucky this time!";
+                        lottoStatusTitle.innerText = "Helaas, minder geluk!";
                     }
 
-                    lottoStatusDesc.innerHTML = `Cost: 2 KC. You received <span class="text-amber-400 font-bold">${prizeWon.toFixed(2)} KC</span>! Net profit/loss: ${(prizeWon - 2).toFixed(2)} KC.`;
+                    lottoStatusDesc.innerHTML = `Kostte 2 KC. Je ontvangt <span class="text-amber-400 font-bold">${prizeWon.toFixed(2)} KC</span>! Netto resultaat: ${(prizeWon - 2).toFixed(2)} KC.`;
 
                 } catch (error) {
                     alert(error.message);
-                    lottoStatusTitle.innerText = "Ready for the draw?";
-                    lottoStatusDesc.innerText = "Purchase a scratch box to test your luck immediately.";
+                    lottoStatusTitle.innerText = "Klaar voor de trekking?";
+                    lottoStatusDesc.innerText = "Koop een krasbox om direct je geluk te beproeven.";
                     lottoIcon.innerHTML = '<i class="fa-solid fa-gift text-amber-500"></i>';
-                } finaly {
+                } finally {
                     btnTriggerLotto.disabled = false;
                 }
             });
         }
 
-        // Settings Module (Update unique handle/username)
+        // Settings Module (Username aanpassen)
         settingsUsernameForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
-            if (newUsername.length < 3) return alert("Username must contain at least 3 characters.");
+            if (newUsername.length < 3) return alert("Username moet minimaal 3 tekens bevatten.");
 
             try {
+                // Check of username al bestaat
                 const q = query(collection(db, "users"), where("username", "==", newUsername));
                 const snap = await getDocs(q);
                 if (!snap.empty && newUsername !== currentUserData.username) {
-                    return alert("This username is already taken!");
+                    return alert("Deze gebruikersnaam is al bezet!");
                 }
 
                 await setDoc(doc(db, "users", auth.currentUser.uid), { 
                     username: newUsername 
                 }, { merge: true });
 
-                alert("Username successfully updated!");
+                alert("Gebruikersnaam succesvol aangepast!");
                 settingsUsernameForm.reset();
             } catch(err) {
-                alert("Error saving username: " + err.message);
+                alert("Fout bij opslaan: " + err.message);
             }
         });
 
-        // Admin Engine: Balance Manipulation Override
+        // Admin Panel: Handmatige Saldo Override
         adminBalanceForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const tUsername = document.getElementById('admin-target-username').value.trim().toLowerCase();
@@ -739,17 +730,17 @@
             try {
                 const q = query(collection(db, "users"), where("username", "==", tUsername));
                 const snap = await getDocs(q);
-                if (snap.empty) return alert("Target user not found!");
+                if (snap.empty) return alert("Doelgebruiker niet gevonden!");
 
                 await setDoc(snap.docs[0].ref, { balance: tAmount }, { merge: true });
-                alert(`Balance of @${tUsername} overridden to ${tAmount.toFixed(2)} KC.`);
+                alert(`Saldo van @${tUsername} overschreven naar ${tAmount.toFixed(2)} KC.`);
                 adminBalanceForm.reset();
             } catch(err) {
                 alert(err.message);
             }
         });
 
-        // Admin Engine: Promote account to System Admin status
+        // Admin Panel: Promoveer Gebruiker tot Co-Admin
         adminPromoteForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const pUsername = document.getElementById('admin-promote-username').value.trim().toLowerCase();
@@ -757,10 +748,10 @@
             try {
                 const q = query(collection(db, "users"), where("username", "==", pUsername));
                 const snap = await getDocs(q);
-                if (snap.empty) return alert("Target user not found!");
+                if (snap.empty) return alert("Doelgebruiker niet gevonden!");
 
                 await setDoc(snap.docs[0].ref, { role: "admin" }, { merge: true });
-                alert(`@${pUsername} is now officially an Admin!`);
+                alert(`@${pUsername} is nu officieel een Admin!`);
                 adminPromoteForm.reset();
             } catch(err) {
                 alert(err.message);
