@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        #leaderboard-list::-webkit-scrollbar { width: 6px; }
-        #leaderboard-list::-webkit-scrollbar-track { background: transparent; }
-        #leaderboard-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        #leaderboard-list::-webkit-scrollbar-thumb:hover { background: #475569; }
+        #leaderboard-list::-webkit-scrollbar, #income-list::-webkit-scrollbar { width: 6px; }
+        #leaderboard-list::-webkit-scrollbar-track, #income-list::-webkit-scrollbar-track { background: transparent; }
+        #leaderboard-list::-webkit-scrollbar-thumb, #income-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        #leaderboard-list::-webkit-scrollbar-thumb:hover, #income-list::-webkit-scrollbar-thumb:hover { background: #475569; }
         
         .animate-fade-in {
             animation: fadeIn 0.4s ease-out forwards;
@@ -40,7 +40,7 @@
         }
         /* Micro plan fallback layer for ultra-narrow compact displays */
         @media (max-width: 350px) {
-            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom {
+            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard {
                 transform: scale(0.88);
                 margin-top: -4px;
                 margin-bottom: -4px;
@@ -121,7 +121,10 @@
 
                 <nav class="space-y-2">
                     <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                        <i class="fa-solid fa-money-bill-transfer w-5"></i> Transfer Center
+                    </button>
+                    <button id="nav-leaderboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-trophy w-5 text-amber-500"></i> Global Leaderboard
                     </button>
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">NEW</span>
@@ -184,7 +187,7 @@
 
                         <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                             <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
-                                <i class="fa-solid fa-paper-plane text-amber-400"></i> Send KittyCoins
+                                <i class="fa-solid fa-paper-plane text-amber-400"></i> Send & Receive KittyCoins
                             </h3>
                             <form id="transfer-form" class="space-y-4">
                                 <div class="grid gap-4 sm:grid-cols-2">
@@ -203,6 +206,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1.5 ml-1">Attach a Wire Message <span class="text-[10px] text-slate-600">(Swear words filtered)</span></label>
+                                    <input type="text" id="transfer-message" maxlength="120" placeholder="Optional public note..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition">
+                                </div>
                                 <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">
                                     Send Coins
                                 </button>
@@ -216,16 +223,49 @@
                         <div id="ad-slot-dashboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
 
+                    <!-- LATEST INCOME MODULE -->
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
-                        <div class="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-4">
-                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 flex items-center gap-2">
-                                <i class="fa-solid fa-trophy text-amber-400"></i> Global Rankings
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-4">
+                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center gap-2">
+                                <i class="fa-solid fa-wallet text-emerald-400"></i> Latest Income Stream
                             </h3>
-                            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live
-                            </span>
+                            <span class="text-[10px] text-slate-500 font-mono">Real-time Receipts</span>
                         </div>
-                        <div id="leaderboard-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
+                        <div id="income-list" class="space-y-3 transition-all duration-300">
+                            <!-- Injected dynamically -->
+                            <p class="text-xs text-slate-500 text-center py-4 font-mono">No income receipts processed yet.</p>
+                        </div>
+                        <div class="mt-4 flex justify-center">
+                            <button id="btn-toggle-income" class="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1.5 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer transition">
+                                <span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW DEDICATED LEADERBOARD VIEW -->
+                <div id="view-leaderboard" class="hidden space-y-6 animate-fade-in">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-trophy"></i> Global Rankings
+                            </h2>
+                            <p class="text-xs text-slate-400">Top performance metrics across the network system.</p>
+                        </div>
+                        <span class="self-start md:self-auto text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live Updates Active
+                        </span>
+                    </div>
+
+                    <!-- NEW DEDICATED LEADERBOARD AD BANNER -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Rankings Sponsor Frame</span>
+                        <div id="ad-slot-leaderboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
+                        <div id="leaderboard-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2"></div>
+                        
                         <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800">
                             <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -326,7 +366,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDra6ILu1IGCyZ64fTfxKYGoQqEL6CbUFE",
@@ -345,22 +385,34 @@
 
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
+        // CLIENT-SIDE swearing filter engine
+        function maskProfanity(text) {
+            if (!text) return "";
+            const badWords = [
+                'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'cunt', 
+                'bastard', 'asshole', 'nigger', 'faggot', 'whore', 'slut'
+            ];
+            let filtered = text;
+            badWords.forEach(word => {
+                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                filtered = filtered.replace(regex, '####');
+            });
+            return filtered;
+        }
+
         // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
             const container = document.getElementById(containerId);
             if (!container) return;
 
-            // Clear old layers and wipe global options scope to prevent dual-render memory leakage
             container.innerHTML = '';
             window.atOptions = null;
 
-            // Determine if viewport matches mobile width thresholds
             const isMobile = window.innerWidth < 768;
             const activeKey = isMobile ? mobileKey : desktopKey;
             const w = isMobile ? 320 : 728;
             const h = isMobile ? 50 : 90;
 
-            // Force bounding boxes to stay strictly locked to specific key layouts
             container.style.width = `${w}px`;
             container.style.height = `${h}px`;
 
@@ -395,14 +447,8 @@
 
         // ANTI-ADBLOCK DETECTOR ENGINE
         function runAdBlockCheck() {
-            if (isLocalDevelopment) {
-                console.log("Safe Guard Notice: Local development active. Skipping AdBlock validation routine.");
-                return;
-            }
-
-            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
-                return;
-            }
+            if (isLocalDevelopment) return;
+            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') return;
 
             const bait = document.createElement('div');
             bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
@@ -419,9 +465,7 @@
                         isBlocked = true;
                     }
                 }
-                if (bait.offsetHeight === 0) {
-                    isBlocked = true;
-                }
+                if (bait.offsetHeight === 0) isBlocked = true;
 
                 document.body.removeChild(bait);
 
@@ -450,10 +494,12 @@
         const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
         const navDashboard = document.getElementById('nav-dashboard');
+        const navLeaderboard = document.getElementById('nav-leaderboard');
         const navGetKc = document.getElementById('nav-get-kc');
         const navSettings = document.getElementById('nav-settings');
 
         const viewDashboard = document.getElementById('view-dashboard');
+        const viewLeaderboard = document.getElementById('view-leaderboard');
         const viewGetKc = document.getElementById('view-get-kc');
         const viewSettings = document.getElementById('view-settings');
 
@@ -465,12 +511,18 @@
         const myRankUser = document.getElementById('my-rank-user');
         const myRankBalance = document.getElementById('my-rank-balance');
 
+        const incomeList = document.getElementById('income-list');
+        const btnToggleIncome = document.getElementById('btn-toggle-income');
+
         let leaderboardUnsubscribe = null;
+        let incomeUnsubscribe = null;
+        let rawIncomeRecords = [];
+        let showMaxIncome = false;
 
         // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewGetKc, viewSettings];
-            const navs = [navDashboard, navGetKc, navSettings];
+            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewSettings];
+            const navs = [navDashboard, navLeaderboard, navGetKc, navSettings];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -480,24 +532,21 @@
             
             document.body.classList.remove('sidebar-open');
 
-            // Trigger script evaluation ONLY when elements have an active layout footprint (display: block)
+            // View-specific ad rendering routines
             if (activeView === viewGetKc) {
-                // Load top banner immediately
                 injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-                
-                // STAGGER FIX: Slight operational execution pause prevents window.atOptions context collision
-                // Note: If you have generated a distinct bottom banner placement hash, swap the strings below!
                 setTimeout(() => {
                     injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
                 }, 350);
             } else if (activeView === viewDashboard) {
                 injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            } else if (activeView === viewLeaderboard) {
+                injectAdsterraSafeBanner('ad-slot-leaderboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             runAdBlockCheck();
-            // Initial load for default active dashboard layer
             injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
         });
         
@@ -514,17 +563,9 @@
                 document.body.classList.remove('sidebar-open');
             });
         }
-        document.addEventListener('click', (e) => {
-            const sidebarEl = document.getElementById('sidebar');
-            const btnOpen = document.getElementById('btn-open-sidebar');
-            if (document.body.classList.contains('sidebar-open')) {
-                if (sidebarEl && !sidebarEl.contains(e.target) && btnOpen && !btnOpen.contains(e.target)) {
-                    document.body.classList.remove('sidebar-open');
-                }
-            }
-        });
 
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+        if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
 
@@ -549,9 +590,8 @@
             if (user) {
                 const targetEmailClean = user.email.toLowerCase().trim();
 
-                // EXCLUSIVE FEATURE: HARDCODED REMOVAL OF ALL SPONSOR ADS FOR LITTENDEKITTEN
                 if (targetEmailClean === 'littendekitten@gmail.com') {
-                    const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom'];
+                    const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard'];
                     structuralAdBlocks.forEach(slotId => {
                         const slotNode = document.getElementById(slotId);
                         if (slotNode && slotNode.parentElement) {
@@ -595,6 +635,7 @@
                     settingsUsernameInput.value = currentUsername;
 
                     startLeaderboard(targetEmailClean);
+                    startIncomeStream(targetEmailClean);
                 } catch (error) {
                     console.error("Firestore loading fault: ", error);
                 }
@@ -604,6 +645,7 @@
                 }
                 appView.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+                if (incomeUnsubscribe) incomeUnsubscribe();
             }
         });
 
@@ -668,24 +710,22 @@
                         balanceAmount.innerText = balance.toFixed(2);
                     }
 
-                    if (currentRank <= 10) {
-                        let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
-                        if (currentRank === 1) { medal = '🥇'; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
-                        else if (currentRank === 2) { medal = '🥈'; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
-                        else if (currentRank === 3) { medal = '🥉'; rowStyle = "bg-amber-700/10 border border-amber-700/20"; badgeStyle = "bg-amber-700 text-white font-black"; }
+                    let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
+                    if (currentRank === 1) { medal = '🥇'; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
+                    else if (currentRank === 2) { medal = '🥈'; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
+                    else if (currentRank === 3) { medal = '🥉'; rowStyle = "bg-amber-700/10 border border-amber-700/20"; badgeStyle = "bg-amber-700 text-white font-black"; }
 
-                        if (email === currentUserEmail) rowStyle += " ring-1 ring-amber-400";
+                    if (email === currentUserEmail) rowStyle += " ring-1 ring-amber-400";
 
-                        const rowHtml = `
-                            <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
-                                    <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
-                                </div>
-                                <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
-                            </div>`;
-                        leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
-                    }
+                    const rowHtml = `
+                        <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
+                            <div class="flex items-center gap-3">
+                                <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
+                                <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
+                            </div>
+                            <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
+                        </div>`;
+                    leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
                     currentRank++;
                 });
 
@@ -697,15 +737,81 @@
             });
         }
 
+        // INCOME TRACKING LIFECYCLE
+        function startIncomeStream(currentUserEmail) {
+            const q = query(
+                collection(db, "transactions"), 
+                where("receiverEmail", "==", currentUserEmail), 
+                orderBy("timestamp", "desc"),
+                limit(10)
+            );
+
+            incomeUnsubscribe = onSnapshot(q, (snapshot) => {
+                rawIncomeRecords = [];
+                snapshot.forEach(docSnap => {
+                    rawIncomeRecords.push(docSnap.data());
+                });
+                renderIncomeUI();
+            });
+        }
+
+        function renderIncomeUI() {
+            if(!incomeList) return;
+            incomeList.innerHTML = "";
+
+            const targetLength = showMaxIncome ? 10 : 3;
+            const recordsToDisplay = rawIncomeRecords.slice(0, targetLength);
+
+            if(recordsToDisplay.length === 0) {
+                incomeList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No incoming receipts processed yet.</p>`;
+                return;
+            }
+
+            recordsToDisplay.forEach(tx => {
+                const rawMsg = tx.message ? tx.message.trim() : "";
+                const msgBlock = rawMsg ? `<div class="mt-1.5 text-[11px] bg-slate-950/80 border border-slate-800/60 px-2.5 py-1.5 rounded-lg text-slate-300 italic font-sans"><i class="fa-regular fa-comment-dots text-slate-500 mr-1"></i> "${rawMsg}"</div>` : '';
+                
+                const card = `
+                    <div class="p-3 bg-slate-950/50 border border-slate-800/60 rounded-xl flex flex-col justify-center animate-fade-in">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 text-[10px] flex items-center justify-center border border-emerald-500/20"><i class="fa-solid fa-arrow-down"></i></span>
+                                <p class="text-xs text-white font-medium">Received from <span class="text-amber-400 font-bold">@${tx.senderUsername || 'unknown'}</span></p>
+                            </div>
+                            <p class="text-xs font-mono font-black text-emerald-400">+${parseFloat(tx.amount).toFixed(2)} KC</p>
+                        </div>
+                        ${msgBlock}
+                    </div>
+                `;
+                incomeList.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        if(btnToggleIncome) {
+            btnToggleIncome.addEventListener('click', () => {
+                showMaxIncome = !showMaxIncome;
+                if(showMaxIncome) {
+                    btnToggleIncome.innerHTML = `<span>Show Less (Last 3)</span> <i class="fa-solid fa-chevron-up text-[10px]"></i>`;
+                } else {
+                    btnToggleIncome.innerHTML = `<span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>`;
+                }
+                renderIncomeUI();
+            });
+        }
+
         if(transferForm) {
             transferForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
                 const amount = parseFloat(document.getElementById('transfer-amount').value);
+                const rawMessage = document.getElementById('transfer-message').value;
                 const myEmail = auth.currentUser.email.toLowerCase();
 
                 if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
                 if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
+
+                // Pass descriptive statement strings through profanity filter array structures
+                const filteredMessage = maskProfanity(rawMessage);
 
                 try {
                     const q = query(collection(db, "wallets"), where("username", "==", targetUname));
@@ -719,10 +825,12 @@
 
                     const myDocRef = doc(db, "wallets", myEmail);
                     const targetDocRef = doc(db, "wallets", targetEmail);
+                    const transactionLoggingRef = doc(collection(db, "transactions"));
 
                     await runTransaction(db, async (transaction) => {
                         const mySnap = await transaction.get(myDocRef);
                         const myCurrentBal = mySnap.data().balance || 0;
+                        const myUname = mySnap.data().username || "guest";
                         if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets.");
 
                         const targetSnap = await transaction.get(targetDocRef);
@@ -730,6 +838,17 @@
 
                         transaction.update(myDocRef, { balance: myCurrentBal - amount });
                         transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
+                        
+                        // Append unified trace metrics to ledger system
+                        transaction.set(transactionLoggingRef, {
+                            senderEmail: myEmail,
+                            senderUsername: myUname,
+                            receiverEmail: targetEmail,
+                            receiverUsername: targetUname,
+                            amount: amount,
+                            message: filteredMessage,
+                            timestamp: new Date()
+                        });
                     });
 
                     alert(`Successfully transferred ${amount.toFixed(2)} KC to @${targetUname}!`);
@@ -780,10 +899,7 @@
                             if (!mySnap.exists()) throw new Error("Wallet does not exist.");
 
                             const currentBal = mySnap.data().balance || 0;
-
-                            if (currentBal < cost) {
-                                throw new Error("Not enough KC to play (cost is 2 KC).");
-                            }
+                            if (currentBal < cost) throw new Error("Not enough KC to play (cost is 2 KC).");
 
                             const newBalance = currentBal - cost + winAmount;
                             transaction.update(myDocRef, { balance: newBalance });
