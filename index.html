@@ -350,8 +350,9 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
-            // Clear old iframes/scripts completely before mounting a fresh load
+            // Clear old layers and wipe global options scope to prevent dual-render memory leakage
             container.innerHTML = '';
+            window.atOptions = null;
 
             // Determine if viewport matches mobile width thresholds
             const isMobile = window.innerWidth < 768;
@@ -481,8 +482,14 @@
 
             // Trigger script evaluation ONLY when elements have an active layout footprint (display: block)
             if (activeView === viewGetKc) {
+                // Load top banner immediately
                 injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-                injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+                
+                // STAGGER FIX: Slight operational execution pause prevents window.atOptions context collision
+                // Note: If you have generated a distinct bottom banner placement hash, swap the strings below!
+                setTimeout(() => {
+                    injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+                }, 350);
             } else if (activeView === viewDashboard) {
                 injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             }
