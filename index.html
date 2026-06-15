@@ -448,8 +448,16 @@
             return filtered;
         }
 
-        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
+// INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
+            // --- DE AD-GUARD: Laad niets als jij ingelogd bent ---
+            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
+                const container = document.getElementById(containerId);
+                if (container) container.style.display = 'none'; // Verberg ook de lege ruimte
+                return; 
+            }
+            // ----------------------------------------------------
+
             const container = document.getElementById(containerId);
             if (!container) return;
 
