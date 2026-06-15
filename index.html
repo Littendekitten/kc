@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange</title>
     
-    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Favicon Configuration -->
+    <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -34,6 +35,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- ANTI-ADBLOCK OVERLAY -->
     <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
         <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
@@ -57,6 +59,7 @@
         </div>
     </div>
 
+    <!-- 1. AUTH VIEW -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -83,8 +86,10 @@
         <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by KitaCat</p>
     </div>
 
+    <!-- 2. MAIN APP VIEW -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
+        <!-- SIDEBAR CONTAINER -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
@@ -112,24 +117,7 @@
                 </nav>
             </div>
 
-            <div class="px-4 text-center my-auto">
-                <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 min-h-[140px] flex flex-col items-center justify-center relative overflow-hidden">
-                    <span class="absolute top-1.5 left-3 text-[7px] uppercase tracking-wider text-slate-500 font-mono font-bold">Advertisement</span>
-                    
-                    <div class="w-full flex flex-col items-center justify-center">
-                        <script type="text/javascript">
-                            atOptions = {
-                                'key' : '93b1f9e019c65574bb080932b4771349',
-                                'format' : 'iframe',
-                                'height' : 90,
-                                'width' : 728,
-                                'params' : {}
-                            };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/93b1f9e019c65574bb080932b4771349/invoke.js"></script>
-                    </div>
-                </div>
-            </div>
+            <!-- AD CONTAINER REMOVED FROM SIDEBAR TO STREAMLINE INTERFACE -->
 
             <div class="p-4 m-4 border border-slate-900 bg-slate-950 rounded-2xl space-y-4">
                 <div class="flex items-center gap-3">
@@ -150,6 +138,7 @@
 
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
+            <!-- APPLICATION HEADER -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -164,6 +153,7 @@
 
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
+                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
@@ -207,10 +197,10 @@
                         </div>
                     </div>
 
+                    <!-- AD ZONE BELOW DASHBOARD CARD -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        
-                        <div class="hidden md:block text-center">
+                        <div class="text-center w-full overflow-hidden">
                             <script type="text/javascript">
                               atOptions = {
                                 'key' : '93b1f9e019c65574bb080932b4771349',
@@ -221,10 +211,6 @@
                               };
                             </script>
                             <script type="text/javascript" src="//www.highperformanceformat.com/93b1f9e019c65574bb080932b4771349/invoke.js"></script>
-                        </div>
-                        
-                        <div class="block md:hidden text-center">
-                            <span class="text-xs text-slate-500 italic">Mobile Banner View Element</span>
                         </div>
                     </div>
 
@@ -250,16 +236,30 @@
                     </div>
                 </div>
 
+                <!-- GET KC / INTERACTIVE KITTY LOTTO VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
                     <div class="space-y-1">
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Claim free coins! To finance the lottery, banners rotate below and above this module.</p>
+                        <p class="text-xs text-slate-400">Claim free coins! Banners rotate below and above this module to fund platform payouts.</p>
                     </div>
 
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
-                        <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Top Banner Space (Adsterra 468x60 / 728x90)</span>
+                    <!-- AD ZONE ABOVE LOTTO BOX -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div class="text-center w-full overflow-hidden">
+                            <script type="text/javascript">
+                              atOptions = {
+                                'key' : '93b1f9e019c65574bb080932b4771349',
+                                'format' : 'iframe',
+                                'height' : 90,
+                                'width' : 728,
+                                'params' : {}
+                              };
+                            </script>
+                            <script type="text/javascript" src="//www.highperformanceformat.com/93b1f9e019c65574bb080932b4771349/invoke.js"></script>
+                        </div>
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-3">
@@ -270,12 +270,12 @@
                                 </div>
                                 <h3 class="text-md font-bold text-white">Free Daily Draw</h3>
                                 <p class="text-xs text-slate-400 leading-relaxed">
-                                    Klik op de knop om een gratis kraslot te activeren. Je wint gegarandeerd een klein of groot deel aan KittyCoins!
+                                    Click the button to activate a scratcher card. You are guaranteed to win a customized micro-allocation fraction of KittyCoins!
                                 </p>
                                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
-                                    <p class="text-amber-500 font-bold">// Loot Table:</p>
-                                    <p>&bull; 70% kans op: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
-                                    <p>&bull; 25% kans op: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
+                                    <p class="text-amber-500 font-bold">// Loot Table Configuration:</p>
+                                    <p>&bull; 70% chance of: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
+                                    <p>&bull; 25% chance of: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
                                     <p>&bull; 5% JACKPOT: <span class="text-emerald-400">25.00 KC!</span></p>
                                 </div>
                             </div>
@@ -289,7 +289,7 @@
                                     <i class="fa-solid fa-gift"></i>
                                 </div>
                                 <div class="space-y-1">
-                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Are you ready? (2KC) </h4>
+                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Are you ready? (2KC)</h4>
                                     <p id="lotto-status-desc" class="text-xs text-slate-400">Click the box - Claim the prize!</p>
                                 </div>
                                 
@@ -300,11 +300,25 @@
                         </div>
                     </div>
 
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
-                        <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Bottom Banner Space (Adsterra 468x60 / 728x90)</span>
+                    <!-- AD ZONE BELOW LOTTO BOX -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div class="text-center w-full overflow-hidden">
+                            <script type="text/javascript">
+                              atOptions = {
+                                'key' : '93b1f9e019c65574bb080932b4771349',
+                                'format' : 'iframe',
+                                'height' : 90,
+                                'width' : 728,
+                                'params' : {}
+                              };
+                            </script>
+                            <script type="text/javascript" src="//www.highperformanceformat.com/93b1f9e019c65574bb080932b4771349/invoke.js"></script>
+                        </div>
                     </div>
                 </div>
 
+                <!-- SETTINGS VIEW -->
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -328,6 +342,7 @@
         </div>
     </div>
                 
+    <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -348,7 +363,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
+        // ANTI-ADBLOCK DETECTOR ENGINE
         function runAdBlockCheck() {
             const bait = document.createElement('div');
             bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
@@ -446,7 +461,7 @@
 
             if(activeView) activeView.classList.remove('hidden');
             if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
-
+            
             document.body.classList.remove('sidebar-open');
         }
 
@@ -673,7 +688,6 @@
                 lottoStatusDesc.innerText = "Checking your scratch card in the database...";
 
                 const cost = 2;
-
                 const rand = Math.random() * 100;
                 let winAmount = 0;
 
