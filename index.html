@@ -6,7 +6,7 @@
     <title>KC-Xchange | KittyCoins Trading</title>
     
     <!-- Favicon Configuration -->
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -35,26 +35,26 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- ANTI-ADBLOCK OVERLAY (SLAAT DE SITE OP SLOT) -->
+    <!-- ANTI-ADBLOCK OVERLAY (LOCKS THE SITE) -->
     <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
         <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
                 <i class="fa-solid fa-shield-halved animate-pulse"></i>
             </div>
             <div class="space-y-2 pt-6">
-                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Gedetecteerd!</h2>
+                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Detected!</h2>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    Om de servers van <span class="text-amber-400 font-bold">KC-Xchange</span> gratis in de lucht te houden, zijn advertenties verplicht. Schakel je adblocker uit voor deze website om verder te gaan.
+                    To keep the servers of <span class="text-amber-400 font-bold">KC-Xchange</span> running for free, advertisements are required. Please disable your adblocker for this website to continue.
                 </p>
             </div>
             <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-left text-[11px] text-slate-400 space-y-1.5 font-mono">
-                <p class="text-amber-400 font-bold mb-1">// Hoe zet ik het uit?</p>
-                <p>1. Klik op het AdBlock icoontje in je browserbalk.</p>
-                <p>2. Schakel de switch om voor deze website.</p>
-                <p>3. Klik hieronder op de herlaadknop.</p>
+                <p class="text-amber-400 font-bold mb-1">// How do I turn it off?</p>
+                <p>1. Click on the AdBlock icon in your browser toolbar.</p>
+                <p>2. Toggle the switch off for this website.</p>
+                <p>3. Click the reload button below.</p>
             </div>
             <button onclick="window.location.reload();" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-950/50 cursor-pointer text-xs uppercase tracking-wider transform active:scale-98">
-                <i class="fa-solid fa-rotate-right mr-2"></i> Ik heb hem uitgezet
+                <i class="fa-solid fa-rotate-right mr-2"></i> I have disabled it
             </button>
         </div>
     </div>
@@ -99,7 +99,7 @@
                         </div>
                         <h2 class="font-black tracking-widest text-amber-400 text-sm">KC-XCHANGE</h2>
                     </div>
-                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2 bg-slate-900 rounded-xl cursor-pointer">
+                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -109,13 +109,10 @@
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
                     </button>
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">NEW</span>
+                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">2 KC</span>
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
-                    </button>
-                    <button id="nav-admin" class="hidden w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-purple-400 hover:bg-purple-950/30 font-bold transition text-sm text-left cursor-pointer border border-transparent hover:border-purple-900/40">
-                        <i class="fa-solid fa-crown w-5"></i> Admin Panel
                     </button>
                 </nav>
             </div>
@@ -124,7 +121,7 @@
             <div class="px-4 text-center">
                 <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-2 min-h-[60px] flex items-center justify-center text-[10px] text-slate-600 relative overflow-hidden">
                     <span class="absolute top-0.5 left-1 text-[7px] uppercase tracking-wider text-slate-700">Ad Space</span>
-                    <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertentie Module</span>
+                    <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertisement Module</span>
                 </div>
             </div>
 
@@ -242,7 +239,7 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Claim gratis munten! Om de loterij te financieren draaien er banners onder en boven deze module.</p>
+                        <p class="text-xs text-slate-400">Test your luck in the Kitty Lottery! Each entry costs 2 KC.</p>
                     </div>
 
                     <!-- AD ZONE ABOVE LOTTO BOX -->
@@ -256,14 +253,14 @@
                                 <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
                                     <i class="fa-solid fa-clover"></i>
                                 </div>
-                                <h3 class="text-md font-bold text-white">Free Daily Draw</h3>
+                                <h3 class="text-md font-bold text-white">Kitty Lotto Draw</h3>
                                 <p class="text-xs text-slate-400 leading-relaxed">
-                                    Klik op de knop om een gratis kraslot te activeren. Je wint gegarandeerd een klein of groot deel aan KittyCoins!
+                                    Click the button below to purchase a scratch card for 2 KC. You are guaranteed to win a small or massive cash prize back!
                                 </p>
                                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
-                                    <p class="text-amber-500 font-bold">// Kansverdeling:</p>
-                                    <p>&bull; 70% kans op: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
-                                    <p>&bull; 25% kans op: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
+                                    <p class="text-amber-500 font-bold">// Odds Distribution:</p>
+                                    <p>&bull; 70% chance of: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
+                                    <p>&bull; 25% chance of: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
                                     <p>&bull; 5% JACKPOT: <span class="text-emerald-400">25.00 KC!</span></p>
                                 </div>
                             </div>
@@ -277,12 +274,12 @@
                                     <i class="fa-solid fa-gift"></i>
                                 </div>
                                 <div class="space-y-1">
-                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Klaar voor de trekking?</h4>
-                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Open je gratis krasbox om direct je saldo op te waarderen.</p>
+                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Ready for the draw?</h4>
+                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Purchase a scratch box to test your luck immediately.</p>
                                 </div>
                                 
                                 <button id="btn-trigger-lotto" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
-                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activeer Kraslot
+                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activate Lotto (2 KC)
                                 </button>
                             </div>
                         </div>
@@ -314,41 +311,6 @@
                     </div>
                 </div>
 
-                <!-- ADMIN VIEW -->
-                <div id="view-admin" class="hidden space-y-6 animate-fade-in">
-                    <div class="border-b border-purple-900/40 pb-4 mb-4">
-                        <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
-                            <i class="fa-solid fa-gavel"></i> Admin Panel
-                        </h2>
-                        <p class="text-xs text-purple-300/60 mt-1">Manage user coins and system roles.</p>
-                    </div>
-                    <div class="grid gap-6 md:grid-cols-2">
-                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
-                            <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
-                                <i class="fa-solid fa-coins"></i> Override Balance
-                            </h3>
-                            <form id="admin-balance-form" class="space-y-4">
-                                <input type="text" id="admin-target-username" required placeholder="Target @username" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <input type="number" id="admin-target-amount" required step="0.01" placeholder="New Balance Amount" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl cursor-pointer transition">
-                                    Update Balance
-                                </button>
-                            </form>
-                        </div>
-                        <div class="bg-purple-950/10 border border-purple-900/30 p-6 rounded-3xl space-y-4">
-                            <h3 class="text-md font-bold text-purple-300 flex items-center gap-2">
-                                <i class="fa-solid fa-crown"></i> Appoint Co-Admin
-                            </h3>
-                            <form id="admin-promote-form" class="space-y-4">
-                                <input type="text" id="admin-promote-username" required placeholder="Target @username" class="w-full bg-slate-950 border border-purple-900/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl cursor-pointer transition">
-                                    Grant Admin Status
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
             </main>
         </div>
     </div>
@@ -374,7 +336,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
+        // ANTI-ADBLOCK DETECTOR ENGINE
         function runAdBlockCheck() {
             const bait = document.createElement('div');
             bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
@@ -408,7 +370,7 @@
         window.addEventListener('DOMContentLoaded', runAdBlockCheck);
         setInterval(runAdBlockCheck, 6000);
 
-
+        // UI Reference Elements
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
         const btnLogin = document.getElementById('btn-login');
@@ -428,17 +390,13 @@
         const navDashboard = document.getElementById('nav-dashboard');
         const navGetKc = document.getElementById('nav-get-kc');
         const navSettings = document.getElementById('nav-settings');
-        const navAdmin = document.getElementById('nav-admin');
 
         const viewDashboard = document.getElementById('view-dashboard');
         const viewGetKc = document.getElementById('view-get-kc');
         const viewSettings = document.getElementById('view-settings');
-        const viewAdmin = document.getElementById('view-admin');
 
         const settingsUsernameForm = document.getElementById('settings-username-form');
         const settingsUsernameInput = document.getElementById('settings-username-input');
-        const adminBalanceForm = document.getElementById('admin-balance-form');
-        const adminPromoteForm = document.getElementById('admin-promote-form');
 
         const leaderboardList = document.getElementById('leaderboard-list');
         const myRankTag = document.getElementById('my-rank-tag');
@@ -446,7 +404,9 @@
         const myRankBalance = document.getElementById('my-rank-balance');
 
         let leaderboardUnsubscribe = null;
+        let currentUserData = null;
 
+        // Sidebar Events
         if (btnOpenSidebar) {
             btnOpenSidebar.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -468,358 +428,259 @@
             }
         });
 
-        function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewGetKc, viewSettings, viewAdmin];
-            const navs = [navDashboard, navGetKc, navSettings, navAdmin];
-            
-            views.forEach(v => { if(v) v.classList.add('hidden'); });
-            navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold', 'bg-purple-950/30', 'text-purple-400'); });
+        // View Switcher Handlers
+        const views = [viewDashboard, viewGetKc, viewSettings];
+        const tabs = [navDashboard, navGetKc, navSettings];
 
-            if(activeView) activeView.classList.remove('hidden');
+        function switchView(targetView, targetTab) {
+            views.forEach(v => v.classList.add('hidden'));
+            targetView.classList.remove('hidden');
             
-            if(activeNav) {
-                if (activeNav === navAdmin) {
-                    activeNav.classList.add('bg-purple-950/30', 'text-purple-400', 'font-bold');
-                } else {
-                    activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
-                }
-            }
+            tabs.forEach(t => {
+                t.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold', 'border-slate-800/80');
+                t.classList.add('text-slate-400');
+            });
+            targetTab.classList.add('bg-slate-900', 'text-amber-400', 'font-bold', 'border-slate-800/80');
             document.body.classList.remove('sidebar-open');
         }
 
-        if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
-        if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
-        if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
-        if(navAdmin) navAdmin.addEventListener('click', () => {
-            if(auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
-                switchView(navAdmin, viewAdmin);
-            } else {
-                alert("Access Denied.");
-            }
+        navDashboard.addEventListener('click', () => switchView(viewDashboard, navDashboard));
+        navGetKc.addEventListener('click', () => switchView(viewGetKc, navGetKc));
+        navSettings.addEventListener('click', () => switchView(viewSettings, navSettings));
+
+        // Firebase Auth handlers
+        btnLogin.addEventListener('click', () => {
+            signInWithPopup(auth, provider).catch(err => alert("Login failed: " + err.message));
         });
 
-        async function generateUniqueGuestName() {
-            let exists = true;
-            let guestName = "";
-            while (exists) {
-                let rand = Math.floor(1000 + Math.random() * 9000);
-                guestName = `kc-guest-${rand}`;
-                const q = query(collection(db, "wallets"), where("username", "==", guestName));
-                try {
-                    const snap = await getDocs(q);
-                    if (snap.empty) exists = false;
-                } catch(e) {
-                    exists = false;
-                }
-            }
-            return guestName;
-        }
+        btnLogout.addEventListener('click', () => {
+            signOut(auth).catch(err => alert("Logout failed: " + err.message));
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
-                    authView.classList.add('hidden');
-                    appView.classList.remove('hidden'); // HERSTELD: appView.remove() is hersteld naar classList.remove!
+                authView.classList.add('hidden');
+                appView.classList.remove('hidden');
+
+                // Sync user with Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (!userDoc.exists()) {
+                    const generatedUsername = "user_" + Math.random().toString(36).substring(2, 7);
+                    currentUserData = {
+                        uid: user.uid,
+                        username: generatedUsername.toLowerCase(),
+                        email: user.email,
+                        displayName: user.displayName || generatedUsername,
+                        photoURL: user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80",
+                        balance: 10.00, // Starter package to test out the paid lotto module
+                        role: "user"
+                    };
+                    await setDoc(userDocRef, currentUserData);
                 }
 
-                const targetEmailClean = user.email.toLowerCase().trim();
-                userEmail.innerText = targetEmailClean;
-                userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
-
-                const isMasterAdminEmail = targetEmailClean === 'littendekitten@gmail.com';
-
-                if (isMasterAdminEmail && navAdmin) {
-                    navAdmin.classList.remove('hidden');
-                } else if (navAdmin) {
-                    navAdmin.classList.add('hidden');
-                }
-
-                const userRef = doc(db, "wallets", targetEmailClean);
-                let currentUsername = "";
-
-                try {
-                    let userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        const data = userSnap.data();
-                        currentUsername = data.username || await generateUniqueGuestName();
-                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
-                        
-                        if (isMasterAdminEmail && !data.isAdmin) {
-                            await setDoc(userRef, { isAdmin: true }, { merge: true });
-                        }
-                    } else {
-                        currentUsername = await generateUniqueGuestName();
-                        const startBalance = 0.00;
-                        await setDoc(userRef, {
-                            name: user.displayName,
-                            email: targetEmailClean,
-                            username: currentUsername,
-                            balance: startBalance,
-                            isAdmin: isMasterAdminEmail,
-                            createdAt: new Date()
-                        }, { merge: true });
-                        balanceAmount.innerText = startBalance.toFixed(2);
+                // Listen to Realtime Database user data updates
+                onSnapshot(userDocRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.data();
+                        currentUserData = data;
+                        balanceAmount.innerText = data.balance.toFixed(2);
+                        userDisplayName.innerText = "@" + data.username;
+                        userEmail.innerText = data.email;
+                        userPhoto.src = data.photoURL;
+                        topbarUsername.innerText = "@" + data.username;
                     }
+                });
 
-                    userDisplayName.innerText = `@${currentUsername}`;
-                    topbarUsername.innerText = `@${currentUsername}`;
-                    settingsUsernameInput.value = currentUsername;
-
-                    startLeaderboard(targetEmailClean);
-                } catch (error) {
-                    console.error("Firestore loading fault: ", error);
-                }
+                startLeaderboard();
             } else {
-                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
-                    authView.classList.remove('hidden');
-                }
-                appView.classList.add('hidden');
-                if (navAdmin) navAdmin.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+                appView.classList.add('hidden');
+                authView.classList.remove('hidden');
             }
         });
 
-        if (btnLogin) {
-            btnLogin.addEventListener('click', async () => {
-                try {
-                    await signInWithPopup(auth, provider);
-                } catch (error) {
-                    alert("Authentication failure occurred: " + error.message);
-                }
-            });
-        }
-
-        if (btnLogout) {
-            btnLogout.addEventListener('click', async () => {
-                try {
-                    await signOut(auth);
-                } catch (error) {}
-            });
-        }
-
-        if(settingsUsernameForm) {
-            settingsUsernameForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
-                if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
-
-                const myEmail = auth.currentUser.email.toLowerCase();
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", newUsername));
-                    const querySnap = await getDocs(q);
-                    let isTaken = false;
-                    querySnap.forEach((doc) => { if (doc.id !== myEmail) isTaken = true; });
-
-                    if (isTaken) return alert(`Username @${newUsername} is taken!`);
-
-                    await setDoc(doc(db, "wallets", myEmail), { username: newUsername }, { merge: true });
-                    userDisplayName.innerText = `@${newUsername}`;
-                    topbarUsername.innerText = `@${newUsername}`;
-                    alert(`Public username updated to @${newUsername}!`);
-                } catch (err) { alert(err.message); }
-            });
-        }
-
-        function startLeaderboard(currentUserEmail) {
-            const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
+        // Live Global Rankings & Leaderboard Module
+        function startLeaderboard() {
+            const q = query(collection(db, "users"), orderBy("balance", "desc"));
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
-                if(!leaderboardList) return;
                 leaderboardList.innerHTML = "";
-                let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+                let rank = 1;
 
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const email = data.email || docSnap.id;
-                    const uname = data.username || "guest";
-                    const balance = data.balance || 0;
+                snapshot.forEach((userDoc) => {
+                    const u = userDoc.data();
+                    
+                    const item = document.createElement('div');
+                    item.className = `flex items-center justify-between p-3 rounded-2xl border ${u.uid === auth.currentUser.uid ? 'bg-amber-500/5 border-amber-500/20' : 'bg-slate-900/40 border-slate-800/80'}`;
+                    
+                    let medal = `<span class="w-6 text-center font-bold text-xs text-slate-500">#${rank}</span>`;
+                    if (rank === 1) medal = `<span class="w-6 text-center text-amber-400 text-sm"><i class="fa-solid fa-crown"></i></span>`;
+                    if (rank === 2) medal = `<span class="w-6 text-center text-slate-300 text-sm"><i class="fa-solid fa-medal"></i></span>`;
+                    if (rank === 3) medal = `<span class="w-6 text-center text-amber-700 text-sm"><i class="fa-solid fa-medal"></i></span>`;
 
-                    if (email === currentUserEmail) {
-                        userRank = currentRank;
-                        userCurrentBalance = balance;
-                        userCurrentName = uname;
-                        balanceAmount.innerText = balance.toFixed(2);
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            ${medal}
+                            <img src="${u.photoURL}" class="w-8 h-8 rounded-xl border border-slate-800 object-cover" />
+                            <div>
+                                <p class="text-xs font-bold text-white">${u.displayName} <span class="text-slate-500 font-normal">@${u.username}</span></p>
+                            </div>
+                        </div>
+                        <p class="text-xs font-black text-amber-400">${u.balance.toFixed(2)} KC</p>
+                    `;
+                    leaderboardList.appendChild(item);
+
+                    // Update local user position bottom component
+                    if (u.uid === auth.currentUser.uid) {
+                        myRankTag.innerText = `#${rank}`;
+                        myRankUser.innerText = `@${u.username}`;
+                        myRankBalance.innerText = u.balance.toFixed(2);
+                    }
+                    rank++;
+                });
+            });
+        }
+
+        // Send Coins (Atomic Firestore Transaction Guarded)
+        transferForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rUsername = document.getElementById('receiver-username').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+
+            if (rUsername === currentUserData.username) return alert("You cannot transfer coins to yourself!");
+            if (amount <= 0 || isNaN(amount)) return alert("Please enter a valid amount!");
+
+            btnSend.disabled = true;
+            btnSend.innerText = "Processing transfer...";
+
+            try {
+                const q = query(collection(db, "users"), where("username", "==", rUsername));
+                const querySnap = await getDocs(q);
+
+                if (querySnap.empty) {
+                    throw new Error("User @" + rUsername + " not found!");
+                }
+
+                const receiverDocRef = querySnap.docs[0].ref;
+                const senderDocRef = doc(db, "users", auth.currentUser.uid);
+
+                await runTransaction(db, async (transaction) => {
+                    const senderDoc = await transaction.get(senderDocRef);
+                    if (senderDoc.data().balance < amount) {
+                        throw new Error("Insufficient balance in your account!");
                     }
 
-                    if (currentRank <= 10) {
-                        let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
-                        if (currentRank === 1) { medal = '🏆 '; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
-                        else if (currentRank === 2) { medal = '🥈 '; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
-                        else if (currentRank === 3) { medal = '🥉 '; rowStyle = "bg-amber-700/10 border border-amber-700/20"; badgeStyle = "bg-amber-700 text-white font-black"; }
-
-                        if (email === currentUserEmail) rowStyle += " ring-1 ring-amber-400";
-
-                        const rowHtml = `
-                            <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
-                                    <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
-                                </div>
-                                <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
-                            </div>`;
-                        leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
-                    }
-                    currentRank++;
+                    const receiverDoc = await transaction.get(receiverDocRef);
+                    transaction.update(senderDocRef, { balance: parseFloat((senderDoc.data().balance - amount).toFixed(2)) });
+                    transaction.update(receiverDocRef, { balance: parseFloat((receiverDoc.data().balance + amount).toFixed(2)) });
                 });
 
-                if (userRank !== -1) {
-                    myRankTag.innerText = `#${userRank}`;
-                    myRankUser.innerText = `@${userCurrentName}`;
-                    myRankBalance.innerText = userCurrentBalance.toFixed(2);
-                }
-            });
-        }
+                alert(`Successfully transferred ${amount.toFixed(2)} KC to @${rUsername}!`);
+                transferForm.reset();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btnSend.disabled = false;
+                btnSend.innerText = "Send Coins";
+            }
+        });
 
-        if(transferForm) {
-            transferForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
-                const amount = parseFloat(document.getElementById('transfer-amount').value);
-                const myEmail = auth.currentUser.email.toLowerCase();
-
-                if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
-                if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
-
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
-                    const targetQuerySnap = await getDocs(q);
-
-                    if (targetQuerySnap.empty) throw new Error(`Profile @${targetUname} not found.`);
-
-                    let targetEmail = "";
-                    targetQuerySnap.forEach((doc) => { targetEmail = doc.id; });
-                    if (targetEmail === myEmail) throw new Error("Self-transfers are prohibited.");
-
-                    const myDocRef = doc(db, "wallets", myEmail);
-                    const targetDocRef = doc(db, "wallets", targetEmail);
-
-                    await runTransaction(db, async (transaction) => {
-                        const mySnap = await transaction.get(myDocRef);
-                        const myCurrentBal = mySnap.data().balance || 0;
-                        if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets.");
-
-                        const targetSnap = await transaction.get(targetDocRef);
-                        const targetCurrentBal = targetSnap.data().balance || 0;
-
-                        transaction.update(myDocRef, { balance: myCurrentBal - amount });
-                        transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
-                    });
-
-                    alert(`Successfully transferred ${amount.toFixed(2)} KC to @${targetUname}!`);
-                    transferForm.reset();
-                } catch (err) {
-                    alert("Transfer Error: " + err.message);
-                } finally {
-                    if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; }
-                }
-            });
-        }
-
-        // INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
+        // 2 KC KITTY LOTTO LOGIC (Server-side validation & Atomic subtraction)
         const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
-        const lottoIcon = document.getElementById('lotto-icon');
         const lottoStatusTitle = document.getElementById('lotto-status-title');
         const lottoStatusDesc = document.getElementById('lotto-status-desc');
+        const lottoIcon = document.getElementById('lotto-icon');
 
-        if(btnTriggerLotto) {
+        if (btnTriggerLotto) {
             btnTriggerLotto.addEventListener('click', async () => {
-                if(!auth.currentUser) return;
-                
+                const user = auth.currentUser;
+                if (!user) return alert("You must be logged in to participate!");
+
                 btnTriggerLotto.disabled = true;
-                btnTriggerLotto.innerText = "Kraslot openen...";
-                lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
-                lottoStatusTitle.innerText = "Trekking is bezig...";
-                lottoStatusDesc.innerText = "Je kraslot wordt gecontroleerd in de database...";
+                lottoStatusTitle.innerText = "Lotto rolling...";
+                lottoIcon.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-amber-500"></i>';
 
-                const rand = Math.random() * 100;
-                let winAmount = 0;
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    let prizeWon = 0;
 
-                if (rand < 70) {
-                    winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
-                } else if (rand < 95) {
-                    winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
-                } else {
-                    winAmount = 25.00;
+                    await runTransaction(db, async (transaction) => {
+                        const userDoc = await transaction.get(userDocRef);
+                        if (!userDoc.exists()) throw new Error("User profile not found!");
+
+                        const currentBalance = userDoc.data().balance || 0;
+                        if (currentBalance < 2) {
+                            throw new Error("Insufficient balance! You need at least 2 KC to play.");
+                        }
+
+                        // Distribution probabilities calculation
+                        const rand = Math.random() * 100;
+                        if (rand < 70) {
+                            // 70% probability: 0.10 - 0.50 KC
+                            prizeWon = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
+                        } else if (rand < 95) {
+                            // 25% probability: 1.00 - 5.00 KC
+                            prizeWon = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+                        } else {
+                            // 5% Probability JACKPOT: 25.00 KC
+                            prizeWon = 25.00;
+                        }
+
+                        // Atomic mathematical transformation: balance - 2 + prize Won
+                        const newBalance = parseFloat((currentBalance - 2 + prizeWon).toFixed(2));
+                        transaction.update(userDocRef, { balance: newBalance });
+                    });
+
+                    // UI Updates after execution success
+                    if (prizeWon === 25.00) {
+                        lottoIcon.innerHTML = '<i class="fa-solid fa-trophy text-emerald-400 text-6xl animate-bounce"></i>';
+                        lottoStatusTitle.innerText = "🚨 JACKPOT WON! 🚨";
+                    } else if (prizeWon >= 2.00) {
+                        lottoIcon.innerHTML = '<i class="fa-solid fa-coins text-amber-400 text-5xl"></i>';
+                        lottoStatusTitle.innerText = "Nice! You made a profit!";
+                    } else {
+                        lottoIcon.innerHTML = '<i class="fa-solid fa-heart-crack text-slate-500 text-5xl"></i>';
+                        lottoStatusTitle.innerText = "Unlucky this time!";
+                    }
+
+                    lottoStatusDesc.innerHTML = `Cost: 2 KC. You received <span class="text-amber-400 font-bold">${prizeWon.toFixed(2)} KC</span>! Net profit/loss: ${(prizeWon - 2).toFixed(2)} KC.`;
+
+                } catch (error) {
+                    alert(error.message);
+                    lottoStatusTitle.innerText = "Ready for the draw?";
+                    lottoStatusDesc.innerText = "Purchase a scratch box to test your luck immediately.";
+                    lottoIcon.innerHTML = '<i class="fa-solid fa-gift text-amber-500"></i>';
+                } finally {
+                    btnTriggerLotto.disabled = false;
+                }
+            });
+        }
+
+        // Settings Module (Update unique handle/username)
+        settingsUsernameForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+            if (newUsername.length < 3) return alert("Username must contain at least 3 characters.");
+
+            try {
+                const q = query(collection(db, "users"), where("username", "==", newUsername));
+                const snap = await getDocs(q);
+                if (!snap.empty && newUsername !== currentUserData.username) {
+                    return alert("This username is already taken!");
                 }
 
-                const myEmail = auth.currentUser.email.toLowerCase();
-                const myDocRef = doc(db, "wallets", myEmail);
+                await setDoc(doc(db, "users", auth.currentUser.uid), { 
+                    username: newUsername 
+                }, { merge: true });
 
-                setTimeout(async () => {
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const mySnap = await transaction.get(myDocRef);
-                            if (!mySnap.exists()) throw new Error("Wallet bestaat niet.");
-                            
-                            const currentBal = mySnap.data().balance || 0;
-                            transaction.update(myDocRef, { balance: currentBal + winAmount });
-                        });
+                alert("Username successfully updated!");
+                settingsUsernameForm.reset();
+            } catch(err) {
+                alert("Error saving username: " + err.message);
+            }
+        });
 
-                        if (winAmount === 25.00) {
-                            lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
-                            lottoStatusTitle.innerText = "🚨 JACKPOT WINST! 🚨";
-                            lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
-                        } else {
-                            lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
-                            lottoStatusTitle.innerText = `+${winAmount.toFixed(2)} KC GEWONNEN!`;
-                            lottoStatusTitle.className = "text-xl font-black text-emerald-400";
-                        }
-                        lottoStatusDesc.innerText = "Gefeliciteerd! De munten zijn direct bijgeschreven op je balans.";
-                        btnTriggerLotto.innerText = "Nog een keer spelen";
-
-                    } catch (err) {
-                        alert("Lotto Fout: " + err.message);
-                        lottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
-                        lottoStatusTitle.innerText = "Trekking mislukt";
-                        lottoStatusDesc.innerText = "Er ging iets fout bij het verwerken van je winst.";
-                        btnTriggerLotto.innerText = "Probeer Opnieuw";
-                    } finally {
-                        btnTriggerLotto.disabled = false;
-                    }
-                }, 1500);
-            });
-        }
-
-
-        if (adminBalanceForm) {
-            adminBalanceForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const rawInputName = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
-                const targetAmount = parseFloat(document.getElementById('admin-target-amount').value);
-
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
-                    const snap = await getDocs(q);
-                    if (snap.empty) return alert("User not located.");
-
-                    let userEmailId = "";
-                    snap.forEach(d => userEmailId = d.id);
-
-                    await setDoc(doc(db, "wallets", userEmailId), { balance: targetAmount }, { merge: true });
-                    alert(`Balance forced override for @${rawInputName} set to ${targetAmount.toFixed(2)} KC.`);
-                    adminBalanceForm.reset();
-                } catch (err) { alert(err.message); }
-            });
-        }
-
-        if (adminPromoteForm) {
-            adminPromoteForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const rawInputName = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
-
-                try {
-                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
-                    const snap = await getDocs(q);
-                    if (snap.empty) return alert("User handle empty.");
-
-                    let userEmailId = "";
-                    snap.forEach(d => userEmailId = d.id);
-
-                    await setDoc(doc(db, "wallets", userEmailId), { isAdmin: true }, { merge: true });
-                    alert(`Admin rights granted to @${rawInputName}.`);
-                    adminPromoteForm.reset();
-                } catch (err) { alert(err.message); }
-            });
-        }
     </script>
 </body>
 </html>
