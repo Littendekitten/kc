@@ -363,7 +363,21 @@
             </main>
         </div>
     </div>
-                
+
+<!-- SHOP VIEW -->
+<div id="view-shop" class="hidden space-y-6 animate-fade-in">
+    <h2 class="text-2xl font-black text-amber-400">KC-Shop</h2>
+    <p class="text-slate-400">Buy services with your KC!</p>
+    <!-- Shop content komt hier -->
+</div>
+
+<!-- STATS VIEW -->
+<div id="view-stats" class="hidden space-y-6 animate-fade-in">
+    <h2 class="text-2xl font-black text-amber-400">KC-Stats</h2>
+    <p class="text-slate-400">Current exchange rate: <span id="kc-rate-display">Loading...</span></p>
+    <!-- Stats content komt hier -->
+</div>
+    
     <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -516,6 +530,14 @@
         const incomeList = document.getElementById('income-list');
         const btnToggleIncome = document.getElementById('btn-toggle-income');
 
+        const navShop = document.getElementById('nav-shop');
+        const navStats = document.getElementById('nav-stats');
+        const viewShop = document.getElementById('view-shop');
+        const viewStats = document.getElementById('view-stats');
+
+        if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
+        if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
+
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
         let rawIncomeRecords = [];
@@ -523,8 +545,8 @@
 
         // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewSettings];
-            const navs = [navDashboard, navLeaderboard, navGetKc, navSettings];
+        const views = [viewDashboard, viewLeaderboard, viewGetKc, viewSettings, viewShop, viewStats];
+        const navs = [navDashboard, navLeaderboard, navGetKc, navSettings, navShop, navStats];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
