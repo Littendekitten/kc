@@ -8,6 +8,7 @@
     <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         #leaderboard-list::-webkit-scrollbar, #income-list::-webkit-scrollbar { width: 6px; }
         #leaderboard-list::-webkit-scrollbar-track, #income-list::-webkit-scrollbar-track { background: transparent; }
@@ -36,7 +37,7 @@
             transition: transform 0.2s ease-in-out;
         }
         @media (max-width: 350px) {
-            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard {
+            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard, #ad-slot-shop, #ad-slot-stats {
                 transform: scale(0.88);
                 margin-top: -4px;
                 margin-bottom: -4px;
@@ -46,7 +47,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- ANTI-ADBLOCK OVERLAY -->
     <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
         <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
@@ -70,7 +70,6 @@
         </div>
     </div>
 
-    <!-- 1. AUTH VIEW -->
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -97,10 +96,8 @@
         <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by KitaCat</p>
     </div>
 
-    <!-- 2. MAIN APP VIEW -->
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
-        <!-- SIDEBAR CONTAINER -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
@@ -156,7 +153,6 @@
 
         <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
             
-            <!-- APPLICATION HEADER -->
             <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
@@ -171,7 +167,6 @@
 
             <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
                 
-                <!-- DASHBOARD VIEW -->
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
@@ -219,13 +214,11 @@
                         </div>
                     </div>
 
-                    <!-- AD ZONE BELOW DASHBOARD CARD -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div id="ad-slot-dashboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
 
-                    <!-- LATEST INCOME MODULE -->
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
                         <div class="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-4">
                             <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center gap-2">
@@ -234,7 +227,6 @@
                             <span class="text-[10px] text-slate-500 font-mono">Real-time Receipts</span>
                         </div>
                         <div id="income-list" class="space-y-3 transition-all duration-300">
-                            <!-- Injected dynamically -->
                             <p class="text-xs text-slate-500 text-center py-4 font-mono">No income receipts processed yet.</p>
                         </div>
                         <div class="mt-4 flex justify-center">
@@ -245,7 +237,6 @@
                     </div>
                 </div>
 
-                <!-- NEW DEDICATED LEADERBOARD VIEW -->
                 <div id="view-leaderboard" class="hidden space-y-6 animate-fade-in">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
@@ -259,7 +250,6 @@
                         </span>
                     </div>
 
-                    <!-- NEW DEDICATED LEADERBOARD AD BANNER -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Rankings Sponsor Frame</span>
                         <div id="ad-slot-leaderboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
@@ -280,7 +270,6 @@
                     </div>
                 </div>
 
-                <!-- GET KC / INTERACTIVE KITTY LOTTO VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
                     <div class="space-y-1">
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
@@ -289,7 +278,6 @@
                         <p class="text-xs text-slate-400">Claim free coins! Banners rotate below and above this module to fund platform payouts.</p>
                     </div>
 
-                    <!-- AD ZONE ABOVE LOTTO BOX -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div id="ad-slot-lotto-top" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
@@ -333,14 +321,73 @@
                         </div>
                     </div>
 
-                    <!-- AD ZONE BELOW LOTTO BOX -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
                 </div>
 
-                <!-- SETTINGS VIEW -->
+                <div id="view-shop" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-shop"></i> KC-Shop
+                        </h2>
+                        <p class="text-xs text-slate-400">Purchase professional services directly using your KittyCoins balance.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
+                                    <i class="fa-solid fa-code"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
+                                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
+                                </p>
+                            </div>
+                            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                Buy (35 KC)
+                            </button>
+                        </div>
+                        
+                        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
+                            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
+                            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-shop" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-stats" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
+                        </h2>
+                        <p class="text-xs text-slate-400">Track the current exchange rate and economic value of the KittyCoin network.</p>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Current Exchange Rate</p>
+                        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
+                            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
+                        </h3>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
+                        <canvas id="rateChart"></canvas>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-stats" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -364,21 +411,6 @@
         </div>
     </div>
 
-<!-- SHOP VIEW -->
-<div id="view-shop" class="hidden space-y-6 animate-fade-in">
-    <h2 class="text-2xl font-black text-amber-400">KC-Shop</h2>
-    <p class="text-slate-400">Buy services with your KC!</p>
-    <!-- Shop content komt hier -->
-</div>
-
-<!-- STATS VIEW -->
-<div id="view-stats" class="hidden space-y-6 animate-fade-in">
-    <h2 class="text-2xl font-black text-amber-400">KC-Stats</h2>
-    <p class="text-slate-400">Current exchange rate: <span id="kc-rate-display">Loading...</span></p>
-    <!-- Stats content komt hier -->
-</div>
-    
-    <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -512,11 +544,15 @@
         const navDashboard = document.getElementById('nav-dashboard');
         const navLeaderboard = document.getElementById('nav-leaderboard');
         const navGetKc = document.getElementById('nav-get-kc');
+        const navShop = document.getElementById('nav-shop');
+        const navStats = document.getElementById('nav-stats');
         const navSettings = document.getElementById('nav-settings');
 
         const viewDashboard = document.getElementById('view-dashboard');
         const viewLeaderboard = document.getElementById('view-leaderboard');
         const viewGetKc = document.getElementById('view-get-kc');
+        const viewShop = document.getElementById('view-shop');
+        const viewStats = document.getElementById('view-stats');
         const viewSettings = document.getElementById('view-settings');
 
         const settingsUsernameForm = document.getElementById('settings-username-form');
@@ -530,23 +566,16 @@
         const incomeList = document.getElementById('income-list');
         const btnToggleIncome = document.getElementById('btn-toggle-income');
 
-        const navShop = document.getElementById('nav-shop');
-        const navStats = document.getElementById('nav-stats');
-        const viewShop = document.getElementById('view-shop');
-        const viewStats = document.getElementById('view-stats');
-
-        if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
-        if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
-
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
         let rawIncomeRecords = [];
         let showMaxIncome = false;
+        let statsChart = null; // Chart.js instance
 
         // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
         function switchView(activeNav, activeView) {
-        const views = [viewDashboard, viewLeaderboard, viewGetKc, viewSettings, viewShop, viewStats];
-        const navs = [navDashboard, navLeaderboard, navGetKc, navSettings, navShop, navStats];
+            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewShop, viewStats, viewSettings];
+            const navs = [navDashboard, navLeaderboard, navGetKc, navShop, navStats, navSettings];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -566,6 +595,10 @@
                 injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             } else if (activeView === viewLeaderboard) {
                 injectAdsterraSafeBanner('ad-slot-leaderboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            } else if (activeView === viewShop) {
+                injectAdsterraSafeBanner('ad-slot-shop', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            } else if (activeView === viewStats) {
+                injectAdsterraSafeBanner('ad-slot-stats', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             }
         }
 
@@ -591,6 +624,8 @@
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
+        if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
+        if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
 
         async function generateUniqueGuestName() {
@@ -615,7 +650,7 @@
                 const targetEmailClean = user.email.toLowerCase().trim();
 
                 if (targetEmailClean === 'littendekitten@gmail.com') {
-                    const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard'];
+                    const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
                     structuralAdBlocks.forEach(slotId => {
                         const slotNode = document.getElementById(slotId);
                         if (slotNode && slotNode.parentElement) {
@@ -931,7 +966,7 @@
 
                         if (winAmount === 25.00) {
                             lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
-                            lottoStatusTitle.innerText = "🎉 JACKPOT WIN! 🎉";
+                            lottoStatusTitle.innerText = "🎰 JACKPOT WIN! 🎰";
                             lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
                         } else {
                             lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
@@ -952,6 +987,136 @@
                         btnTriggerLotto.disabled = false;
                     }
                 }, 1500);
+            });
+        }
+
+        // ==========================================
+        // NEW: KC-SHOP & KC-STATS LOGIC
+        // ==========================================
+
+        // Listen to dynamic exchange rate from Firestore
+        onSnapshot(doc(db, "settings", "shop"), (docSnap) => {
+            if (!docSnap.exists()) return;
+            const data = docSnap.data();
+            
+            // Fallbacks to prevent crash if data is missing or zero
+            const priceKc = data.portfolio_price_kc || 35;
+            const priceEur = data.portfolio_price_eur || 25;
+            
+            // Calculate 1 KC Value (EUR / KC)
+            const currentRate = priceEur / priceKc;
+            
+            // Update the Stats Display
+            const rateDisplay = document.getElementById('kc-rate-display');
+            if (rateDisplay) {
+                rateDisplay.innerHTML = `€${currentRate.toFixed(3)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+            }
+
+            // Update Chart.js Graphic
+            updateStatsChart(currentRate);
+        });
+
+        // Chart.js initialization logic
+        function updateStatsChart(currentRate) {
+            const ctx = document.getElementById('rateChart');
+            if(!ctx) return;
+            
+            // Destroy previous chart instance if it exists
+            if (statsChart) {
+                statsChart.destroy();
+            }
+
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
+
+            statsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Network Start', 'Previous Phase', 'Current Market'],
+                    datasets: [{
+                        label: 'Value of 1 KC (in EUR)',
+                        data: [0.010, (currentRate * 0.8), currentRate],
+                        borderColor: '#10b981', // Emerald 500
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#020617',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#34d399',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `€${context.parsed.y.toFixed(3)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#1e293b', drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Shop Purchase Logic Engine
+        const btnBuyPortfolio = document.getElementById('buy-portfolio');
+        if (btnBuyPortfolio) {
+            btnBuyPortfolio.addEventListener('click', async () => {
+                if (!auth.currentUser) return alert("Please sign in first.");
+                
+                const confirmation = confirm("Confirm purchase: Professional Portfolio Setup for 35 KC?");
+                if (!confirmation) return;
+
+                btnBuyPortfolio.disabled = true;
+                btnBuyPortfolio.innerText = "Processing...";
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+                const cost = 35.00;
+
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        const mySnap = await transaction.get(myDocRef);
+                        if (!mySnap.exists()) throw new Error("Wallet not found in system.");
+
+                        const currentBal = mySnap.data().balance || 0;
+                        if (currentBal < cost) throw new Error("Insufficient KittyCoins! You need 35 KC.");
+
+                        // Deduct funds
+                        transaction.update(myDocRef, { balance: currentBal - cost });
+                    });
+
+                    // Successfully purchased
+                    alert("✅ Purchase confirmed! KitaCat has been notified and your 35 KC has been successfully deducted.");
+                    
+                } catch (err) {
+                    alert("❌ Purchase failed: " + err.message);
+                } finally {
+                    btnBuyPortfolio.disabled = false;
+                    btnBuyPortfolio.innerText = "Buy (35 KC)";
+                }
             });
         }
     </script>
