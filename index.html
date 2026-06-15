@@ -840,16 +840,17 @@ if (adminPromoteForm) {
         }
     });
 }
-</script>
-</body>
 
-    // ===============================
-// ADMIN GUARD (ANTI CHEAT SYSTEM)
+
+        // ===============================
+// ADMIN GUARD (ANTI-CHEAT SYSTEM)
 // ===============================
 
-const ADMIN_EMAIL = "littendekitten@gmail.com";
-const adminScreen = document.createElement("div");
+import { getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+const ADMIN_EMAIL = "littendekitten@gmail.com";
+
+const adminScreen = document.createElement("div");
 adminScreen.id = "admin-cheat-screen";
 adminScreen.style.position = "fixed";
 adminScreen.style.top = "0";
@@ -881,35 +882,31 @@ async function punishCheater() {
     if (!auth.currentUser) return;
 
     const email = auth.currentUser.email.toLowerCase();
-    const myDocRef = doc(db, "wallets", email);
+    const ref = doc(db, "wallets", email);
 
     try {
-        await runTransaction(db, async (transaction) => {
-            const snap = await transaction.get(myDocRef);
+        await runTransaction(db, async (tx) => {
+            const snap = await tx.get(ref);
             if (!snap.exists()) return;
 
             const bal = snap.data().balance || 0;
-            transaction.update(myDocRef, {
-                balance: bal - 100
-            });
+            tx.update(ref, { balance: bal - 100 });
         });
     } catch (e) {
-        console.log("Punish failed:", e);
+        console.log(e);
     }
 }
 
-// RUN EVERY FRAME (~60 FPS)
+// “frame-like” check (SAFE VERSION)
 setInterval(async () => {
     if (!auth.currentUser) return;
     if (adminKicked) return;
 
     const email = auth.currentUser.email.toLowerCase();
-
-    // allowed admin = email OR Firestore flag
-    const myDocRef = doc(db, "wallets", email);
+    const ref = doc(db, "wallets", email);
 
     try {
-        const snap = await getDoc(myDocRef);
+        const snap = await getDoc(ref);
         const isAdmin = snap.exists() && snap.data().isAdmin === true;
 
         if (email !== ADMIN_EMAIL && !isAdmin) {
@@ -921,11 +918,12 @@ setInterval(async () => {
 
             setTimeout(() => {
                 location.reload();
-            }, 3000);
+            }, 2500);
         }
     } catch (err) {
-        console.log(err);
+        console.log("Admin check error:", err);
     }
-
-}, 1000 / 30); // ~30 FPS check
+}, 2000); // 👈 beter dan 30 FPS (minder lag / Firebase safe)
+</script>
+</body>
 </html>
