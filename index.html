@@ -1080,7 +1080,7 @@
             });
         }
 
-        // Shop Purchase Logic Engine
+       // Shop Purchase Logic Engine
         const btnBuyPortfolio = document.getElementById('buy-portfolio');
         if (btnBuyPortfolio) {
             btnBuyPortfolio.addEventListener('click', async () => {
@@ -1095,20 +1095,39 @@
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, "wallets", myEmail);
                 const cost = 35.00;
+                let username = "unknown";
 
                 try {
+                    // 1. Firebase Transactie: Saldo checken en afschrijven
                     await runTransaction(db, async (transaction) => {
                         const mySnap = await transaction.get(myDocRef);
                         if (!mySnap.exists()) throw new Error("Wallet not found in system.");
 
-                        const currentBal = mySnap.data().balance || 0;
+                        const data = mySnap.data();
+                        const currentBal = data.balance || 0;
+                        username = data.username || "guest"; // Haal gebruikersnaam op
+
                         if (currentBal < cost) throw new Error("Insufficient KittyCoins! You need 35 KC.");
 
-                        // Deduct funds
                         transaction.update(myDocRef, { balance: currentBal - cost });
                     });
 
-                    // Successfully purchased
+                    // 2. Formspree e-mail sturen
+                    await fetch("https://formspree.io/f/mwvjywav", {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify({
+                            subject: "New KC-Shop Order",
+                            item: "Professional Portfolio Setup",
+                            buyer_email: myEmail,
+                            buyer_username: "@" + username,
+                            status: "Paid (35 KC removed from their account)"
+                        })
+                    });
+
                     alert("✅ Purchase confirmed! KitaCat has been notified and your 35 KC has been successfully deducted.");
                     
                 } catch (err) {
@@ -1119,6 +1138,3 @@
                 }
             });
         }
-    </script>
-</body>
-</html>
