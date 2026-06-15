@@ -35,7 +35,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- NEW: ANTI-ADBLOCK OVERLAY (SLAAT DE SITE OP SLOT) -->
+    <!-- ANTI-ADBLOCK OVERLAY (SLAAT DE SITE OP SLOT) -->
     <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
         <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
@@ -109,7 +109,7 @@
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
                     </button>
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-rectangle-ad w-5 text-amber-500"></i> Get KC <span class="ml-auto text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold">ADS</span>
+                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">NEW</span>
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
@@ -118,6 +118,15 @@
                         <i class="fa-solid fa-crown w-5"></i> Admin Panel
                     </button>
                 </nav>
+            </div>
+
+            <!-- AD ZONE INSIDE SIDEBAR (Hier kun je een kleine banner kwijt) -->
+            <div class="px-4 text-center">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-2 min-h-[60px] flex items-center justify-center text-[10px] text-slate-600 relative overflow-hidden">
+                    <span class="absolute top-0.5 left-1 text-[7px] uppercase tracking-wider text-slate-700">Ad Space</span>
+                    <!-- JOUW ADSTERRA BANNER SCRIPT CODE HIER PLAATSEN -->
+                    <span class="italic"><i class="fa-solid fa-rectangle-ad text-amber-600 mr-1"></i> Banner Advertentie Module</span>
+                </div>
             </div>
 
             <div class="p-4 m-4 border border-slate-900 bg-slate-950 rounded-2xl space-y-4">
@@ -198,15 +207,12 @@
                         </div>
                     </div>
 
-                    <!-- ADSTERRA ZONE 1: NATIVE BANNER PLACEHOLDER (DASHBOARD) -->
+                    <!-- AD ZONE BELOW BALANCE -->
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 text-center relative overflow-hidden min-h-[90px] flex items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        
-                        <div id="adsterra-banner-1" class="w-full flex justify-center">
-                            <div class="text-xs text-slate-500 flex items-center gap-2 italic">
-                                <i class="fa-solid fa-circle-info text-amber-500/70"></i> 
-                                Adsterra Smart Banner active pipeline &bull; Securing connection...
-                            </div>
+                        <!-- JOUW ADSTERRA 728x90 BANNER CODE HIER IN DE PLAATS SETTEN -->
+                        <div class="text-xs text-slate-500 flex items-center gap-2 italic">
+                            <i class="fa-solid fa-rectangle-ad text-amber-500/70"></i> Programmatic Banner Display Active
                         </div>
                     </div>
 
@@ -232,42 +238,63 @@
                     </div>
                 </div>
 
-                <!-- GET KC VIEW -->
+                <!-- NEW: GET KC / INTERACTIVE KITTY LOTTO VIEW -->
                 <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
                     <div class="space-y-1">
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
-                            <i class="fa-solid fa-rectangle-ad"></i> Partner Ad Zones
+                            <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Support the KittyCoins infrastructure by interacting with our verified ad channels.</p>
+                        <p class="text-xs text-slate-400">Claim gratis munten! Om de loterij te financieren draaien er banners onder en boven deze module.</p>
+                    </div>
+
+                    <!-- AD ZONE ABOVE LOTTO BOX -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
+                        <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Top Banner Space (Adsterra 468x60 / 728x90)</span>
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-3">
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl text-center space-y-4 flex flex-col justify-between min-h-[300px]">
-                            <div class="space-y-2">
-                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl mx-auto border border-amber-500/20">
-                                    <i class="fa-solid fa-bolt"></i>
+                        <!-- Left explanation block -->
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
+                                    <i class="fa-solid fa-clover"></i>
                                 </div>
-                                <h3 class="text-md font-bold text-white">Direct Popunder Asset</h3>
-                                <p class="text-xs text-slate-400">Click below to open a verified secure sponsor page in a new link tab to instantly support coin pools.</p>
+                                <h3 class="text-md font-bold text-white">Free Daily Draw</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Klik op de knop om een gratis kraslot te activeren. Je wint gegarandeerd een klein of groot deel aan KittyCoins!
+                                </p>
+                                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
+                                    <p class="text-amber-500 font-bold">// Kansverdeling:</p>
+                                    <p>&bull; 70% kans op: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
+                                    <p>&bull; 25% kans op: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
+                                    <p>&bull; 5% JACKPOT: <span class="text-emerald-400">25.00 KC!</span></p>
+                                </div>
                             </div>
-                            <a href="https://www.highperformanceformat.com/YOUR_POPUNDER_HASH" target="_blank" class="w-full bg-slate-950 hover:bg-amber-500 hover:text-slate-950 text-amber-400 border border-slate-800 hover:border-transparent font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 cursor-pointer">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Launch Sponsor Link
-                            </a>
                         </div>
 
-                        <div class="md:col-span-2 bg-slate-900/30 border border-slate-800/80 rounded-3xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[300px]">
-                            <span class="absolute top-2 right-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Programmatic Ad Unit</span>
+                        <!-- Main Interative Lotto Engine -->
+                        <div class="md:col-span-2 bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[320px]">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)] pointer-events-none"></div>
                             
-                            <div id="adsterra-square-container" class="w-full flex items-center justify-center">
-                                <div id="fallback-mock-ad" class="space-y-4 border border-dashed border-amber-500/20 p-6 rounded-2xl bg-slate-950/60 max-w-xs shadow-inner">
-                                    <div class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 text-2xl font-black tracking-wider animate-pulse">KITTY CASINO</div>
-                                    <p class="text-[11px] text-slate-400">Multiplier engine ready. Play roulette modules and multiply assets securely.</p>
-                                    <button onclick="alert('Mock Ad Interaction Verified!')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 text-xs font-black px-5 py-2.5 rounded-xl shadow-md cursor-pointer hover:brightness-110 transition">
-                                        Launch Module
-                                    </button>
+                            <div id="lotto-card" class="space-y-6 max-w-sm w-full bg-slate-900/60 border border-dashed border-slate-700 p-6 rounded-2xl relative z-10 shadow-inner">
+                                <div id="lotto-icon" class="text-5xl text-amber-500 animate-pulse">
+                                    <i class="fa-solid fa-gift"></i>
                                 </div>
+                                <div class="space-y-1">
+                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Klaar voor de trekking?</h4>
+                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Open je gratis krasbox om direct je saldo op te waarderen.</p>
+                                </div>
+                                
+                                <button id="btn-trigger-lotto" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activeer Kraslot
+                                </button>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- AD ZONE BELOW LOTTO BOX -->
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2 text-center text-[10px] text-slate-600 min-h-[50px] flex items-center justify-center">
+                        <span><i class="fa-solid fa-rectangle-ad mr-1"></i> Bottom Banner Space (Adsterra 468x60 / 728x90)</span>
                     </div>
                 </div>
 
@@ -351,9 +378,8 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // NEW: ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
+        // ANTI-ADBLOCK DETECTOR ENGINE (PURE JS)
         function runAdBlockCheck() {
-            // Maak een lokaal valstrik element aan
             const bait = document.createElement('div');
             bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
             bait.style.cssText = 'width:1px !important; height:1px !important; position:absolute !important; left:-9999px !important; top:-9999px !important;';
@@ -363,21 +389,18 @@
                 const overlay = document.getElementById('adblock-overlay');
                 let isBlocked = false;
 
-                // Check 1: Heeft een adblock stylesheet de div onzichtbaar gemaakt?
                 if (window.getComputedStyle) {
                     const styles = window.getComputedStyle(bait);
                     if (styles.getPropertyValue('display') === 'none' || styles.getPropertyValue('visibility') === 'hidden') {
                         isBlocked = true;
                     }
                 }
-                // Check 2: Is de hoogte naar 0 geforceerd?
                 if (bait.offsetHeight === 0) {
                     isBlocked = true;
                 }
 
                 document.body.removeChild(bait);
 
-                // Als AdBlock aanstaat, gooi de site direct op slot!
                 if (isBlocked && overlay) {
                     overlay.classList.remove('hidden');
                     document.getElementById('auth-view').classList.add('hidden');
@@ -386,9 +409,7 @@
             }, 250);
         }
 
-        // Voer de scanner direct uit bij laden
         window.addEventListener('DOMContentLoaded', runAdBlockCheck);
-        // Extra controle-check om de paar seconden (tegen sneaky toggles)
         setInterval(runAdBlockCheck, 6000);
 
 
@@ -500,9 +521,9 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Toon de app weergave pas als AdBlock-check niet blokkeert
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
                     authView.classList.add('hidden');
+                    appView.remove('hidden');
                     appView.classList.remove('hidden');
                 }
 
@@ -697,6 +718,79 @@
                 }
             });
         }
+
+        // NEW: INTERACTIVE KITTY LOTTO ENGINE (WITH SECURE FIRESTORE TRANSACTION)
+        const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
+        const lottoIcon = document.getElementById('lotto-icon');
+        const lottoStatusTitle = document.getElementById('lotto-status-title');
+        const lottoStatusDesc = document.getElementById('lotto-status-desc');
+
+        if(btnTriggerLotto) {
+            btnTriggerLotto.addEventListener('click', async () => {
+                if(!auth.currentUser) return;
+                
+                // Schakel knop uit tijdens animatie en verwerking
+                btnTriggerLotto.disabled = true;
+                btnTriggerLotto.innerText = "Kraslot openen...";
+                lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+                lottoStatusTitle.innerText = "Trekking is bezig...";
+                lottoStatusDesc.innerText = "Je kraslot wordt gecontroleerd in de database...";
+
+                // Genereer winst op basis van kansverdeling
+                const rand = Math.random() * 100;
+                let winAmount = 0;
+
+                if (rand < 70) {
+                    // 70% kans: Tussen 0.10 en 0.50 KC
+                    winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
+                } else if (rand < 95) {
+                    // 25% kans: Tussen 1.00 en 5.00 KC
+                    winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+                } else {
+                    // 5% kans: De Grote Jackpot!
+                    winAmount = 25.00;
+                }
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+
+                // Vertraging voor de spanning (1.5 seconde animatie)
+                setTimeout(async () => {
+                    try {
+                        await runTransaction(db, async (transaction) => {
+                            const mySnap = await transaction.get(myDocRef);
+                            if (!mySnap.exists()) throw new Error("Wallet bestaat niet.");
+                            
+                            const currentBal = mySnap.data().balance || 0;
+                            transaction.update(myDocRef, { balance: currentBal + winAmount });
+                        });
+
+                        // Succes weergave updaten
+                        if (winAmount === 25.00) {
+                            lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
+                            lottoStatusTitle.innerText = "🚨 JACKPOT WINST! 🚨";
+                            lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
+                        } else {
+                            lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
+                            lottoStatusTitle.innerText = `+${winAmount.toFixed(2)} KC GEWONNEN!`;
+                            lottoStatusTitle.className = "text-xl font-black text-emerald-400";
+                        }
+                        lottoStatusDesc.innerText = "Gefeliciteerd! De munten zijn direct bijgeschreven op je balans.";
+                        btnTriggerLotto.innerText = "Nog een keer spelen";
+
+                    } catch (err) {
+                        alert("Lotto Fout: " + err.message);
+                        lottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                        lottoStatusTitle.innerText = "Trekking mislukt";
+                        lottoStatusDesc.innerText = "Er ging iets fout bij het verwerken van je winst.";
+                        btnTriggerLotto.innerText = "Probeer Opnieuw";
+                    } finally {
+                        btnTriggerLotto.disabled = false;
+                    }
+                }, 1500);
+            });
+        }
+
 
         if (adminBalanceForm) {
             adminBalanceForm.addEventListener('submit', async (e) => {
