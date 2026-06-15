@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC-Xchange | KittyCoins Trading</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
@@ -45,8 +48,8 @@
         
         <div class="max-w-md w-full bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-8 relative z-10">
             <div class="space-y-3">
-                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400/10 to-orange-500/10 rounded-2xl border border-amber-500/20 text-5xl shadow-xl animate-bounce">
-                    🐱
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400/10 to-orange-500/10 rounded-2xl border border-amber-500/20 shadow-xl animate-bounce overflow-hidden p-2">
+                    <img src="logo.png" alt="KC Logo" class="w-full h-full object-contain">
                 </div>
                 <h1 class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">KC-XCHANGE</h1>
                 <p class="text-slate-400 text-sm max-w-xs mx-auto">The official KittyCoins trading platform for legends.</p>
@@ -67,14 +70,15 @@
         <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by a KitaCat</p>
     </div>
 
-
     <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
         
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
             <div class="p-6 space-y-8">
                 <div class="flex items-center justify-between border-b border-slate-900 pb-5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20">🐱</div>
+                        <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20 overflow-hidden p-1">
+                            <img src="logo.png" alt="KC" class="w-full h-full object-contain">
+                        </div>
                         <h2 class="font-black tracking-widest text-amber-400 text-sm">KC-XCHANGE</h2>
                     </div>
                     <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2 bg-slate-900 rounded-xl cursor-pointer">
@@ -131,7 +135,9 @@
                 <div id="view-dashboard" class="space-y-8 animate-fade-in">
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                            <div class="absolute -right-8 -bottom-8 text-9xl opacity-10 font-black pointer-events-none">🐱</div>
+                            <div class="absolute -right-8 -bottom-8 w-32 h-32 opacity-10 pointer-events-none">
+                                <img src="logo.png" alt="" class="w-full h-full object-contain brightness-0 invert">
+                            </div>
                             <div class="relative z-10">
                                 <p class="text-xs uppercase tracking-widest text-amber-100 font-bold mb-2">My Balance</p>
                                 <div class="flex items-baseline gap-2">
@@ -257,7 +263,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDra6ILu1IGCyZ64fTfxKYGoQqEL6CbUFE",
@@ -274,7 +280,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // DOM Elements
+        // DOM Elements Mapping
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
         const btnLogin = document.getElementById('btn-login');
@@ -311,7 +317,7 @@
 
         let leaderboardUnsubscribe = null;
 
-        // Mobile Sidebar functions
+        // Interactive View Controller Functions
         if (btnOpenSidebar) {
             btnOpenSidebar.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -355,7 +361,6 @@
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
         if(navAdmin) navAdmin.addEventListener('click', () => {
-            // Extra security block: Prevent loading content if unauthorized user bypasses styling classes
             if(auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
                 switchView(navAdmin, viewAdmin);
             } else {
@@ -376,7 +381,7 @@
             return guestName;
         }
 
-        // AUTH CONTROL & STRICT ADMIN LOCKDOWN
+        // Authentication State Listener Pipeline
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 authView.classList.add('hidden');
@@ -386,13 +391,12 @@
                 userEmail.innerText = targetEmailClean;
                 userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
 
-                // STRICT LOCKED EMAlL CHECK
                 const isMasterAdminEmail = targetEmailClean === 'littendekitten@gmail.com';
 
                 if (isMasterAdminEmail && navAdmin) {
-                    navAdmin.classList.remove('hidden'); // ONLY show to owner
+                    navAdmin.classList.remove('hidden');
                 } else if (navAdmin) {
-                    navAdmin.classList.add('hidden');    // STRICT HIDDEN for everyone else
+                    navAdmin.classList.add('hidden');
                 }
 
                 const userRef = doc(db, "wallets", targetEmailClean);
@@ -425,7 +429,6 @@
                 topbarUsername.innerText = `@${currentUsername}`;
                 settingsUsernameInput.value = currentUsername;
 
-                // Cloud verification block
                 const freshSnap = await getDoc(userRef);
                 const showAdminConsole = isMasterAdminEmail || (freshSnap.exists() && freshSnap.data().isAdmin === true);
                 
@@ -444,7 +447,30 @@
             }
         });
 
-        // CHANGE USERNAME
+        // Trigger Google Authentication Sign In Popup Interface 
+        if (btnLogin) {
+            btnLogin.addEventListener('click', async () => {
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (error) {
+                    console.error("Authentication process error:", error);
+                    alert("Authentication failure occurred: " + error.message);
+                }
+            });
+        }
+
+        // Process User Disconnection Sequence
+        if (btnLogout) {
+            btnLogout.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error("Sign out process error:", error);
+                }
+            });
+        }
+
+        // Change Account Public Username Record Identity
         if(settingsUsernameForm) {
             settingsUsernameForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -468,7 +494,7 @@
             });
         }
 
-        // SYNC LEADERBOARD
+        // Sync Leaderboard Engine Live Database Tracker Updates
         function startLeaderboard(currentUserEmail) {
             const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -518,7 +544,7 @@
             });
         }
 
-        // COIN TRADING SYSTEM
+        // Coin Trading Transaction Exchange Processor
         if(transferForm) {
             transferForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -531,82 +557,92 @@
 
                 try {
                     const q = query(collection(db, "wallets"), where("username", "==", targetUname));
-                    const querySnap = await getDocs(q);
-                    if (querySnap.empty) throw new Error(`@${targetUname} not found! Check spelling.`);
+                    const targetQuerySnap = await getDocs(q);
 
-                    let receiverEmail = "";
-                    querySnap.forEach((doc) => { receiverEmail = doc.id; });
-                    if (myEmail === receiverEmail) throw new Error("You cannot send coins to yourself!");
+                    if (targetQuerySnap.empty) {
+                        throw new Error(`Recipient profile @${targetUname} could not be resolved.`);
+                    }
 
-                    const senderRef = doc(db, "wallets", myEmail);
-                    const receiverRef = doc(db, "wallets", receiverEmail);
+                    let targetEmail = "";
+                    targetQuerySnap.forEach((doc) => { targetEmail = doc.id; });
+
+                    if (targetEmail === myEmail) {
+                        throw new Error("Self-transfer transactions are prohibited.");
+                    }
+
+                    const myDocRef = doc(db, "wallets", myEmail);
+                    const targetDocRef = doc(db, "wallets", targetEmail);
 
                     await runTransaction(db, async (transaction) => {
-                        const senderDoc = await transaction.get(senderRef);
-                        const receiverDoc = await transaction.get(receiverRef);
-                        const senderBal = senderDoc.data().balance || 0;
-                        if (senderBal < amount) throw new Error("Insufficient funds! 😿");
+                        const mySnap = await transaction.get(myDocRef);
+                        if (!mySnap.exists()) throw new Error("Sender records initialized empty.");
 
-                        transaction.update(senderRef, { balance: senderBal - amount });
-                        transaction.update(receiverRef, { balance: (receiverDoc.data().balance || 0) + amount });
+                        const myCurrentBal = mySnap.data().balance || 0;
+                        if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets available.");
+
+                        const targetSnap = await transaction.get(targetDocRef);
+                        if (!targetSnap.exists()) throw new Error("Recipient database entry dropped.");
+
+                        const targetCurrentBal = targetSnap.data().balance || 0;
+
+                        transaction.update(myDocRef, { balance: myCurrentBal - amount });
+                        transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
                     });
 
-                    alert(`Successfully sent ${amount.toFixed(2)} KC to @${targetUname}! 🚀`);
+                    alert(`Successfully transferred ${amount.toFixed(2)} KC to @${targetUname}!`);
                     transferForm.reset();
-                } catch (err) { alert(err.message); }
-                finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
+                } catch (err) {
+                    alert("Transfer Error: " + err.message);
+                } finally {
+                    if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; }
+                }
             });
         }
 
-        // MASTER ADMIN BALANCE OVERRIDE
-        if(adminBalanceForm) {
+        // Administrative Global Balance Override Controller
+        if (adminBalanceForm) {
             adminBalanceForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                if(auth.currentUser.email.toLowerCase().trim() !== 'littendekitten@gmail.com') return alert("Unauthorized.");
+                const rawInputName = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
+                const targetAmount = parseFloat(document.getElementById('admin-target-amount').value);
 
-                const targetUname = document.getElementById('admin-target-username').value.trim().toLowerCase().replace('@', '');
-                const newAmount = parseFloat(document.getElementById('admin-target-amount').value);
+                if (isNaN(targetAmount) || targetAmount < 0) return alert("Enter a structural balance setting.");
 
                 try {
-                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
                     const snap = await getDocs(q);
-                    if (snap.empty) return alert("Username not found.");
+                    if (snap.empty) return alert("User not located.");
 
-                    let targetEmail = "";
-                    snap.forEach(d => targetEmail = d.id);
+                    let userEmailId = "";
+                    snap.forEach(d => userEmailId = d.id);
 
-                    await setDoc(doc(db, "wallets", targetEmail), { balance: newAmount }, { merge: true });
-                    alert(`Updated balance of @${targetUname} to ${newAmount} KC!`);
+                    await setDoc(doc(db, "wallets", userEmailId), { balance: targetAmount }, { merge: true });
+                    alert(`Balance forced override execution for @${rawInputName} configured to ${targetAmount.toFixed(2)} KC.`);
                     adminBalanceForm.reset();
-                } catch(err) { alert(err.message); }
+                } catch (err) { alert(err.message); }
             });
         }
 
-        // CO-ADMIN ASSIGNMENT
-        if(adminPromoteForm) {
+        // Administrative Rights Grant Configuration Form
+        if (adminPromoteForm) {
             adminPromoteForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                if(auth.currentUser.email.toLowerCase().trim() !== 'littendekitten@gmail.com') return alert("Unauthorized.");
-
-                const targetUname = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
+                const rawInputName = document.getElementById('admin-promote-username').value.trim().toLowerCase().replace('@', '');
 
                 try {
-                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const q = query(collection(db, "wallets"), where("username", "==", rawInputName));
                     const snap = await getDocs(q);
-                    if (snap.empty) return alert("Username not found.");
+                    if (snap.empty) return alert("User handle resolved empty.");
 
-                    let targetEmail = "";
-                    snap.forEach(d => targetEmail = d.id);
+                    let userEmailId = "";
+                    snap.forEach(d => userEmailId = d.id);
 
-                    await setDoc(doc(db, "wallets", targetEmail), { isAdmin: true }, { merge: true });
-                    alert(`@${targetUname} has been appointed as an Admin! 👑`);
+                    await setDoc(doc(db, "wallets", userEmailId), { isAdmin: true }, { merge: true });
+                    alert(`Administrative authorization successfully assigned to profile @${rawInputName}.`);
                     adminPromoteForm.reset();
-                } catch(err) { alert(err.message); }
+                } catch (err) { alert(err.message); }
             });
         }
-
-        if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(err => alert(err.message)));
-        if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth));
     </script>
 </body>
 </html>
