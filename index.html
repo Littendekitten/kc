@@ -315,7 +315,7 @@
                 </div>
 
                 <!-- ADMIN VIEW -->
-                <div id="view-admin" class="hidden space-y-6 animate-fade-in">
+                <!--<div id="view-admin" class="hidden space-y-6 animate-fade-in">
                     <div class="border-b border-purple-900/40 pb-4 mb-4">
                         <h2 class="text-2xl font-black text-purple-400 flex items-center gap-2">
                             <i class="fa-solid fa-gavel"></i> Admin Panel
@@ -351,8 +351,8 @@
 
             </main>
         </div>
-    </div>
-
+    </div>  <!-- ADMIN VIEW -->
+                
     <!-- CORE LOGIC FRAMEWORK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -840,90 +840,6 @@ if (adminPromoteForm) {
         }
     });
 }
-
-
-        // ===============================
-// ADMIN GUARD (ANTI-CHEAT SYSTEM)
-// ===============================
-
-import { getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const ADMIN_EMAIL = "littendekitten@gmail.com";
-
-const adminScreen = document.createElement("div");
-adminScreen.id = "admin-cheat-screen";
-adminScreen.style.position = "fixed";
-adminScreen.style.top = "0";
-adminScreen.style.left = "0";
-adminScreen.style.width = "100vw";
-adminScreen.style.height = "100vh";
-adminScreen.style.background = "rgba(0,0,0,0.95)";
-adminScreen.style.color = "red";
-adminScreen.style.display = "none";
-adminScreen.style.flexDirection = "column";
-adminScreen.style.justifyContent = "center";
-adminScreen.style.alignItems = "center";
-adminScreen.style.zIndex = "999999";
-adminScreen.style.fontSize = "28px";
-adminScreen.style.fontWeight = "900";
-adminScreen.style.textAlign = "center";
-
-adminScreen.innerHTML = `
-    <div style="font-size:40px; margin-bottom:20px;">🚨 ACCESS DENIED 🚨</div>
-    <div>We don’t support cheaters!</div>
-    <div style="margin-top:10px; font-size:18px; opacity:0.7;">-100 KC penalty applied</div>
-`;
-
-document.body.appendChild(adminScreen);
-
-let adminKicked = false;
-
-async function punishCheater() {
-    if (!auth.currentUser) return;
-
-    const email = auth.currentUser.email.toLowerCase();
-    const ref = doc(db, "wallets", email);
-
-    try {
-        await runTransaction(db, async (tx) => {
-            const snap = await tx.get(ref);
-            if (!snap.exists()) return;
-
-            const bal = snap.data().balance || 0;
-            tx.update(ref, { balance: bal - 100 });
-        });
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-// “frame-like” check (SAFE VERSION)
-setInterval(async () => {
-    if (!auth.currentUser) return;
-    if (adminKicked) return;
-
-    const email = auth.currentUser.email.toLowerCase();
-    const ref = doc(db, "wallets", email);
-
-    try {
-        const snap = await getDoc(ref);
-        const isAdmin = snap.exists() && snap.data().isAdmin === true;
-
-        if (email !== ADMIN_EMAIL && !isAdmin) {
-            adminKicked = true;
-
-            await punishCheater();
-
-            adminScreen.style.display = "flex";
-
-            setTimeout(() => {
-                location.reload();
-            }, 2500);
-        }
-    } catch (err) {
-        console.log("Admin check error:", err);
-    }
-}, 2000); // 👈 beter dan 30 FPS (minder lag / Firebase safe)
 </script>
 </body>
 </html>
