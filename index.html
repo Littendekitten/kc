@@ -31,6 +31,21 @@
         @media (min-width: 1024px) {
             #sidebar { transform: translateX(0) !important; }
         }
+
+        /* HYBRID RESPONSIVE AD WRAPPER ENGINE */
+        .ad-slot-wrapper {
+            transform-origin: center center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease-in-out;
+        }
+        /* Micro plan fallback layer for ultra-narrow compact displays */
+        @media (max-width: 350px) {
+            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom {
+                transform: scale(0.88);
+                margin-top: -4px;
+                margin-bottom: -4px;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
@@ -196,9 +211,9 @@
                     </div>
 
                     <!-- AD ZONE BELOW DASHBOARD CARD -->
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        <div id="ad-slot-dashboard" class="text-center w-full overflow-hidden flex items-center justify-center"></div>
+                        <div id="ad-slot-dashboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
 
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
@@ -233,9 +248,9 @@
                     </div>
 
                     <!-- AD ZONE ABOVE LOTTO BOX -->
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        <div id="ad-slot-lotto-top" class="text-center w-full overflow-hidden flex items-center justify-center"></div>
+                        <div id="ad-slot-lotto-top" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
                     
                     <div class="grid gap-6 md:grid-cols-3">
@@ -277,9 +292,9 @@
                     </div>
 
                     <!-- AD ZONE BELOW LOTTO BOX -->
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 relative overflow-hidden min-h-[110px] flex flex-col items-center justify-center">
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        <div id="ad-slot-lotto-bottom" class="text-center w-full overflow-hidden flex items-center justify-center"></div>
+                        <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
                     </div>
                 </div>
 
@@ -311,7 +326,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // FIXED: Imported from firestore.js package endpoint dynamically instead of auth package url
         import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -329,19 +343,28 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // Check if environment is running locally
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-        // SAFE DYNAMIC AD-LOADER ENGINE
-        function injectAdsterraSafeBanner(containerId, adKey) {
+        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
+        function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
             const container = document.getElementById(containerId);
             if (!container) return;
 
+            // Determine if viewport matches mobile width thresholds
+            const isMobile = window.innerWidth < 768;
+            const activeKey = isMobile ? mobileKey : desktopKey;
+            const w = isMobile ? 320 : 728;
+            const h = isMobile ? 50 : 90;
+
+            // Force bounding boxes to stay strictly locked to specific key layouts
+            container.style.width = `${w}px`;
+            container.style.height = `${h}px`;
+
             if (isLocalDevelopment) {
                 container.innerHTML = `
-                    <div class="w-full max-w-[728px] h-[90px] rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-2 select-none">
-                        <p class="text-[10px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MODE GUARD ACTIVE</p>
-                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">Adsterra script blocked on localhost to protect your publisher account balance.</p>
+                    <div class="w-full h-full rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-1.5 select-none">
+                        <p class="text-[9px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MOCK GUARD</p>
+                        <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame Allocated</p>
                     </div>`;
                 return;
             }
@@ -350,17 +373,17 @@
             optionsScript.type = 'text/javascript';
             optionsScript.text = `
                 atOptions = {
-                    'key' : '${adKey}',
+                    'key' : '${activeKey}',
                     'format' : 'iframe',
-                    'height' : 90,
-                    'width' : 728,
+                    'height' : ${h},
+                    'width' : ${w},
                     'params' : {}
                 };
             `;
             
             const invokeScript = document.createElement('script');
             invokeScript.type = 'text/javascript';
-            invokeScript.src = `//www.highperformanceformat.com/${adKey}/invoke.js`;
+            invokeScript.src = `//www.highperformanceformat.com/${activeKey}/invoke.js`;
 
             container.appendChild(optionsScript);
             container.appendChild(invokeScript);
@@ -373,7 +396,6 @@
                 return;
             }
 
-            // Skip checking completely if the premium user profile is logged in
             if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
                 return;
             }
@@ -409,10 +431,11 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             runAdBlockCheck();
-            // Initialize safe loaders across the views
-            injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349');
-            injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349');
-            injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349');
+            
+            // Injects Desktop Key (728x90) or Mobile Key (320x50) depending on display footprint natively
+            injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
         });
         
         setInterval(runAdBlockCheck, 6000);
