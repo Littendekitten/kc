@@ -43,6 +43,22 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
+    <div id="ad-modal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4">
+        <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-8 rounded-3xl text-center space-y-6 shadow-2xl relative">
+            <div class="w-16 h-16 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto animate-spin">
+                <i class="fa-solid fa-spinner"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-black tracking-tight text-white">Sponsor Video Loading...</h3>
+                <p class="text-xs text-slate-400">Do not close this screen or refresh the page.</p>
+            </div>
+            <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                <div id="ad-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-1000 ease-linear"></div>
+            </div>
+            <div id="ad-countdown-timer" class="text-sm font-mono text-amber-400 font-bold">10s remaining</div>
+        </div>
+    </div>
+
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -89,6 +105,9 @@
                 <nav class="space-y-2">
                     <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                    </button>
+                    <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-video w-5 text-amber-500"></i> Get KC <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">+5 KC</span>
                     </button>
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
@@ -199,6 +218,29 @@
                     </div>
                 </div>
 
+                <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
+                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-video"></i> Get Free KittyCoins
+                    </h2>
+                    
+                    <div class="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl max-w-xl shadow-lg border-dashed border-amber-500/30 text-center space-y-6">
+                        <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-3xl text-amber-400 shadow-inner">
+                            <i class="fa-solid fa-coins animate-pulse"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-xl font-bold text-white">Watch Sponsor Ad</h3>
+                            <p class="text-sm text-slate-400 max-w-sm mx-auto">Watch a short 10-second sponsor video script to support the community platform and instantly claim <span class="text-amber-400 font-bold">5.00 KC</span>!</p>
+                        </div>
+                        
+                        <div id="ad-placement-zone" class="hidden text-xs text-slate-600 bg-black/40 p-2 rounded-xl">
+                            </div>
+
+                        <button id="btn-watch-ad" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-8 py-4 rounded-xl hover:from-amber-400 hover:to-orange-400 cursor-pointer shadow-lg transform transition active:scale-95 inline-flex items-center gap-2">
+                            <i class="fa-solid fa-circle-play"></i> Stream Ad & Earn 5 KC
+                        </button>
+                    </div>
+                </div>
+
                 <div id="view-settings" class="hidden space-y-6 animate-fade-in">
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
@@ -298,10 +340,12 @@
         const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
         const navDashboard = document.getElementById('nav-dashboard');
+        const navGetKc = document.getElementById('nav-get-kc');
         const navSettings = document.getElementById('nav-settings');
         const navAdmin = document.getElementById('nav-admin');
 
         const viewDashboard = document.getElementById('view-dashboard');
+        const viewGetKc = document.getElementById('view-get-kc');
         const viewSettings = document.getElementById('view-settings');
         const viewAdmin = document.getElementById('view-admin');
 
@@ -314,6 +358,11 @@
         const myRankTag = document.getElementById('my-rank-tag');
         const myRankUser = document.getElementById('my-rank-user');
         const myRankBalance = document.getElementById('my-rank-balance');
+
+        const btnWatchAd = document.getElementById('btn-watch-ad');
+        const adModal = document.getElementById('ad-modal');
+        const adProgressBar = document.getElementById('ad-progress-bar');
+        const adCountdownTimer = document.getElementById('ad-countdown-timer');
 
         let leaderboardUnsubscribe = null;
 
@@ -340,8 +389,8 @@
         });
 
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewSettings, viewAdmin];
-            const navs = [navDashboard, navSettings, navAdmin];
+            const views = [viewDashboard, viewGetKc, viewSettings, viewAdmin];
+            const navs = [navDashboard, navGetKc, navSettings, navAdmin];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold', 'bg-purple-950/30', 'text-purple-400'); });
@@ -359,6 +408,7 @@
         }
 
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+        if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
         if(navAdmin) navAdmin.addEventListener('click', () => {
             if(auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
@@ -380,7 +430,7 @@
                     if (snap.empty) exists = false;
                 } catch(e) {
                     console.error("Rules blocked check, using temporary fallback");
-                    exists = false; // Prevents infinite loop if rules break
+                    exists = false;
                 }
             }
             return guestName;
@@ -419,7 +469,8 @@
                         }
                     } else {
                         currentUsername = await generateUniqueGuestName();
-                        const startBalance = 10.00;
+                        // EVERYONE STARTS WITH 0.00 KC NOW!
+                        const startBalance = 0.00;
                         await setDoc(userRef, {
                             name: user.displayName,
                             email: targetEmailClean,
@@ -478,6 +529,58 @@
                     console.error("Sign out process error:", error);
                 }
             });
+        }
+
+        // Ad monetization logic execution framework
+        if (btnWatchAd) {
+            btnWatchAd.addEventListener('click', () => {
+                if (!auth.currentUser) return alert("You must be signed in to earn KC.");
+                
+                // Open visual layout block overlay
+                adModal.classList.remove('hidden');
+                adProgressBar.style.width = '0%';
+                
+                let timeRemaining = 10; // 10-second sponsor ad runtime constraint
+                adCountdownTimer.innerText = `${timeRemaining}s remaining`;
+
+                // Force layout recalculation for transition rendering engine
+                void adProgressBar.offsetWidth;
+                adProgressBar.style.width = '100%';
+
+                const timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    adCountdownTimer.innerText = `${timeRemaining}s remaining`;
+
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        grantAdReward();
+                    }
+                }, 1000);
+            });
+        }
+
+        async function grantAdReward() {
+            const myEmail = auth.currentUser.email.toLowerCase();
+            const userDocRef = doc(db, "wallets", myEmail);
+
+            try {
+                // Secure atomic transaction injection to safely append 5.00 KC
+                await runTransaction(db, async (transaction) => {
+                    const freshSnap = await transaction.get(userDocRef);
+                    if (!freshSnap.exists()) throw new Error("Profile node not verified.");
+                    
+                    const oldBal = freshSnap.data().balance || 0;
+                    transaction.update(userDocRef, { balance: oldBal + 5.00 });
+                });
+
+                alert("Sponsor script execution verified! +5.00 KittyCoins added to your secure wallet storage.");
+            } catch (err) {
+                console.error("Reward injection fault:", err);
+                alert("Transaction processing fault dropped reward allocation.");
+            } finally {
+                adModal.classList.add('hidden');
+                adProgressBar.style.width = '0%';
+            }
         }
 
         // Change Account Public Username Record Identity
