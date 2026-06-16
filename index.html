@@ -368,11 +368,22 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-chart-line"></i> KC-Stats Market
                         </h2>
-                        <p class="text-xs text-slate-400">Track the current exchange rate and economic value of the KittyCoin network.</p>
+                        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
+                            <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Treasury Backing</p>
+                            <h3 id="kc-market-cap" class="text-2xl md:text-3xl font-black text-emerald-400 font-mono">€0.00</h3>
+                        </div>
                     </div>
 
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-                        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Current Exchange Rate</p>
+                        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Live Exchange Rate</p>
                         <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
                             Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
                         </h3>
@@ -448,7 +459,7 @@
             return filtered;
         }
 
-// INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
+        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
             // --- DE AD-GUARD: Laad niets als jij ingelogd bent ---
             if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
@@ -456,7 +467,6 @@
                 if (container) container.style.display = 'none'; // Verberg ook de lege ruimte
                 return; 
             }
-            // ----------------------------------------------------
 
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -578,7 +588,11 @@
         let incomeUnsubscribe = null;
         let rawIncomeRecords = [];
         let showMaxIncome = false;
-        let statsChart = null; // Chart.js instance
+        let statsChart = null; 
+
+        // GLOBAL ECONOMY VARIABLES
+        let globalMarketCapEur = 50.00; // Theoretische achterliggende waarde (kan je via settings in Firebase aanpassen!)
+        let globalTotalSupply = 0; // Wordt live berekend op basis van de wallets
 
         // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
         function switchView(activeNav, activeView) {
@@ -593,12 +607,9 @@
             
             document.body.classList.remove('sidebar-open');
 
-            // View-specific ad rendering routines
             if (activeView === viewGetKc) {
                 injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-                setTimeout(() => {
-                    injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
-                }, 350);
+                setTimeout(() => injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6'), 350);
             } else if (activeView === viewDashboard) {
                 injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             } else if (activeView === viewLeaderboard) {
@@ -607,6 +618,8 @@
                 injectAdsterraSafeBanner('ad-slot-shop', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             } else if (activeView === viewStats) {
                 injectAdsterraSafeBanner('ad-slot-stats', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+                // Forceer een update van de grafiek als je naar de view navigeert
+                updateEconomyUI();
             }
         }
 
@@ -617,17 +630,8 @@
         
         setInterval(runAdBlockCheck, 6000);
 
-        if (btnOpenSidebar) {
-            btnOpenSidebar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.body.classList.add('sidebar-open');
-            });
-        }
-        if (btnCloseSidebar) {
-            btnCloseSidebar.addEventListener('click', () => {
-                document.body.classList.remove('sidebar-open');
-            });
-        }
+        if (btnOpenSidebar) btnOpenSidebar.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.add('sidebar-open'); });
+        if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
 
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
@@ -646,12 +650,20 @@
                 try {
                     const snap = await getDocs(q);
                     if (snap.empty) exists = false;
-                } catch(e) {
-                    exists = false;
-                }
+                } catch(e) { exists = false; }
             }
             return guestName;
         }
+
+        // Lees eventueel de "Market Cap" uit je settings/shop document.
+        // Als je dit document in Firebase aanmaakt met een veld "market_cap_eur" van 100, past de koers zich meteen aan!
+        onSnapshot(doc(db, "settings", "shop"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.market_cap_eur) globalMarketCapEur = data.market_cap_eur;
+            }
+            updateEconomyUI();
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -661,9 +673,7 @@
                     const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
                     structuralAdBlocks.forEach(slotId => {
                         const slotNode = document.getElementById(slotId);
-                        if (slotNode && slotNode.parentElement) {
-                            slotNode.parentElement.style.setProperty('display', 'none', 'important');
-                        }
+                        if (slotNode && slotNode.parentElement) slotNode.parentElement.style.setProperty('display', 'none', 'important');
                     });
                 }
 
@@ -701,38 +711,19 @@
                     topbarUsername.innerText = `@${currentUsername}`;
                     settingsUsernameInput.value = currentUsername;
 
-                    startLeaderboard(targetEmailClean);
+                    startLeaderboardAndEconomy(targetEmailClean);
                     startIncomeStream(targetEmailClean);
-                } catch (error) {
-                    console.error("Firestore loading fault: ", error);
-                }
+                } catch (error) { console.error("Firestore loading fault: ", error); }
             } else {
-                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
-                    authView.classList.remove('hidden');
-                }
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
                 appView.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
             }
         });
 
-        if (btnLogin) {
-            btnLogin.addEventListener('click', async () => {
-                try {
-                    await signInWithPopup(auth, provider);
-                } catch (error) {
-                    alert("Authentication failure occurred: " + error.message);
-                }
-            });
-        }
-
-        if (btnLogout) {
-            btnLogout.addEventListener('click', async () => {
-                try {
-                    await signOut(auth);
-                } catch (error) {}
-            });
-        }
+        if (btnLogin) btnLogin.addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch (error) { alert("Authentication failure: " + error.message); }});
+        if (btnLogout) btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
 
         if(settingsUsernameForm) {
             settingsUsernameForm.addEventListener('submit', async (e) => {
@@ -757,18 +748,25 @@
             });
         }
 
-        function startLeaderboard(currentUserEmail) {
+        // ==========================================
+        // DYNAMIC ECONOMY LOGIC & LEADERBOARD
+        // ==========================================
+        function startLeaderboardAndEconomy(currentUserEmail) {
             const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
                 if(!leaderboardList) return;
                 leaderboardList.innerHTML = "";
                 let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+                let calculatedTotalSupply = 0; // Start de teller op 0
 
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const email = data.email || docSnap.id;
                     const uname = data.username || "guest";
                     const balance = data.balance || 0;
+
+                    // Tel de balans van ELKE gebruiker op voor de Total Supply
+                    calculatedTotalSupply += balance; 
 
                     if (email === currentUserEmail) {
                         userRank = currentRank;
@@ -801,23 +799,97 @@
                     myRankUser.innerText = `@${userCurrentName}`;
                     myRankBalance.innerText = userCurrentBalance.toFixed(2);
                 }
+
+                // Update de globle Total Supply
+                globalTotalSupply = calculatedTotalSupply;
+                updateEconomyUI();
             });
         }
 
-        // INCOME TRACKING LIFECYCLE
-        function startIncomeStream(currentUserEmail) {
-            const q = query(
-                collection(db, "transactions"), 
-                where("receiverEmail", "==", currentUserEmail), 
-                orderBy("timestamp", "desc"),
-                limit(10)
-            );
+        function updateEconomyUI() {
+            const supplyDisplay = document.getElementById('kc-total-supply');
+            const capDisplay = document.getElementById('kc-market-cap');
+            const rateDisplay = document.getElementById('kc-rate-display');
 
+            if (supplyDisplay) supplyDisplay.innerText = globalTotalSupply.toFixed(2) + " KC";
+            if (capDisplay) capDisplay.innerText = "€" + globalMarketCapEur.toFixed(2);
+
+            if (globalTotalSupply > 0) {
+                // FORMULE: KOERS = GELD / MUNTEN
+                const currentRate = globalMarketCapEur / globalTotalSupply;
+                
+                if (rateDisplay) {
+                    rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+                }
+                updateStatsChart(currentRate);
+            } else {
+                if (rateDisplay) rateDisplay.innerHTML = `€0.0000 <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+            }
+        }
+
+        function updateStatsChart(currentRate) {
+            const ctx = document.getElementById('rateChart');
+            if(!ctx) return;
+            
+            if (statsChart) statsChart.destroy();
+
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
+
+            statsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Network Start', 'Previous Phase', 'Current Live Value'],
+                    datasets: [{
+                        label: 'Value of 1 KC (in EUR)',
+                        // We maken de grafiek visueel dynamisch t.o.v. de currentRate
+                        data: [(currentRate * 0.7), (currentRate * 1.1), currentRate],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#020617',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#34d399',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) { return `€${context.parsed.y.toFixed(4)}`; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#1e293b', drawBorder: false } },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // OTHER LOGIC (Income, Transfers, Shop, Lotto)
+        // ==========================================
+
+        function startIncomeStream(currentUserEmail) {
+            const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(10));
             incomeUnsubscribe = onSnapshot(q, (snapshot) => {
                 rawIncomeRecords = [];
-                snapshot.forEach(docSnap => {
-                    rawIncomeRecords.push(docSnap.data());
-                });
+                snapshot.forEach(docSnap => rawIncomeRecords.push(docSnap.data()));
                 renderIncomeUI();
             });
         }
@@ -825,7 +897,6 @@
         function renderIncomeUI() {
             if(!incomeList) return;
             incomeList.innerHTML = "";
-
             const targetLength = showMaxIncome ? 10 : 3;
             const recordsToDisplay = rawIncomeRecords.slice(0, targetLength);
 
@@ -837,7 +908,6 @@
             recordsToDisplay.forEach(tx => {
                 const rawMsg = tx.message ? tx.message.trim() : "";
                 const msgBlock = rawMsg ? `<div class="mt-1.5 text-[11px] bg-slate-950/80 border border-slate-800/60 px-2.5 py-1.5 rounded-lg text-slate-300 italic font-sans"><i class="fa-regular fa-comment-dots text-slate-500 mr-1"></i> "${rawMsg}"</div>` : '';
-                
                 const card = `
                     <div class="p-3 bg-slate-950/50 border border-slate-800/60 rounded-xl flex flex-col justify-center animate-fade-in">
                         <div class="flex items-center justify-between">
@@ -857,11 +927,7 @@
         if(btnToggleIncome) {
             btnToggleIncome.addEventListener('click', () => {
                 showMaxIncome = !showMaxIncome;
-                if(showMaxIncome) {
-                    btnToggleIncome.innerHTML = `<span>Show Less (Last 3)</span> <i class="fa-solid fa-chevron-up text-[10px]"></i>`;
-                } else {
-                    btnToggleIncome.innerHTML = `<span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>`;
-                }
+                btnToggleIncome.innerHTML = showMaxIncome ? `<span>Show Less (Last 3)</span> <i class="fa-solid fa-chevron-up text-[10px]"></i>` : `<span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>`;
                 renderIncomeUI();
             });
         }
@@ -877,7 +943,6 @@
                 if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
                 if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
 
-                // Pass descriptive statement strings through profanity filter array structures
                 const filteredMessage = maskProfanity(rawMessage);
 
                 try {
@@ -906,7 +971,6 @@
                         transaction.update(myDocRef, { balance: myCurrentBal - amount });
                         transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
                         
-                        // Append unified trace metrics to ledger system
                         transaction.set(transactionLoggingRef, {
                             senderEmail: myEmail,
                             senderUsername: myUname,
@@ -920,19 +984,10 @@
 
                     alert(`Successfully transferred ${amount.toFixed(2)} KC to @${targetUname}!`);
                     transferForm.reset();
-                } catch (err) {
-                    alert("Transfer Error: " + err.message);
-                } finally {
-                    if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; }
-                }
+                } catch (err) { alert("Transfer Error: " + err.message); } 
+                finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
             });
         }
-
-        // INTERACTIVE KITTY LOTTO ENGINE
-        const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
-        const lottoIcon = document.getElementById('lotto-icon');
-        const lottoStatusTitle = document.getElementById('lotto-status-title');
-        const lottoStatusDesc = document.getElementById('lotto-status-desc');
 
         if (btnTriggerLotto) {
             btnTriggerLotto.addEventListener('click', async () => {
@@ -948,13 +1003,9 @@
                 const rand = Math.random() * 100;
                 let winAmount = 0;
 
-                if (rand < 70) {
-                    winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
-                } else if (rand < 95) {
-                    winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
-                } else {
-                    winAmount = 25.00;
-                }
+                if (rand < 70) winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
+                else if (rand < 95) winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+                else winAmount = 25.00;
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, "wallets", myEmail);
@@ -991,105 +1042,12 @@
                         lottoStatusTitle.innerText = "Draw failed";
                         lottoStatusDesc.innerText = "Something went wrong while processing your result.";
                         btnTriggerLotto.innerText = "Try again";
-                    } finally {
-                        btnTriggerLotto.disabled = false;
-                    }
+                    } finally { btnTriggerLotto.disabled = false; }
                 }, 1500);
             });
         }
 
-        // ==========================================
-        // NEW: KC-SHOP & KC-STATS LOGIC
-        // ==========================================
-
-        // Listen to dynamic exchange rate from Firestore
-        onSnapshot(doc(db, "settings", "shop"), (docSnap) => {
-            if (!docSnap.exists()) return;
-            const data = docSnap.data();
-            
-            // Fallbacks to prevent crash if data is missing or zero
-            const priceKc = data.portfolio_price_kc || 35;
-            const priceEur = data.portfolio_price_eur || 25;
-            
-            // Calculate 1 KC Value (EUR / KC)
-            const currentRate = priceEur / priceKc;
-            
-            // Update the Stats Display
-            const rateDisplay = document.getElementById('kc-rate-display');
-            if (rateDisplay) {
-                rateDisplay.innerHTML = `€${currentRate.toFixed(3)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
-            }
-
-            // Update Chart.js Graphic
-            updateStatsChart(currentRate);
-        });
-
-        // Chart.js initialization logic
-        function updateStatsChart(currentRate) {
-            const ctx = document.getElementById('rateChart');
-            if(!ctx) return;
-            
-            // Destroy previous chart instance if it exists
-            if (statsChart) {
-                statsChart.destroy();
-            }
-
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
-
-            statsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Network Start', 'Previous Phase', 'Current Market'],
-                    datasets: [{
-                        label: 'Value of 1 KC (in EUR)',
-                        data: [0.010, (currentRate * 0.8), currentRate],
-                        borderColor: '#10b981', // Emerald 500
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#10b981',
-                        pointBorderColor: '#020617',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            titleColor: '#f8fafc',
-                            bodyColor: '#34d399',
-                            borderColor: '#334155',
-                            borderWidth: 1,
-                            padding: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return `€${context.parsed.y.toFixed(3)}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#1e293b', drawBorder: false }
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false }
-                        }
-                    }
-                }
-            });
-        }
-
-       // Shop Purchase Logic Engine
-        const btnBuyPortfolio = document.getElementById('buy-portfolio');
+       const btnBuyPortfolio = document.getElementById('buy-portfolio');
         if (btnBuyPortfolio) {
             btnBuyPortfolio.addEventListener('click', async () => {
                 if (!auth.currentUser) return alert("Please sign in first.");
@@ -1106,27 +1064,22 @@
                 let username = "unknown";
 
                 try {
-                    // 1. Firebase Transactie: Saldo checken en afschrijven
                     await runTransaction(db, async (transaction) => {
                         const mySnap = await transaction.get(myDocRef);
                         if (!mySnap.exists()) throw new Error("Wallet not found in system.");
 
                         const data = mySnap.data();
                         const currentBal = data.balance || 0;
-                        username = data.username || "guest"; // Haal gebruikersnaam op
+                        username = data.username || "guest";
 
                         if (currentBal < cost) throw new Error("Insufficient KittyCoins! You need 35 KC.");
 
                         transaction.update(myDocRef, { balance: currentBal - cost });
                     });
 
-                    // 2. Formspree e-mail sturen
                     await fetch("https://formspree.io/f/mwvjywav", {
                         method: "POST",
-                        headers: { 
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
                         body: JSON.stringify({
                             subject: "New KC-Shop Order",
                             item: "Professional Portfolio Setup",
@@ -1137,13 +1090,8 @@
                     });
 
                     alert("✅ Purchase confirmed! KitaCat has been notified and your 35 KC has been successfully deducted.");
-                    
-                } catch (err) {
-                    alert("❌ Purchase failed: " + err.message);
-                } finally {
-                    btnBuyPortfolio.disabled = false;
-                    btnBuyPortfolio.innerText = "Buy (35 KC)";
-                }
+                } catch (err) { alert("❌ Purchase failed: " + err.message); } 
+                finally { btnBuyPortfolio.disabled = false; btnBuyPortfolio.innerText = "Buy (35 KC)"; }
             });
         }
     </script>
