@@ -402,7 +402,7 @@
                         <form id="settings-username-form" class="space-y-4">
                             <div class="relative">
                                 <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
-                                <input type="text" id="settings-username-input" required placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                <input type="text" id="settings-username-input" required maxlength="15" placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
                             </div>
                             <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
                                 Save Username
@@ -738,6 +738,7 @@
                 e.preventDefault();
                 let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
                 if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
+                if (newUsername.length > 15) return alert("Username can be a maximum of 15 characters long.");
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 try {
