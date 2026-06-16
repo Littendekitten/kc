@@ -242,7 +242,7 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Claim free coins! Banners rotate below and above this module to fund platform payouts.</p>
+                        <p class="text-xs text-slate-400">Claim free coins!</p>
                     </div>
 
                     
@@ -284,91 +284,80 @@
                         </div>
                     </div>
 
-
-                <div id="view-shop" class="hidden space-y-6 animate-fade-in">
-                    <div class="space-y-1">
-                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
-                            <i class="fa-solid fa-shop"></i> KC-Shop
-                        </h2>
-                        <p class="text-xs text-slate-400">Purchase professional services directly using your KittyCoins balance.</p>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
-                            <div>
-                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
-                                    <i class="fa-solid fa-code"></i>
-                                </div>
-                                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
-                                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
-                                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
-                                </p>
-                            </div>
-                            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
-                                Buy (35 KC)
-                            </button>
-                        </div>
-                        
-                        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
-                            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
-                            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
-                        </div>
-                    </div>
-                    
-
-                <div id="view-stats" class="hidden space-y-6 animate-fade-in">
-                    <div class="space-y-1">
-                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
-                        </h2>
-                        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
-                            <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
-                        </div>
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Treasury Backing</p>
-                            <h3 id="kc-market-cap" class="text-2xl md:text-3xl font-black text-emerald-400 font-mono">€0.00</h3>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-                        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Live Exchange Rate</p>
-                        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
-                            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
-                        </h3>
-                    </div>
-
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
-                        <canvas id="rateChart"></canvas>
-                    </div>
-
-
-                <div id="view-settings" class="hidden space-y-6 animate-fade-in">
-                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-gear"></i> Account Settings
-                    </h2>
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
-                        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
-                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
-                        <form id="settings-username-form" class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
-                                <input type="text" id="settings-username-input" required placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
-                            </div>
-                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
-                                Save Username
-                            </button>
-                        </form>
-                    </div>
+<div id="view-shop" class="hidden space-y-6 animate-fade-in">
+    <h2 class="text-2xl font-black text-amber-400 mb-4">KC Shop</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
+            <div>
+                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
+                    <i class="fa-solid fa-code"></i>
                 </div>
-
-            </main>
+                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
+                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
+                </p>
+            </div>
+            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                Buy (35 KC)
+            </button>
+        </div>
+        
+        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
+            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
+            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
         </div>
     </div>
+</div>
+
+<div id="view-stats" class="hidden space-y-6 animate-fade-in">
+    <div class="space-y-1">
+        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
+        </h2>
+        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
+            <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
+        </div>
+        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Treasury Backing</p>
+            <h3 id="kc-market-cap" class="text-2xl md:text-3xl font-black text-emerald-400 font-mono">€0.00</h3>
+        </div>
+    </div>
+
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Live Exchange Rate</p>
+        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
+            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
+        </h3>
+    </div>
+
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
+        <canvas id="rateChart"></canvas>
+    </div>
+</div>
+
+<div id="view-settings" class="hidden space-y-6 animate-fade-in">
+    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
+        <i class="fa-solid fa-gear"></i> Account Settings
+    </h2>
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
+        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
+        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
+        <form id="settings-username-form" class="space-y-4">
+            <div class="relative">
+                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                <input type="text" id="settings-username-input" required placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+            </div>
+            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
+                Save Username
+            </button>
+        </form>
+    </div>
+</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
