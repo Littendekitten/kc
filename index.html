@@ -364,14 +364,24 @@
                         <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
                     </div>
 
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
-                        <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
+                    <div class="grid gap-4 sm:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Circulating Supply</p>
+                            <h3 id="kc-total-supply" class="text-xl font-black text-amber-400 font-mono">0.00 KC</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Network Users (All-Time)</p>
+                            <h3 id="kc-total-users" class="text-xl font-black text-blue-400 font-mono">0</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Active Network (Weekly)</p>
+                            <h3 id="kc-weekly-users" class="text-xl font-black text-indigo-400 font-mono">0</h3>
+                        </div>
                     </div>
 
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                         <div class="flex items-center justify-between mb-2">
-                            <p class="text-xs uppercase font-bold text-slate-400">Live Exchange Rate</p>
+                            <p class="text-xs uppercase font-bold text-slate-400">Live Algorithmic Exchange Rate</p>
                             <div class="flex gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl">
                                 <button id="btn-chart-1h" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition bg-amber-500 text-slate-950">1 hr (Live)</button>
                                 <button id="btn-chart-lifetime" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-slate-400 hover:text-white">Lifetime (Live)</button>
@@ -434,10 +444,10 @@
                 measurementId: "G-G7TY0C4T3X"
             },
             lotto: {
-                cost: 2.00, // Kosten per ticket in KC
+                cost: 2.00, 
                 distribution: {
-                    lowChance: 75, // 75% kans op micro winst
-                    midChance: 99  // 24% kans op medium winst (boven 75 tot 99). Resterende 1% is jackpot.
+                    lowChance: 75, 
+                    midChance: 99  
                 },
                 prizes: {
                     lowMin: 0.10,
@@ -448,8 +458,8 @@
                 }
             },
             shop: {
-                portfolioCost: 350.00, // Kosten van Portfolio Website in KC
-                formspreeUrl: "https://formspree.io/f/mwvjywav" // Bestellingen verwerkings endpoint
+                portfolioCost: 350.00, 
+                formspreeUrl: "https://formspree.io/f/mwvjywav" 
             },
             ads: {
                 desktopKey: '93b1f9e019c65574bb080932b4771349',
@@ -464,7 +474,6 @@
 
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-        // CLIENT-SIDE swearing filter engine
         function maskProfanity(text) {
             if (!text) return "";
             const badWords = ['fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'cunt', 'bastard', 'asshole', 'nigger', 'faggot', 'whore', 'slut'];
@@ -476,7 +485,6 @@
             return filtered;
         }
 
-        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE WITH IFRAME INJECTION
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
             if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
                 const container = document.getElementById(containerId);
@@ -486,7 +494,6 @@
 
             const container = document.getElementById(containerId);
             if (!container) return;
-
             container.innerHTML = '';
 
             const isMobile = window.innerWidth < 768;
@@ -540,7 +547,6 @@
             iframeDoc.close();
         }
 
-        // ANTI-ADBLOCK DETECTOR ENGINE
         function runAdBlockCheck() {
             if (isLocalDevelopment) return;
             if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') return;
@@ -626,21 +632,20 @@
         let rawIncomeRecords = [];
         let showMaxIncome = false;
         let statsChart = null; 
-        let currentChartTimeframe = '1h'; // '1h' of 'lifetime'
+        let currentChartTimeframe = '1h';
 
-        // GLOBAL ECONOMY VARIABLES
+        // REAL-TIME ECOSYSTEM ENGINE DATA
         let globalMarketCapEur = 50.00; 
         let globalTotalSupply = 0; 
+        let globalUsersAllTime = 0;
+        let globalUsersWeeklyActive = 0;
 
-        // INITIALIZE DYNAMIC TEXT FROM CONFIG
         function setupUIFromConfig() {
             const buyBtn = document.getElementById('buy-portfolio');
             if (buyBtn) buyBtn.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`;
-            
             if (lottoStatusTitle) lottoStatusTitle.innerText = `Are you ready? (${CONFIG.lotto.cost} KC)`;
         }
 
-        // LAZY RE-INJECTION VIEW SWITCHER ROUTINE
         function switchView(activeNav, activeView) {
             const views = [viewDashboard, viewLeaderboard, viewGetKc, viewShop, viewStats, viewSettings];
             const navs = [navDashboard, navLeaderboard, navGetKc, navShop, navStats, navSettings];
@@ -683,7 +688,6 @@
         if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
 
-        // TIMEFRAME TIMELINE EVENT LISTENERS
         if(btnChart1h) {
             btnChart1h.addEventListener('click', () => {
                 currentChartTimeframe = '1h';
@@ -809,7 +813,7 @@
         }
 
         // ==========================================
-        // DYNAMIC ECONOMY LOGIC & LEADERBOARD
+        // DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
         // ==========================================
         function startLeaderboardAndEconomy(currentUserEmail) {
             const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
@@ -817,7 +821,13 @@
                 if(!leaderboardList) return;
                 leaderboardList.innerHTML = "";
                 let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+                
                 let calculatedTotalSupply = 0; 
+                let usersAllTime = snapshot.size;
+                let usersWeeklyActive = 0;
+
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
@@ -826,6 +836,15 @@
                     const balance = data.balance || 0;
 
                     calculatedTotalSupply += balance; 
+
+                    let isWeekly = false;
+                    if (data.createdAt) {
+                        const cDate = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                        if (cDate > oneWeekAgo) isWeekly = true;
+                    } else {
+                        isWeekly = true; 
+                    }
+                    if (isWeekly) usersWeeklyActive++;
 
                     if (email === currentUserEmail) {
                         userRank = currentRank;
@@ -860,18 +879,42 @@
                 }
 
                 globalTotalSupply = calculatedTotalSupply;
+                globalUsersAllTime = usersAllTime;
+                globalUsersWeeklyActive = usersWeeklyActive;
+                
                 updateEconomyUI();
             });
         }
 
         function updateEconomyUI() {
             const supplyDisplay = document.getElementById('kc-total-supply');
+            const usersDisplay = document.getElementById('kc-total-users');
+            const weeklyDisplay = document.getElementById('kc-weekly-users');
             const rateDisplay = document.getElementById('kc-rate-display');
 
             if (supplyDisplay) supplyDisplay.innerText = globalTotalSupply.toFixed(2) + " KC";
+            if (usersDisplay) usersDisplay.innerText = globalUsersAllTime;
+            if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
             if (globalTotalSupply > 0) {
-                const currentRate = globalMarketCapEur / globalTotalSupply;
+                // 1. UTILITY ECOSYSTEM FACTOR (Gecoördineerd door Lotto-kosten en Product-prijzen)
+                // Hogere prijzen in de shop/lotto vergroten de 'sink' (behoefte/absorptie) van de coin, wat prijsstijging simuleert.
+                const lottoFactor = CONFIG.lotto.cost * 0.15; 
+                const shopFactor = CONFIG.shop.portfolioCost * 0.015;
+                const utilitySinkSummary = 1 + ((lottoFactor + shopFactor) / 25);
+
+                // 2. ADOPTION NETWORK EFFECT (Geïnspireerd op Metcalfe's Law voor Bitcoin/USD systemen)
+                // Totale unieke wallets (All-time) creëert de fundamentele basiswaarde-vermenigvuldiger via logaritmische groei.
+                // Wekelijkse actieve gebruikers veroorzaken directe actieve handelsdruk en netwerksnelheid.
+                const activeUserWeight = globalUsersWeeklyActive * 0.20;
+                const totalUserWeight = Math.log1p(globalUsersAllTime) * 1.8;
+                const networkAdoptionMultiplier = 1 + ((totalUserWeight + activeUserWeight) / 10);
+
+                // 3. BASE ASSET EXCHANGE RATE
+                const baseRate = globalMarketCapEur / globalTotalSupply;
+                
+                // 4. METCALFE-VALUTA FINALE BEREKENING
+                const currentRate = baseRate * networkAdoptionMultiplier * utilitySinkSummary;
                 
                 if (rateDisplay) {
                     rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
@@ -896,10 +939,10 @@
 
             if (currentChartTimeframe === '1h') {
                 labelData = ['60m ago', '45m ago', '30m ago', '15m ago', 'Current live'];
-                rateData = [(currentRate * 0.98), (currentRate * 1.01), (currentRate * 0.99), (currentRate * 1.02), currentRate];
+                rateData = [(currentRate * 0.985), (currentRate * 1.005), (currentRate * 0.991), (currentRate * 1.012), currentRate];
             } else {
                 labelData = ['Network Start', 'Phase 1.5', 'Phase 2.0', 'Previous Phase', 'All-Time Live'];
-                rateData = [(currentRate * 0.4), (currentRate * 0.65), (currentRate * 0.55), (currentRate * 0.85), currentRate];
+                rateData = [(currentRate * 0.35), (currentRate * 0.60), (currentRate * 0.52), (currentRate * 0.88), currentRate];
             }
 
             statsChart = new Chart(ctx, {
@@ -947,9 +990,8 @@
         }
 
         // ==========================================
-        // OTHER LOGIC (Income, Transfers, Shop, Lotto)
+        // SYSTEM SUBSYSTEMS (Income, Trans, Lotto, Shop)
         // ==========================================
-
         function startIncomeStream(currentUserEmail) {
             const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(10));
             incomeUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -966,7 +1008,7 @@
             const recordsToDisplay = rawIncomeRecords.slice(0, targetLength);
 
             if(recordsToDisplay.length === 0) {
-                incomeList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No incoming receipts processed yet.</p>`;
+                incomeList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No income receipts processed yet.</p>`;
                 return;
             }
 
@@ -1068,7 +1110,6 @@
                 const rand = Math.random() * 100;
                 let winAmount = 0;
 
-                // Dynamische verwerking op basis van CONFIG lotto-chances
                 if (rand < CONFIG.lotto.distribution.lowChance) {
                     winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.lowMax - CONFIG.lotto.prizes.lowMin) + CONFIG.lotto.prizes.lowMin).toFixed(2));
                 } else if (rand < CONFIG.lotto.distribution.midChance) {
@@ -1161,7 +1202,7 @@
 
                     alert(`✅ Purchase confirmed! KitaCat has been notified and your ${cost} KC has been successfully deducted.`);
                 } catch (err) { alert("❌ Purchase failed: " + err.message); } 
-                finally { btnBuyPortfolio.disabled = false; buyBtn.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`; }
+                finally { btnBuyPortfolio.disabled = false; btnBuyPortfolio.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`; }
             });
         }
     </script>
