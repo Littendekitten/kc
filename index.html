@@ -486,65 +486,67 @@
         }
 
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
-            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
+            try {
+                if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
+                    const container = document.getElementById(containerId);
+                    if (container && container.parentElement) container.parentElement.style.display = 'none'; 
+                    return; 
+                }
+
                 const container = document.getElementById(containerId);
-                if (container && container.parentElement) container.parentElement.style.display = 'none'; 
-                return; 
-            }
+                if (!container) return;
+                container.innerHTML = '';
 
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            container.innerHTML = '';
+                const isMobile = window.innerWidth < 768;
+                const activeKey = isMobile ? mobileKey : desktopKey;
+                const w = isMobile ? 320 : 728;
+                const h = isMobile ? 50 : 90;
 
-            const isMobile = window.innerWidth < 768;
-            const activeKey = isMobile ? mobileKey : desktopKey;
-            const w = isMobile ? 320 : 728;
-            const h = isMobile ? 50 : 90;
+                container.style.width = `${w}px`;
+                container.style.height = `${h}px`;
 
-            container.style.width = `${w}px`;
-            container.style.height = `${h}px`;
+                if (isLocalDevelopment) {
+                    container.innerHTML = `
+                        <div class="w-full h-full rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-1.5 select-none">
+                            <p class="text-[9px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MOCK GUARD</p>
+                            <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame</p>
+                        </div>`;
+                    return;
+                }
 
-            if (isLocalDevelopment) {
-                container.innerHTML = `
-                    <div class="w-full h-full rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-1.5 select-none">
-                        <p class="text-[9px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MOCK GUARD</p>
-                        <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame</p>
-                    </div>`;
-                return;
-            }
+                const iframe = document.createElement('iframe');
+                iframe.width = w;
+                iframe.height = h;
+                iframe.style.border = 'none';
+                iframe.style.overflow = 'hidden';
+                iframe.scrolling = 'no';
+                
+                container.appendChild(iframe);
 
-            const iframe = document.createElement('iframe');
-            iframe.width = w;
-            iframe.height = h;
-            iframe.style.border = 'none';
-            iframe.style.overflow = 'hidden';
-            iframe.scrolling = 'no';
-            
-            container.appendChild(iframe);
-
-            const iframeDoc = iframe.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }</style>
-                </head>
-                <body>
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : '${activeKey}',
-                            'format' : 'iframe',
-                            'height' : ${h},
-                            'width' : ${w},
-                            'params' : {}
-                        };
-                    <\/script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/${activeKey}/invoke.js"><\/script>
-                </body>
-                </html>
-            `);
-            iframeDoc.close();
+                const iframeDoc = iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }</style>
+                    </head>
+                    <body>
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : '${activeKey}',
+                                'format' : 'iframe',
+                                'height' : ${h},
+                                'width' : ${w},
+                                'params' : {}
+                            };
+                        <\/script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/${activeKey}/invoke.js"><\/script>
+                    </body>
+                    </html>
+                `);
+                iframeDoc.close();
+            } catch (e) { console.error("Banner injection blocked or failed:", e); }
         }
 
         function runAdBlockCheck() {
@@ -642,7 +644,7 @@
         let globalUsersWeeklyActive = 0;
         let globalTotalKcSpentInShop = 0;
 
-        // UN-BYPASSABLE CLAUDE STYLE SYSTEM WIPEOUT
+        // OBLITERATION DESTRUCTION FOR TERMINATION
         function executeBanObliteration() {
             localStorage.clear();
             sessionStorage.clear();
@@ -672,7 +674,7 @@
                 </body>
                 </html>
             `;
-            throw new Error("Execution terminated: Target entity banned.");
+            throw new Error("Execution terminated: Entity restricted.");
         }
 
         function setupUIFromConfig() {
@@ -704,6 +706,12 @@
                 injectAdsterraSafeBanner('ad-slot-stats', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
                 updateEconomyUI();
             }
+        }
+
+        function clearAllListeners() {
+            if (userSnapshotUnsubscribe) { userSnapshotUnsubscribe(); userSnapshotUnsubscribe = null; }
+            if (leaderboardUnsubscribe) { leaderboardUnsubscribe(); leaderboardUnsubscribe = null; }
+            if (incomeUnsubscribe) { incomeUnsubscribe(); incomeUnsubscribe = null; }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -764,7 +772,7 @@
             updateEconomyUI();
         });
 
-        // REAL-TIME LISTENER FOR USER BALANCE & BAN COMPLIANCE
+        // STABILIZED PRE-FLIGHT INITIALIZATION ENGINE
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const targetEmailClean = user.email.toLowerCase().trim();
@@ -787,52 +795,65 @@
 
                 const userRef = doc(db, "wallets", targetEmailClean);
 
-                // Open continuous connection profile monitor
-                userSnapshotUnsubscribe = onSnapshot(userRef, async (userSnap) => {
-                    if (userSnap.exists()) {
-                        const data = userSnap.data();
-                        
-                        // IF BAN IS SWITCHED TO TRUE IN FIREBASE, KILL EVERYTHING INSTANTLY
-                        if (data.is_banned === true) {
-                            if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
-                            if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-                            if (incomeUnsubscribe) incomeUnsubscribe();
-                            executeBanObliteration();
-                            return;
-                        }
-
-                        const currentUsername = data.username || await generateUniqueGuestName();
-                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
-                        userDisplayName.innerText = `@${currentUsername}`;
-                        topbarUsername.innerText = `@${currentUsername}`;
-                        settingsUsernameInput.value = currentUsername;
-                    } else {
-                        // Generate account default context fields safely
-                        const currentUsername = await generateUniqueGuestName();
-                        const startBalance = 0.00;
+                try {
+                    // PRE-FLIGHT SYSTEM: One-time document verification check
+                    const preFlightSnap = await getDoc(userRef);
+                    
+                    if (!preFlightSnap.exists()) {
+                        // AUTOMATIC FIELD INSTANTIATION DURING CONTEXT GENERATION
+                        const initialUsername = await generateUniqueGuestName();
                         await setDoc(userRef, {
-                            name: user.displayName,
+                            name: user.displayName || "Unknown User",
                             email: targetEmailClean,
-                            username: currentUsername,
-                            balance: startBalance,
-                            is_banned: false,
+                            username: initialUsername,
+                            balance: 0.00,
+                            is_banned: false, // Automatically written right here!
                             createdAt: new Date()
-                        }, { merge: true });
-                        balanceAmount.innerText = startBalance.toFixed(2);
+                        });
+                    } else {
+                        // BACKWARD-COMPATIBILITY PATCH: Inject is_banned if missing from old documents
+                        const legacyData = preFlightSnap.data();
+                        if (legacyData.is_banned === undefined) {
+                            await setDoc(userRef, { is_banned: false }, { merge: true });
+                        }
                     }
-                }, (error) => {
-                    // Security rule denials throw an exception context here automatically
-                    executeBanObliteration();
-                });
 
-                startLeaderboardAndEconomy(targetEmailClean);
-                startIncomeStream(targetEmailClean);
+                    // SAFE RUNTIME: Only mount real-time streams after the database is populated
+                    clearAllListeners();
+
+                    userSnapshotUnsubscribe = onSnapshot(userRef, (userSnap) => {
+                        if (userSnap.exists()) {
+                            const data = userSnap.data();
+                            
+                            if (data.is_banned === true) {
+                                clearAllListeners();
+                                executeBanObliteration();
+                                return;
+                            }
+
+                            balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                            const currentUsername = data.username || "guest";
+                            userDisplayName.innerText = `@${currentUsername}`;
+                            topbarUsername.innerText = `@${currentUsername}`;
+                            settingsUsernameInput.value = currentUsername;
+                        }
+                    }, (error) => {
+                        if (error.code === 'permission-denied') {
+                            clearAllListeners();
+                            executeBanObliteration();
+                        }
+                    });
+
+                    startLeaderboardAndEconomy(targetEmailClean);
+                    startIncomeStream(targetEmailClean);
+
+                } catch (preFlightError) {
+                    console.error("Critical failure during pre-flight loading parameters:", preFlightError);
+                }
             } else {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
                 appView.classList.add('hidden');
-                if (userSnapshotUnsubscribe) { userSnapshotUnsubscribe(); userSnapshotUnsubscribe = null; }
-                if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-                if (incomeUnsubscribe) incomeUnsubscribe();
+                clearAllListeners();
             }
         });
 
@@ -901,7 +922,6 @@
                         userRank = currentRank;
                         userCurrentBalance = balance;
                         userCurrentName = uname;
-                        balanceAmount.innerText = balance.toFixed(2);
                     }
 
                     let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
@@ -968,7 +988,7 @@
 
         function updateStatsChart(currentRate) {
             const ctx = document.getElementById('rateChart');
-            if(!ctx) return;
+            if(!ctx || isNaN(currentRate)) return;
             
             if (statsChart) statsChart.destroy();
 
