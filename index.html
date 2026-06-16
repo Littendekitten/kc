@@ -45,6 +45,29 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
 
+    <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
+        <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
+                <i class="fa-solid fa-shield-halved animate-pulse"></i>
+            </div>
+            <div class="space-y-2 pt-6">
+                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Detected!</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    To keep this website running for free, advertisements are mandatory. Disable your ad blocker for this website to continue.
+                </p>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-left text-[11px] text-slate-400 space-y-1.5 font-mono">
+                <p class="text-amber-400 font-bold mb-1">// How do I turn it off?</p>
+                <p>1. Click on the AdBlock icon in your browser bar.</p>
+                <p>2. Toggle the switch for this website.</p>
+                <p>3. Click on the reload button below.</p>
+            </div>
+            <button onclick="window.location.reload();" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-950/50 cursor-pointer text-xs uppercase tracking-wider transform active:scale-98">
+                <i class="fa-solid fa-rotate-right mr-2"></i> I turned it off
+            </button>
+        </div>
+    </div>
+
     <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
         
@@ -220,7 +243,10 @@
                         </span>
                     </div>
 
-
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Rankings Sponsor Frame</span>
+                        <div id="ad-slot-leaderboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
 
                     <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
                         <div id="leaderboard-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2"></div>
@@ -242,9 +268,13 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
                         </h2>
-                        <p class="text-xs text-slate-400">Claim free coins!</p>
+                        <p class="text-xs text-slate-400">Claim free coins! Banners rotate below and above this module to fund platform payouts.</p>
                     </div>
 
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-lotto-top" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
                     
                     <div class="grid gap-6 md:grid-cols-3">
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
@@ -284,80 +314,106 @@
                         </div>
                     </div>
 
-<div id="view-shop" class="hidden space-y-6 animate-fade-in">
-    <h2 class="text-2xl font-black text-amber-400 mb-4">KC Shop</h2>
-    <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
-            <div>
-                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
-                    <i class="fa-solid fa-code"></i>
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
                 </div>
-                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
-                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
-                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
-                </p>
-            </div>
-            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
-                Buy (35 KC)
-            </button>
+
+                <div id="view-shop" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-shop"></i> KC-Shop
+                        </h2>
+                        <p class="text-xs text-slate-400">Purchase professional services directly using your KittyCoins balance.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
+                                    <i class="fa-solid fa-code"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
+                                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
+                                </p>
+                            </div>
+                            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                Buy (35 KC)
+                            </button>
+                        </div>
+                        
+                        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
+                            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
+                            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-shop" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-stats" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
+                        </h2>
+                        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
+                            <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Treasury Backing</p>
+                            <h3 id="kc-market-cap" class="text-2xl md:text-3xl font-black text-emerald-400 font-mono">€0.00</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Live Exchange Rate</p>
+                        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
+                            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
+                        </h3>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
+                        <canvas id="rateChart"></canvas>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-stats" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-settings" class="hidden space-y-6 animate-fade-in">
+                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-gear"></i> Account Settings
+                    </h2>
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
+                        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
+                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
+                        <form id="settings-username-form" class="space-y-4">
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                <input type="text" id="settings-username-input" required placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                            </div>
+                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
+                                Save Username
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
         </div>
-        
-        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
-            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
-            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
-        </div>
     </div>
-</div>
-
-<div id="view-stats" class="hidden space-y-6 animate-fade-in">
-    <div class="space-y-1">
-        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
-        </h2>
-        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4">
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Circulating Supply</p>
-            <h3 id="kc-total-supply" class="text-2xl md:text-3xl font-black text-amber-400 font-mono">0.00 KC</h3>
-        </div>
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Treasury Backing</p>
-            <h3 id="kc-market-cap" class="text-2xl md:text-3xl font-black text-emerald-400 font-mono">€0.00</h3>
-        </div>
-    </div>
-
-    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
-        <p class="text-xs uppercase font-bold text-slate-400 mb-2">Live Exchange Rate</p>
-        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
-            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
-        </h3>
-    </div>
-
-    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
-        <canvas id="rateChart"></canvas>
-    </div>
-</div>
-
-<div id="view-settings" class="hidden space-y-6 animate-fade-in">
-    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
-        <i class="fa-solid fa-gear"></i> Account Settings
-    </h2>
-    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
-        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
-        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
-        <form id="settings-username-form" class="space-y-4">
-            <div class="relative">
-                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
-                <input type="text" id="settings-username-input" required placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
-            </div>
-            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
-                Save Username
-            </button>
-        </form>
-    </div>
-</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -611,60 +667,62 @@
             updateEconomyUI();
         });
 
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        // Gebruiker is ingelogd
-        authView.classList.add('hidden');
-        appView.classList.remove('hidden');
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const targetEmailClean = user.email.toLowerCase().trim();
 
-        const targetEmailClean = user.email.toLowerCase().trim();
+                if (targetEmailClean === 'littendekitten@gmail.com') {
+                    const structuralAdBlocks = ['ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
+                    structuralAdBlocks.forEach(slotId => {
+                        const slotNode = document.getElementById(slotId);
+                        if (slotNode && slotNode.parentElement) slotNode.parentElement.style.setProperty('display', 'none', 'important');
+                    });
+                }
 
-        // Als je speciale admin-checks hebt, kun je die hier laten staan:
-        if (targetEmailClean === 'littendekitten@gmail.com') {
-            // ... (jouw admin code)
-        }
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
+                    authView.classList.add('hidden');
+                    appView.classList.remove('hidden');
+                }
 
-        userEmail.innerText = targetEmailClean;
-        userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
+                userEmail.innerText = targetEmailClean;
+                userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
 
-        const userRef = doc(db, "wallets", targetEmailClean);
-        let currentUsername = "";
+                const userRef = doc(db, "wallets", targetEmailClean);
+                let currentUsername = "";
 
-        try {
-            let userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                currentUsername = data.username || await generateUniqueGuestName();
-                balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                try {
+                    let userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        currentUsername = data.username || await generateUniqueGuestName();
+                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                    } else {
+                        currentUsername = await generateUniqueGuestName();
+                        const startBalance = 0.00;
+                        await setDoc(userRef, {
+                            name: user.displayName,
+                            email: targetEmailClean,
+                            username: currentUsername,
+                            balance: startBalance,
+                            createdAt: new Date()
+                        }, { merge: true });
+                        balanceAmount.innerText = startBalance.toFixed(2);
+                    }
+
+                    userDisplayName.innerText = `@${currentUsername}`;
+                    topbarUsername.innerText = `@${currentUsername}`;
+                    settingsUsernameInput.value = currentUsername;
+
+                    startLeaderboardAndEconomy(targetEmailClean);
+                    startIncomeStream(targetEmailClean);
+                } catch (error) { console.error("Firestore loading fault: ", error); }
             } else {
-                currentUsername = await generateUniqueGuestName();
-                const startBalance = 0.00;
-                await setDoc(userRef, {
-                    name: user.displayName,
-                    email: targetEmailClean,
-                    username: currentUsername,
-                    balance: startBalance,
-                    createdAt: new Date()
-                }, { merge: true });
-                balanceAmount.innerText = startBalance.toFixed(2);
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
+                appView.classList.add('hidden');
+                if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+                if (incomeUnsubscribe) incomeUnsubscribe();
             }
-
-            userDisplayName.innerText = `@${currentUsername}`;
-            topbarUsername.innerText = `@${currentUsername}`;
-            settingsUsernameInput.value = currentUsername;
-
-            startLeaderboardAndEconomy(targetEmailClean);
-            startIncomeStream(targetEmailClean);
-        } catch (error) { console.error("Firestore loading fault: ", error); }
-    } else {
-        // Gebruiker is uitgelogd
-        authView.classList.remove('hidden');
-        appView.classList.add('hidden');
-        
-        if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-        if (incomeUnsubscribe) incomeUnsubscribe();
-    }
-});
+        });
 
         if (btnLogin) btnLogin.addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch (error) { alert("Authentication failure: " + error.message); }});
         if (btnLogout) btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
