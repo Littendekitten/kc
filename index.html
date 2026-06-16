@@ -639,6 +639,7 @@
         let globalTotalSupply = 0; 
         let globalUsersAllTime = 0;
         let globalUsersWeeklyActive = 0;
+        let globalTotalKcSpentInShop = 0;
 
         function setupUIFromConfig() {
             const buyBtn = document.getElementById('buy-portfolio');
@@ -723,7 +724,8 @@
         onSnapshot(doc(db, "settings", "shop"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                if (data.market_cap_eur) globalMarketCapEur = data.market_cap_eur;
+                if (data.market_cap_eur !== undefined) globalMarketCapEur = data.market_cap_eur;
+                if (data.total_kc_spent_in_shop !== undefined) globalTotalKcSpentInShop = data.total_kc_spent_in_shop;
             }
             updateEconomyUI();
         });
@@ -897,23 +899,19 @@
             if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
             if (globalTotalSupply > 0) {
-                // 1. UTILITY ECOSYSTEM FACTOR (Gecoördineerd door Lotto-kosten en Product-prijzen)
-                // Hogere prijzen in de shop/lotto vergroten de 'sink' (behoefte/absorptie) van de coin, wat prijsstijging simuleert.
-                const lottoFactor = CONFIG.lotto.cost * 0.15; 
-                const shopFactor = CONFIG.shop.portfolioCost * 0.015;
-                const utilitySinkSummary = 1 + ((lottoFactor + shopFactor) / 25);
-
-                // 2. ADOPTION NETWORK EFFECT (Geïnspireerd op Metcalfe's Law voor Bitcoin/USD systemen)
-                // Totale unieke wallets (All-time) creëert de fundamentele basiswaarde-vermenigvuldiger via logaritmische groei.
-                // Wekelijkse actieve gebruikers veroorzaken directe actieve handelsdruk en netwerksnelheid.
-                const activeUserWeight = globalUsersWeeklyActive * 0.20;
-                const totalUserWeight = Math.log1p(globalUsersAllTime) * 1.8;
-                const networkAdoptionMultiplier = 1 + ((totalUserWeight + activeUserWeight) / 10);
-
-                // 3. BASE ASSET EXCHANGE RATE
+                // 1. BASE FLOOR PRICE (Fundamental Asset Backing)
                 const baseRate = globalMarketCapEur / globalTotalSupply;
                 
-                // 4. METCALFE-VALUTA FINALE BEREKENING
+                // 2. METCALFE'S LAW ADOPTION MULTIPLIER (Logarithmic Network Growth Scaling)
+                const networkSizeFactor = Math.log1p(globalUsersAllTime) * 1.8;
+                const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
+                const networkAdoptionMultiplier = 1 + (networkSizeFactor * (0.5 + activityRatio));
+
+                // 3. UTILITY SINK MULTIPLIER (Verified Economic Velocity Tracker)
+                const shopVelocityFactor = globalTotalKcSpentInShop / CONFIG.shop.portfolioCost;
+                const utilitySinkSummary = 1 + (Math.log1p(shopVelocityFactor) * 0.4);
+
+                // 4. UNMANIPULATED COMPOSITION RATE
                 const currentRate = baseRate * networkAdoptionMultiplier * utilitySinkSummary;
                 
                 if (rateDisplay) {
@@ -1172,6 +1170,7 @@
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, "wallets", myEmail);
+                const shopSettingsRef = doc(db, "settings", "shop");
                 let username = "unknown";
 
                 try {
@@ -1185,7 +1184,14 @@
 
                         if (currentBal < cost) throw new Error(`Insufficient KittyCoins! You need ${cost} KC.`);
 
+                        const shopSnap = await transaction.get(shopSettingsRef);
+                        let currentSpent = 0;
+                        if (shopSnap.exists()) {
+                            currentSpent = shopSnap.data().total_kc_spent_in_shop || 0;
+                        }
+
                         transaction.update(myDocRef, { balance: currentBal - cost });
+                        transaction.set(shopSettingsRef, { total_kc_spent_in_shop: currentSpent + cost }, { merge: true });
                     });
 
                     await fetch(CONFIG.shop.formspreeUrl, {
