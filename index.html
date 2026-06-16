@@ -340,7 +340,7 @@
                                 </p>
                             </div>
                             <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
-                                Buy (35 KC)
+                                Buy (350 KC)
                             </button>
                         </div>
                         
@@ -1056,7 +1056,7 @@
             btnBuyPortfolio.addEventListener('click', async () => {
                 if (!auth.currentUser) return alert("Please sign in first.");
                 
-                const confirmation = confirm("Confirm purchase: Professional Portfolio Setup for 35 KC?");
+                const confirmation = confirm("Confirm purchase: Professional Portfolio Setup for 350 KC?");
                 if (!confirmation) return;
 
                 btnBuyPortfolio.disabled = true;
@@ -1064,7 +1064,7 @@
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, "wallets", myEmail);
-                const cost = 35.00;
+                const cost = 350.00;
                 let username = "unknown";
 
                 try {
