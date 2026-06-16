@@ -120,9 +120,6 @@
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto
                     </button>
-                    <button id="nav-games" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
-                        <i class="fa-solid fa-gamepad w-5 text-amber-500"></i> Kitty Runner
-                    </button>
                     <button id="nav-shop" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-shop w-5 text-amber-500"></i> KC-Shop
                     </button>
@@ -293,7 +290,7 @@
                                     <p class="text-amber-500 font-bold">// Loot Table Configuration:</p>
                                     <p>&bull; 75% chance of: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
                                     <p>&bull; 24% chance of: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
-                                    <p>&bull; 1% JACKPOT: <span class="text-emerald-400">20.00 KC!</span></p>
+                                    <p>&bull; 1% JACKPOT: <span class="text-emerald-400">25.00 KC!</span></p>
                                 </div>
                             </div>
                         </div>
@@ -320,44 +317,6 @@
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
-                    </div>
-                </div>
-
-                <div id="view-games" class="hidden space-y-6 animate-fade-in">
-                    <div class="space-y-1">
-                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
-                            <i class="fa-solid fa-gamepad"></i> Kitty Runner Subsystem
-                        </h2>
-                        <p class="text-xs text-slate-400">Survive dynamic obstacle pathways to generate direct algorithm dividends.</p>
-                    </div>
-
-                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
-                        <div id="game-stage" class="relative w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden aspect-[2/1]">
-                            <canvas id="gameCanvas" width="800" height="400" class="w-full h-full block"></canvas>
-                            
-                            <div id="game-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 p-6 text-center z-20">
-                                <h3 id="game-overlay-title" class="text-2xl font-black text-amber-400 mb-2">Kitty Runner</h3>
-                                <p id="game-overlay-desc" class="text-xs text-slate-400 mb-6 max-w-sm">Press Spacebar, Up Arrow, or click the canvas to jump. Avoid unpredictable obstacles!</p>
-                                <button id="btn-start-game" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl transition transform active:scale-95 cursor-pointer text-xs uppercase tracking-wider">
-                                    Start Run
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="w-full max-w-2xl mt-4 grid grid-cols-3 gap-4 text-center">
-                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
-                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Active Time</p>
-                                <p id="game-ui-time" class="text-sm font-mono font-bold text-white">0.0s</p>
-                            </div>
-                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
-                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Rate Tier</p>
-                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.10 KC / 10s</p>
-                            </div>
-                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
-                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Earned Loot</p>
-                                <p id="game-ui-earned" class="text-sm font-mono font-bold text-emerald-400">0.00 KC</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -485,7 +444,7 @@
                 measurementId: "G-G7TY0C4T3X"
             },
             lotto: {
-                cost: 1.00, 
+                cost: 2.00, 
                 distribution: {
                     lowChance: 75, 
                     midChance: 99  
@@ -495,7 +454,7 @@
                     lowMax: 0.50,
                     midMin: 1.00,
                     midMax: 5.00,
-                    jackpot: 20.00
+                    jackpot: 25.00
                 }
             },
             shop: {
@@ -514,28 +473,6 @@
         const provider = new GoogleAuthProvider();
 
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-
-        // ==========================================
-        // THE OBLITERATION PROTOCOL (Banned Users)
-        // ==========================================
-        function executeBanObliteration() {
-            document.body.innerHTML = `
-                <div class="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-950 text-center select-none">
-                    <div class="max-w-md w-full bg-slate-900 border border-rose-600/50 p-8 rounded-3xl shadow-[0_0_50px_-12px_rgba(225,29,72,0.5)] space-y-6 relative overflow-hidden">
-                        <div class="text-rose-500 text-6xl mb-4 animate-pulse">
-                            <i class="fa-solid fa-skull"></i>
-                        </div>
-                        <h1 class="text-3xl font-black text-rose-500 tracking-widest uppercase">Account Banned</h1>
-                        <p class="text-slate-400 text-sm leading-relaxed">
-                            Your access to the KC-Xchange network has been permanently revoked due to severe policy violations. 
-                        </p>
-                        <a href="mailto:kitacatservice@gmail.com" class="inline-block w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 rounded-xl transition shadow-lg cursor-pointer text-xs uppercase tracking-wider mt-4">
-                            <i class="fa-solid fa-envelope mr-2"></i> Contact Support
-                        </a>
-                    </div>
-                </div>
-            `;
-        }
 
         function maskProfanity(text) {
             if (!text) return "";
@@ -665,7 +602,6 @@
         const navDashboard = document.getElementById('nav-dashboard');
         const navLeaderboard = document.getElementById('nav-leaderboard');
         const navGetKc = document.getElementById('nav-get-kc');
-        const navGames = document.getElementById('nav-games');
         const navShop = document.getElementById('nav-shop');
         const navStats = document.getElementById('nav-stats');
         const navSettings = document.getElementById('nav-settings');
@@ -673,7 +609,6 @@
         const viewDashboard = document.getElementById('view-dashboard');
         const viewLeaderboard = document.getElementById('view-leaderboard');
         const viewGetKc = document.getElementById('view-get-kc');
-        const viewGames = document.getElementById('view-games');
         const viewShop = document.getElementById('view-shop');
         const viewStats = document.getElementById('view-stats');
         const viewSettings = document.getElementById('view-settings');
@@ -692,6 +627,7 @@
         const btnChart1h = document.getElementById('btn-chart-1h');
         const btnChartLifetime = document.getElementById('btn-chart-lifetime');
 
+        let userSnapshotUnsubscribe = null;
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
         let rawIncomeRecords = [];
@@ -706,6 +642,39 @@
         let globalUsersWeeklyActive = 0;
         let globalTotalKcSpentInShop = 0;
 
+        // UN-BYPASSABLE CLAUDE STYLE SYSTEM WIPEOUT
+        function executeBanObliteration() {
+            localStorage.clear();
+            sessionStorage.clear();
+            document.documentElement.innerHTML = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Account Suspended</title>
+                    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                </head>
+                <body class="bg-slate-950 text-slate-100 flex flex-col items-center justify-center min-h-screen p-6 text-center font-sans">
+                    <div class="max-w-md bg-slate-900 border border-rose-500/30 rounded-3xl p-8 shadow-2xl space-y-6">
+                        <div class="w-16 h-16 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-gavel text-rose-400"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h1 class="text-2xl font-black text-rose-400 tracking-tight">Account Restricted</h1>
+                            <p class="text-slate-400 text-xs leading-relaxed">This profile has been permanently barred from accessing the platform for violating terms of service.</p>
+                        </div>
+                        <a href="mailto:support@kc-xchange.com" class="block w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg text-xs uppercase tracking-wider">
+                            Contact Support
+                        </a>
+                    </div>
+                </body>
+                </html>
+            `;
+            throw new Error("Execution terminated: Target entity banned.");
+        }
+
         function setupUIFromConfig() {
             const buyBtn = document.getElementById('buy-portfolio');
             if (buyBtn) buyBtn.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`;
@@ -713,8 +682,8 @@
         }
 
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings];
-            const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings];
+            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewShop, viewStats, viewSettings];
+            const navs = [navDashboard, navLeaderboard, navGetKc, navShop, navStats, navSettings];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -734,8 +703,6 @@
             } else if (activeView === viewStats) {
                 injectAdsterraSafeBanner('ad-slot-stats', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
                 updateEconomyUI();
-            } else if (activeView !== viewGames) {
-                stopKittyRunnerEngine();
             }
         }
 
@@ -752,7 +719,6 @@
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
-        if(navGames) navGames.addEventListener('click', () => { switchView(navGames, viewGames); initKittyRunnerEngine(); });
         if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
         if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
@@ -798,6 +764,7 @@
             updateEconomyUI();
         });
 
+        // REAL-TIME LISTENER FOR USER BALANCE & BAN COMPLIANCE
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const targetEmailClean = user.email.toLowerCase().trim();
@@ -810,55 +777,60 @@
                     });
                 }
 
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
+                    authView.classList.add('hidden');
+                    appView.classList.remove('hidden');
+                }
+
                 userEmail.innerText = targetEmailClean;
                 userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
 
                 const userRef = doc(db, "wallets", targetEmailClean);
-                let currentUsername = "";
 
-                try {
-                    let userSnap = await getDoc(userRef);
-                    
+                // Open continuous connection profile monitor
+                userSnapshotUnsubscribe = onSnapshot(userRef, async (userSnap) => {
                     if (userSnap.exists()) {
                         const data = userSnap.data();
                         
-                        // THE BANNED USER CHECK
+                        // IF BAN IS SWITCHED TO TRUE IN FIREBASE, KILL EVERYTHING INSTANTLY
                         if (data.is_banned === true) {
+                            if (userSnapshotUnsubscribe) userSnapshotUnsubscribe();
+                            if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+                            if (incomeUnsubscribe) incomeUnsubscribe();
                             executeBanObliteration();
-                            return; 
+                            return;
                         }
 
-                        currentUsername = data.username || await generateUniqueGuestName();
+                        const currentUsername = data.username || await generateUniqueGuestName();
                         balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                        userDisplayName.innerText = `@${currentUsername}`;
+                        topbarUsername.innerText = `@${currentUsername}`;
+                        settingsUsernameInput.value = currentUsername;
                     } else {
-                        currentUsername = await generateUniqueGuestName();
+                        // Generate account default context fields safely
+                        const currentUsername = await generateUniqueGuestName();
                         const startBalance = 0.00;
                         await setDoc(userRef, {
                             name: user.displayName,
                             email: targetEmailClean,
                             username: currentUsername,
                             balance: startBalance,
-                            is_banned: false, 
+                            is_banned: false,
                             createdAt: new Date()
                         }, { merge: true });
                         balanceAmount.innerText = startBalance.toFixed(2);
                     }
+                }, (error) => {
+                    // Security rule denials throw an exception context here automatically
+                    executeBanObliteration();
+                });
 
-                    if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
-                        authView.classList.add('hidden');
-                        appView.classList.remove('hidden');
-                    }
-
-                    userDisplayName.innerText = `@${currentUsername}`;
-                    topbarUsername.innerText = `@${currentUsername}`;
-                    settingsUsernameInput.value = currentUsername;
-
-                    startLeaderboardAndEconomy(targetEmailClean);
-                    startIncomeStream(targetEmailClean);
-                } catch (error) { console.error("Firestore loading fault: ", error); }
+                startLeaderboardAndEconomy(targetEmailClean);
+                startIncomeStream(targetEmailClean);
             } else {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
                 appView.classList.add('hidden');
+                if (userSnapshotUnsubscribe) { userSnapshotUnsubscribe(); userSnapshotUnsubscribe = null; }
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
             }
@@ -913,9 +885,6 @@
                     const email = data.email || docSnap.id;
                     const uname = data.username || "guest";
                     const balance = data.balance || 0;
-                    
-                    // Don't count banned users in the active supply
-                    if(data.is_banned === true) return;
 
                     calculatedTotalSupply += balance; 
 
@@ -1284,369 +1253,6 @@
                 } catch (err) { alert("❌ Purchase failed: " + err.message); } 
                 finally { btnBuyPortfolio.disabled = false; btnBuyPortfolio.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`; }
             });
-        }
-
-        // ==========================================
-        // KITTY RUNNER ARCADE ENGINE
-        // ==========================================
-        let gameCanvas = null;
-        let gameCtx = null;
-        let gameAnimFrame = null;
-        let gameRunningState = 'IDLE'; 
-        let gameTimeMetrics = { countdown: 3, grace: 3, running: 0 };
-        let gameLastTimestamp = 0;
-        
-        let kittyState = {
-            x: 80, y: 0, w: 42, h: 42,
-            vy: 0, gravity: 1.1, jumpForce: 16.5,
-            isGrounded: false
-        };
-        
-        let obstaclesCollection = [];
-        let mapGenerationTracker = {
-            baseSpeed: 5.2,
-            currentSpeed: 5.2,
-            nextSpawnTicks: 0,
-            difficultyTier: 1,
-            payoutTally: 0,
-            lastTenSecMilestone: 0
-        };
-
-        function initKittyRunnerEngine() {
-            gameCanvas = document.getElementById('gameCanvas');
-            if (!gameCanvas) return;
-            gameCtx = gameCanvas.getContext('2d');
-            
-            const triggerJump = (e) => {
-                if (gameRunningState === 'COUNTDOWN' || gameRunningState === 'GRACE' || gameRunningState === 'PLAYING') {
-                    if (kittyState.isGrounded) {
-                        kittyState.vy = -kittyState.jumpForce;
-                        kittyState.isGrounded = false;
-                    }
-                }
-            };
-
-            window.removeEventListener('keydown', handleGameKeys);
-            window.addEventListener('keydown', handleGameKeys);
-            gameCanvas.removeEventListener('click', triggerJump);
-            gameCanvas.addEventListener('click', triggerJump);
-
-            document.getElementById('btn-start-game').onclick = () => {
-                if (!auth.currentUser) return alert("Please sign in to earn rewards.");
-                startKittyRunnerRun();
-            };
-
-            resetKittyEngineState();
-            renderKittyEngineStatic();
-        }
-
-        function handleGameKeys(e) {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                e.preventDefault();
-                if (kittyState.isGrounded && (gameRunningState === 'GRACE' || gameRunningState === 'PLAYING')) {
-                    kittyState.vy = -kittyState.jumpForce;
-                    kittyState.isGrounded = false;
-                }
-            }
-        }
-
-        function stopKittyRunnerEngine() {
-            if (gameAnimFrame) cancelAnimationFrame(gameAnimFrame);
-            gameRunningState = 'IDLE';
-        }
-
-        function resetKittyEngineState() {
-            kittyState.y = 350 - kittyState.h;
-            kittyState.vy = 0;
-            kittyState.isGrounded = true;
-            obstaclesCollection = [];
-            
-            mapGenerationTracker.baseSpeed = 5.2;
-            mapGenerationTracker.currentSpeed = 5.2;
-            mapGenerationTracker.nextSpawnTicks = 0;
-            mapGenerationTracker.difficultyTier = 1;
-            mapGenerationTracker.payoutTally = 0;
-            mapGenerationTracker.lastTenSecMilestone = 0;
-
-            gameTimeMetrics.countdown = 3.0;
-            gameTimeMetrics.grace = 3.0;
-            gameTimeMetrics.running = 0.0;
-
-            updateGameUIPanel();
-        }
-
-        function startKittyRunnerRun() {
-            resetKittyEngineState();
-            document.getElementById('game-overlay').classList.add('hidden');
-            gameRunningState = 'COUNTDOWN';
-            gameLastTimestamp = performance.now();
-            gameAnimFrame = requestAnimationFrame(kittyRunnerLoop);
-        }
-
-        function kittyRunnerLoop(timestamp) {
-            if (gameRunningState === 'IDLE' || gameRunningState === 'GAMEOVER') return;
-
-            let dt = (timestamp - gameLastTimestamp) / 1000;
-            if (dt > 0.1) dt = 0.1; 
-            gameLastTimestamp = timestamp;
-
-            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            drawKittyRunnerBackground();
-
-            if (gameRunningState === 'COUNTDOWN') {
-                gameTimeMetrics.countdown -= dt;
-                drawKittyRunnerCat();
-                
-                gameCtx.fillStyle = 'rgba(245, 158, 11, 1)';
-                gameCtx.font = 'black 54px sans-serif';
-                gameCtx.textAlign = 'center';
-                gameCtx.textBaseline = 'middle';
-                let displayVal = Math.ceil(gameTimeMetrics.countdown);
-                gameCtx.fillText(displayVal <= 0 ? "GO!" : displayVal, gameCanvas.width / 2, gameCanvas.height / 2);
-
-                if (gameTimeMetrics.countdown <= 0) {
-                    gameRunningState = 'GRACE';
-                }
-            } 
-            else if (gameRunningState === 'GRACE' || gameRunningState === 'PLAYING') {
-                processKittyPhysics();
-                
-                if (gameRunningState === 'GRACE') {
-                    gameTimeMetrics.grace -= dt;
-                    if (gameTimeMetrics.grace <= 0) {
-                        gameRunningState = 'PLAYING';
-                    }
-                } else {
-                    gameTimeMetrics.running += dt;
-                    processEngineDifficultyAndPayouts(dt);
-                    generateMapObstacles();
-                }
-
-                updateObstaclesAndCollisions();
-                drawKittyRunnerCat();
-                drawKittyRunnerObstacles();
-            }
-
-            updateGameUIPanel();
-            if (gameRunningState !== 'GAMEOVER') {
-                gameAnimFrame = requestAnimationFrame(kittyRunnerLoop);
-            }
-        }
-
-        function processKittyPhysics() {
-            kittyState.vy += kittyState.gravity;
-            kittyState.y += kittyState.vy;
-            const floorLine = 350 - kittyState.h;
-
-            if (kittyState.y >= floorLine) {
-                kittyState.y = floorLine;
-                kittyState.vy = 0;
-                kittyState.isGrounded = true;
-            }
-        }
-
-        function processEngineDifficultyAndPayouts(dt) {
-            let currentSecs = gameTimeMetrics.running;
-            
-            // Speed scaling loop: accelerate horizontal pace every 10 seconds
-            let tenSecCycle = Math.floor(currentSecs / 10);
-            mapGenerationTracker.currentSpeed = mapGenerationTracker.baseSpeed + (tenSecCycle * 0.75);
-
-            // Reward Schedule Calculations
-            if (currentSecs < 60) {
-                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.1;
-                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
-                }
-            } else if (currentSecs >= 60 && currentSecs < 300) {
-                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.2;
-                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
-                }
-            } else if (currentSecs >= 300) {
-                // 5 Minutes+ Threshold: Hyper-scale allocation to 1.00 KittyCoin per second
-                mapGenerationTracker.payoutTally += (1.0 * dt);
-            }
-
-            // Adaptive Architectural Variance: Make jump frames narrow every 30 seconds
-            mapGenerationTracker.difficultyTier = 1 + Math.floor(currentSecs / 30);
-        }
-
-        function generateMapObstacles() {
-            if (mapGenerationTracker.nextSpawnTicks > 0) {
-                mapGenerationTracker.nextSpawnTicks--;
-                return;
-            }
-
-            // Deterministic safe-bounds matrix balancing maximum launch trajectories
-            let baseInterval = Math.max(35, 80 - (mapGenerationTracker.currentSpeed * 2.5));
-            let randomizedVariance = Math.floor(Math.random() * 55) + 20;
-            mapGenerationTracker.nextSpawnTicks = baseInterval + randomizedVariance;
-
-            // Generate map permutations with explicit anti-autoclicker height adjustments
-            let hWeights = [30, 42, 55, 68];
-            let assignedHeight = hWeights[Math.floor(Math.random() * hWeights.length)];
-            
-            if (mapGenerationTracker.difficultyTier >= 5) {
-                assignedHeight = Math.random() > 0.5 ? 75 : 55; // Terminal velocity wall checks
-            }
-
-            let obsType = Math.random() > 0.5 ? 'yarn' : 'crate';
-
-            obstaclesCollection.push({
-                x: gameCanvas.width + 20,
-                y: 350 - assignedHeight,
-                w: 26 + (Math.random() * 15),
-                h: assignedHeight,
-                type: obsType
-            });
-        }
-
-        function updateObstaclesAndCollisions() {
-            for (let i = obstaclesCollection.length - 1; i >= 0; i--) {
-                let obs = obstaclesCollection[i];
-                obs.x -= mapGenerationTracker.currentSpeed;
-
-                // Absolute AABB bounding-box collision vectors
-                if (
-                    kittyState.x < obs.x + obs.w &&
-                    kittyState.x + kittyState.w > obs.x &&
-                    kittyState.y < obs.y + obs.h &&
-                    kittyState.y + kittyState.h > obs.y
-                ) {
-                    triggerKittyGameOver();
-                    return;
-                }
-
-                if (obs.x + obs.w < 0) {
-                    obstaclesCollection.splice(i, 1);
-                }
-            }
-        }
-
-        async function triggerKittyGameOver() {
-            gameRunningState = 'GAMEOVER';
-            if (gameAnimFrame) cancelAnimationFrame(gameAnimFrame);
-
-            const finalPayout = parseFloat(mapGenerationTracker.payoutTally.toFixed(4));
-            
-            document.getElementById('game-overlay-title').innerText = "Game Over";
-            document.getElementById('game-overlay-title').className = "text-2xl font-black text-rose-500 mb-2";
-            
-            let messageStr = `You survived ${gameTimeMetrics.running.toFixed(1)}s.`;
-            if (finalPayout > 0) {
-                messageStr += ` Processing reward payout of +${finalPayout.toFixed(2)} KC...`;
-                document.getElementById('game-overlay-desc').innerText = messageStr;
-                document.getElementById('game-overlay').classList.remove('hidden');
-
-                const myEmail = auth.currentUser.email.toLowerCase();
-                const myDocRef = doc(db, "wallets", myEmail);
-
-                try {
-                    await runTransaction(db, async (transaction) => {
-                        const snap = await transaction.get(myDocRef);
-                        if (!snap.exists()) throw new Error("Wallet context dropped.");
-                        let curBal = snap.data().balance || 0;
-                        transaction.update(myDocRef, { balance: curBal + finalPayout });
-                    });
-                    document.getElementById('game-overlay-desc').innerText = `You survived ${gameTimeMetrics.running.toFixed(1)}s and earned +${finalPayout.toFixed(2)} KC!`;
-                } catch (e) {
-                    alert("Payout logging bypass fault: " + e.message);
-                }
-            } else {
-                messageStr += " Try again to hit the 10-second dividend mark!";
-                document.getElementById('game-overlay-desc').innerText = messageStr;
-                document.getElementById('game-overlay').classList.remove('hidden');
-            }
-        }
-
-        function drawKittyRunnerBackground() {
-            // Sky background fill
-            gameCtx.fillStyle = '#020617';
-            gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-            // Ground pathway plane
-            gameCtx.fillStyle = '#1e293b';
-            gameCtx.fillRect(0, 350, gameCanvas.width, 50);
-
-            gameCtx.strokeStyle = '#334155';
-            gameCtx.lineWidth = 4;
-            gameCtx.beginPath();
-            gameCtx.moveTo(0, 350);
-            gameCtx.lineTo(gameCanvas.width, 350);
-            gameCtx.stroke();
-        }
-
-        function drawKittyRunnerCat() {
-            gameCtx.save();
-            gameCtx.translate(kittyState.x, kittyState.y);
-
-            // Dynamic sprite generator using emojis rendered inside the sub-coordinate matrix
-            gameCtx.font = `${kittyState.w}px sans-serif`;
-            gameCtx.textAlign = 'left';
-            gameCtx.textBaseline = 'top';
-            gameCtx.fillText("🐱", 0, 0);
-
-            gameCtx.restore();
-        }
-
-        function drawKittyRunnerObstacles() {
-            obstaclesCollection.forEach(obs => {
-                gameCtx.save();
-                gameCtx.translate(obs.x, obs.y);
-
-                if (obs.type === 'yarn') {
-                    gameCtx.fillStyle = '#f43f5e';
-                    gameCtx.beginPath();
-                    gameCtx.arc(obs.w / 2, obs.h / 2, Math.min(obs.w, obs.h) / 2, 0, Math.PI * 2);
-                    gameCtx.fill();
-                    gameCtx.strokeStyle = '#fda4af';
-                    gameCtx.lineWidth = 2;
-                    gameCtx.stroke();
-                } else {
-                    gameCtx.fillStyle = '#ea580c';
-                    gameCtx.fillRect(0, 0, obs.w, obs.h);
-                    gameCtx.strokeStyle = '#f97316';
-                    gameCtx.lineWidth = 2;
-                    gameCtx.strokeRect(0, 0, obs.w, obs.h);
-                    
-                    // Cross lines to represent structural hazard reinforcement crates
-                    gameCtx.beginPath();
-                    gameCtx.moveTo(0,0); gameCtx.lineTo(obs.w, obs.h);
-                    gameCtx.moveTo(obs.w, 0); gameCtx.lineTo(0, obs.h);
-                    gameCtx.stroke();
-                }
-
-                gameCtx.restore();
-            });
-        }
-
-        function renderKittyEngineStatic() {
-            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            drawKittyRunnerBackground();
-            drawKittyRunnerCat();
-        }
-
-        function updateGameUIPanel() {
-            const uiTime = document.getElementById('game-ui-time');
-            const uiTier = document.getElementById('game-ui-tier');
-            const uiEarned = document.getElementById('game-ui-earned');
-
-            if (uiTime) uiTime.innerText = gameTimeMetrics.running.toFixed(1) + "s";
-            if (uiEarned) uiEarned.innerText = mapGenerationTracker.payoutTally.toFixed(2) + " KC";
-            
-            if (uiTier) {
-                if (gameTimeMetrics.running < 60) {
-                    uiTier.innerText = "0.10 KC / 10s";
-                    uiTier.className = "text-xs font-mono font-bold text-amber-400";
-                } else if (gameTimeMetrics.running >= 60 && gameTimeMetrics.running < 300) {
-                    uiTier.innerText = "0.20 KC / 10s";
-                    uiTier.className = "text-xs font-mono font-bold text-orange-400 animate-pulse";
-                } else {
-                    uiTier.innerText = "1.00 KC / SEC";
-                    uiTier.className = "text-xs font-mono font-bold text-rose-400 underline";
-                }
-            }
         }
     </script>
 </body>
