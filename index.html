@@ -1008,7 +1008,7 @@
                 let winAmount = 0;
 
                 if (rand < 75) winAmount = parseFloat((Math.random() * (0.50 - 0.10) + 0.10).toFixed(2));
-                else if (rand < 100) winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
+                else if (rand < 99) winAmount = parseFloat((Math.random() * (5.00 - 1.00) + 1.00).toFixed(2));
                 else winAmount = 25.00;
 
                 const myEmail = auth.currentUser.email.toLowerCase();
