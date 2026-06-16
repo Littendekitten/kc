@@ -15,9 +15,7 @@
         #leaderboard-list::-webkit-scrollbar-thumb, #income-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         #leaderboard-list::-webkit-scrollbar-thumb:hover, #income-list::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -37,7 +35,7 @@
             transition: transform 0.2s ease-in-out;
         }
         @media (max-width: 350px) {
-            #ad-slot-dashboard, #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard, #ad-slot-shop, #ad-slot-stats {
+            #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard, #ad-slot-shop, #ad-slot-stats {
                 transform: scale(0.88);
                 margin-top: -4px;
                 margin-bottom: -4px;
@@ -214,12 +212,7 @@
                         </div>
                     </div>
 
-                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
-                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
-                        <div id="ad-slot-dashboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
-                    </div>
-
-                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg mt-6">
                         <div class="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-4">
                             <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center gap-2">
                                 <i class="fa-solid fa-wallet text-emerald-400"></i> Latest Income Stream
@@ -447,10 +440,7 @@
         // CLIENT-SIDE swearing filter engine
         function maskProfanity(text) {
             if (!text) return "";
-            const badWords = [
-                'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'cunt', 
-                'bastard', 'asshole', 'nigger', 'faggot', 'whore', 'slut'
-            ];
+            const badWords = ['fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'cunt', 'bastard', 'asshole', 'nigger', 'faggot', 'whore', 'slut'];
             let filtered = text;
             badWords.forEach(word => {
                 const regex = new RegExp(`\\b${word}\\b`, 'gi');
@@ -459,12 +449,12 @@
             return filtered;
         }
 
-        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE
+        // INTELLIGENT VIEWPORT-ADAPTIVE AD INFRASTRUCTURE WITH IFRAME INJECTION
         function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
             // --- DE AD-GUARD: Laad niets als jij ingelogd bent ---
             if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
                 const container = document.getElementById(containerId);
-                if (container) container.style.display = 'none'; // Verberg ook de lege ruimte
+                if (container && container.parentElement) container.parentElement.style.display = 'none'; 
                 return; 
             }
 
@@ -472,7 +462,6 @@
             if (!container) return;
 
             container.innerHTML = '';
-            window.atOptions = null;
 
             const isMobile = window.innerWidth < 768;
             const activeKey = isMobile ? mobileKey : desktopKey;
@@ -486,29 +475,44 @@
                 container.innerHTML = `
                     <div class="w-full h-full rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-1.5 select-none">
                         <p class="text-[9px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MOCK GUARD</p>
-                        <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame Allocated</p>
+                        <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame</p>
                     </div>`;
                 return;
             }
 
-            const optionsScript = document.createElement('script');
-            optionsScript.type = 'text/javascript';
-            optionsScript.text = `
-                atOptions = {
-                    'key' : '${activeKey}',
-                    'format' : 'iframe',
-                    'height' : ${h},
-                    'width' : ${w},
-                    'params' : {}
-                };
-            `;
+            // FIX VOOR LEGE BANNERS: Gebruik een geïsoleerde iframe
+            const iframe = document.createElement('iframe');
+            iframe.width = w;
+            iframe.height = h;
+            iframe.style.border = 'none';
+            iframe.style.overflow = 'hidden';
+            iframe.scrolling = 'no';
             
-            const invokeScript = document.createElement('script');
-            invokeScript.type = 'text/javascript';
-            invokeScript.src = `//www.highperformanceformat.com/${activeKey}/invoke.js`;
+            container.appendChild(iframe);
 
-            container.appendChild(optionsScript);
-            container.appendChild(invokeScript);
+            const iframeDoc = iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }</style>
+                </head>
+                <body>
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : '${activeKey}',
+                            'format' : 'iframe',
+                            'height' : ${h},
+                            'width' : ${w},
+                            'params' : {}
+                        };
+                    <\/script>
+                    <script type="text/javascript" src="//www.highperformanceformat.com/${activeKey}/invoke.js"><\/script>
+                </body>
+                </html>
+            `);
+            iframeDoc.close();
         }
 
         // ANTI-ADBLOCK DETECTOR ENGINE
@@ -610,8 +614,6 @@
             if (activeView === viewGetKc) {
                 injectAdsterraSafeBanner('ad-slot-lotto-top', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
                 setTimeout(() => injectAdsterraSafeBanner('ad-slot-lotto-bottom', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6'), 350);
-            } else if (activeView === viewDashboard) {
-                injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             } else if (activeView === viewLeaderboard) {
                 injectAdsterraSafeBanner('ad-slot-leaderboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
             } else if (activeView === viewShop) {
@@ -625,7 +627,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             runAdBlockCheck();
-            injectAdsterraSafeBanner('ad-slot-dashboard', '93b1f9e019c65574bb080932b4771349', 'c0f6e26c4837f4a1220d9115e0a275e6');
+            // Geen advertenties meer op dashboard laden
         });
         
         setInterval(runAdBlockCheck, 6000);
@@ -670,7 +672,7 @@
                 const targetEmailClean = user.email.toLowerCase().trim();
 
                 if (targetEmailClean === 'littendekitten@gmail.com') {
-                    const structuralAdBlocks = ['ad-slot-dashboard', 'ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
+                    const structuralAdBlocks = ['ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
                     structuralAdBlocks.forEach(slotId => {
                         const slotNode = document.getElementById(slotId);
                         if (slotNode && slotNode.parentElement) slotNode.parentElement.style.setProperty('display', 'none', 'important');
@@ -757,7 +759,7 @@
                 if(!leaderboardList) return;
                 leaderboardList.innerHTML = "";
                 let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
-                let calculatedTotalSupply = 0; // Start de teller op 0
+                let calculatedTotalSupply = 0; 
 
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
@@ -765,7 +767,6 @@
                     const uname = data.username || "guest";
                     const balance = data.balance || 0;
 
-                    // Tel de balans van ELKE gebruiker op voor de Total Supply
                     calculatedTotalSupply += balance; 
 
                     if (email === currentUserEmail) {
@@ -800,7 +801,6 @@
                     myRankBalance.innerText = userCurrentBalance.toFixed(2);
                 }
 
-                // Update de globle Total Supply
                 globalTotalSupply = calculatedTotalSupply;
                 updateEconomyUI();
             });
@@ -815,7 +815,6 @@
             if (capDisplay) capDisplay.innerText = "€" + globalMarketCapEur.toFixed(2);
 
             if (globalTotalSupply > 0) {
-                // FORMULE: KOERS = GELD / MUNTEN
                 const currentRate = globalMarketCapEur / globalTotalSupply;
                 
                 if (rateDisplay) {
@@ -842,7 +841,6 @@
                     labels: ['Network Start', 'Previous Phase', 'Current Live Value'],
                     datasets: [{
                         label: 'Value of 1 KC (in EUR)',
-                        // We maken de grafiek visueel dynamisch t.o.v. de currentRate
                         data: [(currentRate * 0.7), (currentRate * 1.1), currentRate],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
