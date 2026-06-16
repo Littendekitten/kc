@@ -622,62 +622,60 @@
             updateEconomyUI();
         });
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const targetEmailClean = user.email.toLowerCase().trim();
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // Gebruiker is ingelogd
+        authView.classList.add('hidden');
+        appView.classList.remove('hidden');
 
-                if (targetEmailClean === 'littendekitten@gmail.com') {
-                    const structuralAdBlocks = ['ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
-                    structuralAdBlocks.forEach(slotId => {
-                        const slotNode = document.getElementById(slotId);
-                        if (slotNode && slotNode.parentElement) slotNode.parentElement.style.setProperty('display', 'none', 'important');
-                    });
-                }
+        const targetEmailClean = user.email.toLowerCase().trim();
 
-                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
-                    authView.classList.add('hidden');
-                    appView.classList.remove('hidden');
-                }
+        // Als je speciale admin-checks hebt, kun je die hier laten staan:
+        if (targetEmailClean === 'littendekitten@gmail.com') {
+            // ... (jouw admin code)
+        }
 
-                userEmail.innerText = targetEmailClean;
-                userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
+        userEmail.innerText = targetEmailClean;
+        userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
 
-                const userRef = doc(db, "wallets", targetEmailClean);
-                let currentUsername = "";
+        const userRef = doc(db, "wallets", targetEmailClean);
+        let currentUsername = "";
 
-                try {
-                    let userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        const data = userSnap.data();
-                        currentUsername = data.username || await generateUniqueGuestName();
-                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
-                    } else {
-                        currentUsername = await generateUniqueGuestName();
-                        const startBalance = 0.00;
-                        await setDoc(userRef, {
-                            name: user.displayName,
-                            email: targetEmailClean,
-                            username: currentUsername,
-                            balance: startBalance,
-                            createdAt: new Date()
-                        }, { merge: true });
-                        balanceAmount.innerText = startBalance.toFixed(2);
-                    }
-
-                    userDisplayName.innerText = `@${currentUsername}`;
-                    topbarUsername.innerText = `@${currentUsername}`;
-                    settingsUsernameInput.value = currentUsername;
-
-                    startLeaderboardAndEconomy(targetEmailClean);
-                    startIncomeStream(targetEmailClean);
-                } catch (error) { console.error("Firestore loading fault: ", error); }
+        try {
+            let userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                currentUsername = data.username || await generateUniqueGuestName();
+                balanceAmount.innerText = (data.balance || 0).toFixed(2);
             } else {
-                if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
-                appView.classList.add('hidden');
-                if (leaderboardUnsubscribe) leaderboardUnsubscribe();
-                if (incomeUnsubscribe) incomeUnsubscribe();
+                currentUsername = await generateUniqueGuestName();
+                const startBalance = 0.00;
+                await setDoc(userRef, {
+                    name: user.displayName,
+                    email: targetEmailClean,
+                    username: currentUsername,
+                    balance: startBalance,
+                    createdAt: new Date()
+                }, { merge: true });
+                balanceAmount.innerText = startBalance.toFixed(2);
             }
-        });
+
+            userDisplayName.innerText = `@${currentUsername}`;
+            topbarUsername.innerText = `@${currentUsername}`;
+            settingsUsernameInput.value = currentUsername;
+
+            startLeaderboardAndEconomy(targetEmailClean);
+            startIncomeStream(targetEmailClean);
+        } catch (error) { console.error("Firestore loading fault: ", error); }
+    } else {
+        // Gebruiker is uitgelogd
+        authView.classList.remove('hidden');
+        appView.classList.add('hidden');
+        
+        if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+        if (incomeUnsubscribe) incomeUnsubscribe();
+    }
+});
 
         if (btnLogin) btnLogin.addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch (error) { alert("Authentication failure: " + error.message); }});
         if (btnLogout) btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
