@@ -844,70 +844,57 @@
             });
         }
 
-// ==========================================
-// DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
-// ==========================================
+        // ==========================================
+        // DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
+        // ==========================================
 
-// Global variable to store the live rate
-let currentMarketRate = 0.05; // Starting base price
+        function startHistoricalRatesStream() {
+            const q = query(collection(db, "kc-to-eur"), orderBy("timestamp", "asc"));
+            historicalRatesUnsubscribe = onSnapshot(q, (snapshot) => {
+                historicalRates = [];
+                snapshot.forEach(docSnap => historicalRates.push(docSnap.data()));
+                updateEconomyUI();
+            });
+        }
 
-function startMarketDynamics() {
-    // Listens to all transactions to determine the price
-    const q = query(collection(db, "transactions"));
-    
-    onSnapshot(q, (snapshot) => {
-        let totalTransactionVolume = 0;
-        
-        // Sum up the transaction amounts from the collection
-        snapshot.forEach((doc) => {
-            const tx = doc.data();
-            totalTransactionVolume += (tx.amount || 0);
-        });
+        function startLeaderboardAndEconomy(currentUserEmail) {
+            const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
+            leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
+                if(!leaderboardList) return;
+                leaderboardList.innerHTML = "";
+                let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+                
+                let calculatedTotalSupply = 0; 
+                let usersAllTime = snapshot.size;
+                let usersWeeklyActive = 0;
 
-        // ALGORITHM: Price = Base (0.05) + (Volume * Sensitivity)
-        // The more activity in transactions, the higher the rate.
-        // Adjust 0.0001 (sensitivity) to make the market react faster or slower.
-        currentMarketRate = 0.05 + (totalTransactionVolume * 0.0001);
-        
-        // Refresh the UI with the new calculated rate
-        updateEconomyUI();
-    });
-}
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-function startLeaderboardAndEconomy(currentUserEmail) {
-    const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
-    leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
-        if(!leaderboardList) return;
-        leaderboardList.innerHTML = "";
-        let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
-        
-        let calculatedTotalSupply = 0; 
-        
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const email = data.email || docSnap.id;
+                    const uname = data.username || "guest";
+                    const balance = data.balance || 0;
 
-        snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const email = data.email || docSnap.id;
-            const uname = data.username || "guest";
-            const balance = data.balance || 0;
+                    calculatedTotalSupply += balance; 
 
-            calculatedTotalSupply += balance; 
+                    let isWeekly = false;
+                    if (data.createdAt) {
+                        const cDate = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                        if (cDate > oneWeekAgo) isWeekly = true;
+                    } else {
+                        isWeekly = true; 
+                    }
+                    if (isWeekly) usersWeeklyActive++;
 
-            // ... (keep your existing logic for isWeekly/rank) ...
+                    if (email === currentUserEmail) {
+                        userRank = currentRank;
+                        userCurrentBalance = balance;
+                        userCurrentName = uname;
+                        balanceAmount.innerText = balance.toFixed(2);
+                    }
 
-            if (email === currentUserEmail) {
-                userRank = currentRank;
-                userCurrentBalance = balance;
-                userCurrentName = uname;
-                balanceAmount.innerText = balance.toFixed(2);
-            }
-        });
-
-        // Update the Economy UI now that we have the calculations
-        updateEconomyUI();
-    });
-}
                     let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
                     if (currentRank === 1) { medal = '🥇'; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
                     else if (currentRank === 2) { medal = '🥈'; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
