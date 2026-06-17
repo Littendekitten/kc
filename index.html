@@ -423,9 +423,9 @@
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-xs uppercase font-bold text-slate-400">Live Algorithmic Exchange Rate</p>
-                            <div class="flex gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl">
-                                <button id="btn-chart-1h" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition bg-amber-500 text-slate-950">1 hr (Live)</button>
-                                <button id="btn-chart-lifetime" class="text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-slate-400 hover:text-white">Lifetime (Live)</button>
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+                                <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Synced to Database</span>
                             </div>
                         </div>
                         <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
@@ -667,15 +667,14 @@
         const incomeList = document.getElementById('income-list');
         const btnToggleIncome = document.getElementById('btn-toggle-income');
 
-        const btnChart1h = document.getElementById('btn-chart-1h');
-        const btnChartLifetime = document.getElementById('btn-chart-lifetime');
-
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
+        let historicalRatesUnsubscribe = null;
+        
         let rawIncomeRecords = [];
+        let historicalRates = [];
         let showMaxIncome = false;
         let statsChart = null; 
-        let currentChartTimeframe = '1h';
 
         // REAL-TIME ECOSYSTEM ENGINE DATA
         let globalMarketCapEur = 50.00; 
@@ -734,23 +733,6 @@
         if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
         if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
         if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
-
-        if(btnChart1h) {
-            btnChart1h.addEventListener('click', () => {
-                currentChartTimeframe = '1h';
-                btnChart1h.className = "text-[10px] font-bold px-2.5 py-1 rounded-lg transition bg-amber-500 text-slate-950";
-                btnChartLifetime.className = "text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-slate-400 hover:text-white";
-                updateEconomyUI();
-            });
-        }
-        if(btnChartLifetime) {
-            btnChartLifetime.addEventListener('click', () => {
-                currentChartTimeframe = 'lifetime';
-                btnChartLifetime.className = "text-[10px] font-bold px-2.5 py-1 rounded-lg transition bg-amber-500 text-slate-950";
-                btnChart1h.className = "text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-slate-400 hover:text-white";
-                updateEconomyUI();
-            });
-        }
 
         async function generateUniqueGuestName() {
             let exists = true;
@@ -824,12 +806,14 @@
 
                     startLeaderboardAndEconomy(targetEmailClean);
                     startIncomeStream(targetEmailClean);
+                    startHistoricalRatesStream();
                 } catch (error) { console.error("Firestore loading fault: ", error); }
             } else {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
                 appView.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
+                if (historicalRatesUnsubscribe) historicalRatesUnsubscribe();
             }
         });
 
@@ -863,6 +847,16 @@
         // ==========================================
         // DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
         // ==========================================
+
+        function startHistoricalRatesStream() {
+            const q = query(collection(db, "kc-to-eur"), orderBy("timestamp", "asc"));
+            historicalRatesUnsubscribe = onSnapshot(q, (snapshot) => {
+                historicalRates = [];
+                snapshot.forEach(docSnap => historicalRates.push(docSnap.data()));
+                updateEconomyUI();
+            });
+        }
+
         function startLeaderboardAndEconomy(currentUserEmail) {
             const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
             leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -945,6 +939,7 @@
             if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
             if (globalTotalSupply > 0) {
+                // Algorithmic Base estimate influenced by shop purchases
                 const baseRate = globalMarketCapEur / globalTotalSupply;
                 const networkSizeFactor = Math.log1p(globalUsersAllTime) * 1.8;
                 const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
@@ -963,7 +958,7 @@
             }
         }
 
-        function updateStatsChart(currentRate) {
+        function updateStatsChart(currentLiveRate) {
             const ctx = document.getElementById('rateChart');
             if(!ctx) return;
             
@@ -975,13 +970,24 @@
             let labelData = [];
             let rateData = [];
 
-            if (currentChartTimeframe === '1h') {
-                labelData = ['60m ago', '45m ago', '30m ago', '15m ago', 'Current live'];
-                rateData = [(currentRate * 0.985), (currentRate * 1.005), (currentRate * 0.991), (currentRate * 1.012), currentRate];
-            } else {
-                labelData = ['Network Start', 'Phase 1.5', 'Phase 2.0', 'Previous Phase', 'All-Time Live'];
-                rateData = [(currentRate * 0.35), (currentRate * 0.60), (currentRate * 0.52), (currentRate * 0.88), currentRate];
+            // Read the manual documents from Firebase
+            if (historicalRates.length > 0) {
+                historicalRates.forEach(record => {
+                    if (record.timestamp) {
+                        const d = record.timestamp.toDate ? record.timestamp.toDate() : new Date(record.timestamp);
+                        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                        labelData.push(`${dateStr} ${timeStr}`);
+                    } else {
+                        labelData.push("Unknown Date");
+                    }
+                    rateData.push(record.rate || 0);
+                });
             }
+
+            // Append the dynamically estimated Live Algorithmic Price to the very end
+            labelData.push('Live (Estimated)');
+            rateData.push(currentLiveRate);
 
             statsChart = new Chart(ctx, {
                 type: 'line',
