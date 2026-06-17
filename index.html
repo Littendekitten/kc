@@ -10,10 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        #leaderboard-list::-webkit-scrollbar, #income-list::-webkit-scrollbar { width: 6px; }
-        #leaderboard-list::-webkit-scrollbar-track, #income-list::-webkit-scrollbar-track { background: transparent; }
-        #leaderboard-list::-webkit-scrollbar-thumb, #income-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        #leaderboard-list::-webkit-scrollbar-thumb:hover, #income-list::-webkit-scrollbar-thumb:hover { background: #475569; }
+        #leaderboard-list::-webkit-scrollbar, #income-list::-webkit-scrollbar, #market-listings-list::-webkit-scrollbar { width: 6px; }
+        #leaderboard-list::-webkit-scrollbar-track, #income-list::-webkit-scrollbar-track, #market-listings-list::-webkit-scrollbar-track { background: transparent; }
+        #leaderboard-list::-webkit-scrollbar-thumb, #income-list::-webkit-scrollbar-thumb, #market-listings-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        #leaderboard-list::-webkit-scrollbar-thumb:hover, #income-list::-webkit-scrollbar-thumb:hover, #market-listings-list::-webkit-scrollbar-thumb:hover { background: #475569; }
         
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn {
@@ -113,6 +113,9 @@
                 <nav class="space-y-2">
                     <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-money-bill-transfer w-5"></i> Transfer Center
+                    </button>
+                    <button id="nav-market" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-store w-5 text-amber-500"></i> KC-Market
                     </button>
                     <button id="nav-leaderboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-trophy w-5 text-amber-500"></i> Global Leaderboard
@@ -229,6 +232,55 @@
                             <button id="btn-toggle-income" class="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1.5 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer transition">
                                 <span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KC MARKET VIEW -->
+                <div id="view-market" class="hidden space-y-6 animate-fade-in">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-store"></i> KC-Market P2P
+                            </h2>
+                            <p class="text-xs text-slate-400">List KittyCoins for real money at your own price. Uses direct bank transfers.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-fit">
+                            <h3 class="text-md font-bold text-white flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-plus text-amber-400"></i> Create Sale Listing
+                            </h3>
+                            <form id="market-listing-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1.5 ml-1">Amount to List</label>
+                                    <div class="relative">
+                                        <input type="number" id="market-amount" required min="0.01" step="0.01" placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-12 py-2.5 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                                        <span class="absolute right-4 top-3 text-xs text-slate-500 font-bold">KC</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 mt-1 block px-1">Coins are pulled from your wallet until sold or cancelled.</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1.5 ml-1">Total Fiat Price</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-2.5 text-xs text-slate-500 font-bold">€</span>
+                                        <input type="number" id="market-price" required min="0.01" step="0.01" placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-2.5 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                                    </div>
+                                </div>
+                                <button type="submit" id="btn-create-listing" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl hover:bg-amber-400 transition cursor-pointer text-xs uppercase tracking-wider">
+                                    List for Sale
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <h3 class="text-md font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-800 pb-3">
+                                <i class="fa-solid fa-list-ul text-amber-400"></i> Active Offer Listings
+                            </h3>
+                            <div id="market-listings-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                                <p class="text-xs text-slate-500 text-center py-6 font-mono">No market offers posted yet.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -447,18 +499,41 @@
                     <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
                         <i class="fa-solid fa-gear"></i> Account Settings
                     </h2>
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
-                        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
-                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
-                        <form id="settings-username-form" class="space-y-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
-                                <input type="text" id="settings-username-input" required maxlength="15" placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                    
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
+                            <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
+                            <form id="settings-username-form" class="space-y-4">
+                                <div class="relative">
+                                    <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                    <input type="text" id="settings-username-input" required maxlength="15" placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                </div>
+                                <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-xl hover:bg-amber-400 cursor-pointer transition text-xs uppercase tracking-wider font-bold">
+                                    Save Username
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <h3 class="text-md font-bold text-white mb-2">P2P Settlement Banking</h3>
+                            <p class="text-xs text-slate-400 mb-4">Required to sell or buy on KC-Market. Changes apply globally to direct financial receipts.</p>
+                            
+                            <!-- Recognition Alert Placeholder -->
+                            <div id="bank-recognition-alert" class="hidden bg-rose-500/10 border border-rose-500/40 text-rose-400 font-black text-xs px-4 py-3 rounded-xl mb-4 animate-pulse">
+                                <i class="fa-solid fa-circle-exclamation mr-1.5"></i> Bank Account Not Recognized!
                             </div>
-                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
-                                Save Username
-                            </button>
-                        </form>
+
+                            <form id="settings-bank-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1.5 ml-1">Bank Number / IBAN (e.g. NL12INGB0123456789)</label>
+                                    <input type="text" id="settings-bank-input" placeholder="Enter valid bank account structure" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition uppercase tracking-wider font-mono">
+                                </div>
+                                <button type="submit" id="btn-save-bank" class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-xl hover:bg-amber-400 cursor-pointer transition text-xs uppercase tracking-wider font-bold">
+                                    Save Bank Details
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -469,7 +544,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // ==========================================
         // DYNAMIC GLOBAL PLATFORM CONFIGURATION
@@ -514,6 +589,17 @@
         const provider = new GoogleAuthProvider();
 
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+
+        let cachedUserBankNumber = "";
+
+        // Core validation logic matching European/International structured alphanumeric account schemas
+        function isValidBankAccount(accountNum) {
+            const cleanStr = accountNum.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (cleanStr.length < 8 || cleanStr.length > 34) return false;
+            // Strict regex verifying country prefix, check digits, bank identifier string frameworks
+            const structuredIbanRegex = /^[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7,26}$/;
+            return structuredIbanRegex.test(cleanStr);
+        }
 
         function maskProfanity(text) {
             if (!text) return "";
@@ -641,6 +727,7 @@
         const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
         const navDashboard = document.getElementById('nav-dashboard');
+        const navMarket = document.getElementById('nav-market');
         const navLeaderboard = document.getElementById('nav-leaderboard');
         const navGetKc = document.getElementById('nav-get-kc');
         const navGames = document.getElementById('nav-games');
@@ -649,6 +736,7 @@
         const navSettings = document.getElementById('nav-settings');
 
         const viewDashboard = document.getElementById('view-dashboard');
+        const viewMarket = document.getElementById('view-market');
         const viewLeaderboard = document.getElementById('view-leaderboard');
         const viewGetKc = document.getElementById('view-get-kc');
         const viewGames = document.getElementById('view-games');
@@ -658,6 +746,9 @@
 
         const settingsUsernameForm = document.getElementById('settings-username-form');
         const settingsUsernameInput = document.getElementById('settings-username-input');
+        const settingsBankForm = document.getElementById('settings-bank-form');
+        const settingsBankInput = document.getElementById('settings-bank-input');
+        const bankRecognitionAlert = document.getElementById('bank-recognition-alert');
 
         const leaderboardList = document.getElementById('leaderboard-list');
         const myRankTag = document.getElementById('my-rank-tag');
@@ -672,6 +763,7 @@
 
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
+        let marketUnsubscribe = null;
         let rawIncomeRecords = [];
         let showMaxIncome = false;
         let statsChart = null; 
@@ -691,8 +783,17 @@
         }
 
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings];
-            const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings];
+            // First-time or missing validation guard route setup for the P2P financial architecture
+            if (activeView === viewMarket) {
+                if (!cachedUserBankNumber || !isValidBankAccount(cachedUserBankNumber)) {
+                    switchView(navSettings, viewSettings);
+                    if (bankRecognitionAlert) bankRecognitionAlert.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            const views = [viewDashboard, viewMarket, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings];
+            const navs = [navDashboard, navMarket, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -728,6 +829,7 @@
         if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
 
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+        if(navMarket) navMarket.addEventListener('click', () => switchView(navMarket, viewMarket));
         if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
         if(navGames) navGames.addEventListener('click', () => { switchView(navGames, viewGames); initKittyRunnerEngine(); });
@@ -805,6 +907,7 @@
                         const data = userSnap.data();
                         currentUsername = data.username || await generateUniqueGuestName();
                         balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                        cachedUserBankNumber = data.bankNumber || "";
                     } else {
                         currentUsername = await generateUniqueGuestName();
                         const startBalance = 0.00;
@@ -813,23 +916,28 @@
                             email: targetEmailClean,
                             username: currentUsername,
                             balance: startBalance,
+                            bankNumber: "",
                             createdAt: new Date()
                         }, { merge: true });
                         balanceAmount.innerText = startBalance.toFixed(2);
+                        cachedUserBankNumber = "";
                     }
 
                     userDisplayName.innerText = `@${currentUsername}`;
                     topbarUsername.innerText = `@${currentUsername}`;
                     settingsUsernameInput.value = currentUsername;
+                    settingsBankInput.value = cachedUserBankNumber;
 
                     startLeaderboardAndEconomy(targetEmailClean);
                     startIncomeStream(targetEmailClean);
+                    startMarketEngine(targetEmailClean);
                 } catch (error) { console.error("Firestore loading fault: ", error); }
             } else {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
                 appView.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
+                if (marketUnsubscribe) marketUnsubscribe();
             }
         });
 
@@ -857,6 +965,27 @@
                     topbarUsername.innerText = `@${newUsername}`;
                     alert(`Public username updated to @${newUsername}!`);
                 } catch (err) { alert(err.message); }
+            });
+        }
+
+        if (settingsBankForm) {
+            settingsBankForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const rawInput = settingsBankInput.value.trim();
+                
+                if (!isValidBankAccount(rawInput)) {
+                    if (bankRecognitionAlert) bankRecognitionAlert.classList.remove('hidden');
+                    return;
+                }
+
+                if (bankRecognitionAlert) bankRecognitionAlert.classList.add('hidden');
+                const myEmail = auth.currentUser.email.toLowerCase();
+
+                try {
+                    await setDoc(doc(db, "wallets", myEmail), { bankNumber: rawInput.toUpperCase() }, { merge: true });
+                    cachedUserBankNumber = rawInput.toUpperCase();
+                    alert("Bank structural credentials successfully bound to profile context!");
+                } catch (err) { alert("Database Fault: " + err.message); }
             });
         }
 
@@ -1028,7 +1157,7 @@
         }
 
         // ==========================================
-        // SYSTEM SUBSYSTEMS (Income, Trans, Lotto, Shop)
+        // SYSTEM SUBSYSTEMS (Income, Trans, Lotto, Shop, Market)
         // ==========================================
         function startIncomeStream(currentUserEmail) {
             const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(10));
@@ -1133,6 +1262,177 @@
                 finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
             });
         }
+
+        // ==========================================
+        // DYNAMIC P2P MARKET MODULE
+        // ==========================================
+        function startMarketEngine(currentUserEmail) {
+            const marketContainer = document.getElementById('market-listings-list');
+            const q = query(collection(db, "market_listings"), orderBy("timestamp", "desc"));
+            
+            marketUnsubscribe = onSnapshot(q, (snapshot) => {
+                if (!marketContainer) return;
+                marketContainer.innerHTML = "";
+
+                if (snapshot.empty) {
+                    marketContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-6 font-mono">No active market offers posted yet.</p>`;
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const offer = docSnap.data();
+                    const listingId = docSnap.id;
+                    const isOwnListing = offer.sellerEmail === currentUserEmail;
+
+                    const activeCardHtml = `
+                        <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Seller Profile</p>
+                                <p class="text-sm font-black text-white">@${offer.sellerUsername} ${isOwnListing ? '<span class="text-[10px] text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md ml-1">You</span>' : ''}</p>
+                                <div class="flex gap-4 mt-1.5 text-xs font-mono">
+                                    <div><span class="text-slate-500">Volume:</span> <span class="text-amber-400 font-bold">${parseFloat(offer.amount).toFixed(2)} KC</span></div>
+                                    <div><span class="text-slate-500">Price:</span> <span class="text-emerald-400 font-bold">€${parseFloat(offer.price).toFixed(2)}</span></div>
+                                </div>
+                            </div>
+                            <div>
+                                ${isOwnListing ? 
+                                `<button onclick="window.cancelMarketListing('${listingId}')" class="bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500 hover:text-white text-rose-400 text-xs font-bold px-4 py-2 rounded-xl transition cursor-pointer">Cancel Sale</button>` : 
+                                `<button onclick="window.initiateMarketBuy('${listingId}')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-slate-950 text-xs font-black px-5 py-2 rounded-xl transition shadow-md cursor-pointer uppercase tracking-wider">Buy Offer</button>`}
+                            </div>
+                        </div>`;
+                    marketContainer.insertAdjacentHTML('beforeend', activeCardHtml);
+                });
+            });
+        }
+
+        const marketListingForm = document.getElementById('market-listing-form');
+        if (marketListingForm) {
+            marketListingForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!auth.currentUser) return;
+
+                const amount = parseFloat(document.getElementById('market-amount').value);
+                const price = parseFloat(document.getElementById('market-price').value);
+                const myEmail = auth.currentUser.email.toLowerCase();
+
+                if (isNaN(amount) || amount <= 0 || isNaN(price) || price <= 0) return alert("Verify numeric bounds configuration parameters.");
+                
+                const btnSubmitListing = document.getElementById('btn-create-listing');
+                if (btnSubmitListing) { btnSubmitListing.disabled = true; btnSubmitListing.innerText = "Processing..."; }
+
+                try {
+                    const myDocRef = doc(db, "wallets", myEmail);
+                    const newListingRef = doc(collection(db, "market_listings"));
+
+                    await runTransaction(db, async (transaction) => {
+                        const mySnap = await transaction.get(myDocRef);
+                        const currentBalance = mySnap.data().balance || 0;
+                        const myUsername = mySnap.data().username || "guest";
+
+                        if (currentBalance < amount) throw new Error("Insufficient trade balance assets.");
+
+                        // Deduct listing assets immediately from active circulation profile
+                        transaction.update(myDocRef, { balance: currentBalance - amount });
+                        transaction.set(newListingRef, {
+                            sellerEmail: myEmail,
+                            sellerUsername: myUsername,
+                            sellerBank: cachedUserBankNumber,
+                            amount: amount,
+                            price: price,
+                            timestamp: new Date()
+                        });
+                    });
+
+                    alert(`Successfully listed ${amount.toFixed(2)} KC for €${price.toFixed(2)}! Assets safely cached.`);
+                    marketListingForm.reset();
+                } catch (err) { alert("Listing Error: " + err.message); }
+                finally { if (btnSubmitListing) { btnSubmitListing.disabled = false; btnSubmitListing.innerText = "List for Sale"; } }
+            });
+        }
+
+        window.cancelMarketListing = async function(listingId) {
+            const confirmation = confirm("Confirm withdrawal: Return active listed assets to balance repository?");
+            if (!confirmation) return;
+
+            try {
+                const listingRef = doc(db, "market_listings", listingId);
+                const listingSnap = await getDoc(listingRef);
+                
+                if (!listingSnap.exists()) throw new Error("Offer instance dropped or altered.");
+                
+                const offer = listingSnap.data();
+                const myDocRef = doc(db, "wallets", offer.sellerEmail.toLowerCase());
+
+                await runTransaction(db, async (transaction) => {
+                    const currentListingState = await transaction.get(listingRef);
+                    if (!currentListingState.exists()) throw new Error("Offer instance concurrently dropped.");
+
+                    const mySnap = await transaction.get(myDocRef);
+                    const currentBalance = mySnap.data().balance || 0;
+
+                    transaction.update(myDocRef, { balance: currentBalance + offer.amount });
+                    transaction.delete(listingRef);
+                });
+
+                alert("Listing successfully terminated. Assets returned to balance stack.");
+            } catch (err) { alert("Cancellation Error: " + err.message); }
+        };
+
+        window.initiateMarketBuy = async function(listingId) {
+            try {
+                const listingRef = doc(db, "market_listings", listingId);
+                const listingSnap = await getDoc(listingRef);
+                
+                if (!listingSnap.exists()) throw new Error("Target listing structure no longer valid.");
+                
+                const offer = listingSnap.data();
+                const buyerEmail = auth.currentUser.email.toLowerCase();
+                const buyerDocRef = doc(db, "wallets", buyerEmail);
+                
+                const buyerSnap = await getDoc(buyerDocRef);
+                const buyerUsername = buyerSnap.data().username || "buyer";
+
+                // P2P escrow transfer instructional framework
+                const checkoutPrompt = confirm(
+                    `=== KC-MARKET ESCROW ESCAPEMENT ===\n\n` +
+                    `To complete purchase of ${offer.amount.toFixed(2)} KC for €${offer.price.toFixed(2)}, ` +
+                    `you must manually execute a direct wire transfer outside this client application.\n\n` +
+                    `--- SELLER DESTINATION PARAMETERS ---\n` +
+                    `Recipient: @${offer.sellerUsername}\n` +
+                    `Bank/IBAN: ${offer.sellerBank}\n` +
+                    `Total Amount: €${offer.price.toFixed(2)}\n\n` +
+                    `Click OK once bank parameters are logged to update transaction indexes and assign ledger assets.`
+                );
+
+                if (!checkoutPrompt) return;
+
+                await runTransaction(db, async (transaction) => {
+                    const freshListingCheck = await transaction.get(listingRef);
+                    if (!freshListingCheck.exists()) throw new Error("Listing bought by another network actor concurrently.");
+
+                    const buyerProfileState = await transaction.get(buyerDocRef);
+                    const currentBuyerBal = buyerProfileState.data().balance || 0;
+
+                    // Clear transaction asset allocations straight to buyer wallet index 
+                    transaction.update(buyerDocRef, { balance: currentBuyerBal + offer.amount });
+                    transaction.delete(listingRef);
+
+                    // Append real-time internal receipts reference
+                    const transactionLoggingRef = doc(collection(db, "transactions"));
+                    transaction.set(transactionLoggingRef, {
+                        senderEmail: offer.sellerEmail,
+                        senderUsername: offer.sellerUsername,
+                        receiverEmail: buyerEmail,
+                        receiverUsername: buyerUsername,
+                        amount: offer.amount,
+                        message: `P2P Market Settlement (Bank Transfer Agreement)`,
+                        timestamp: new Date()
+                    });
+                });
+
+                alert("Success! Balance transferred. Please fulfill structural bank operations within standard legal limits.");
+            } catch (err) { alert("Purchase execution interrupted: " + err.message); }
+        };
 
         if (btnTriggerLotto) {
             btnTriggerLotto.addEventListener('click', async () => {
