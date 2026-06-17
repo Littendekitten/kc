@@ -1,1 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KC-Xchange</title>
+    
+    <link class="rounded-md" rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #leaderboard-list::-webkit-scrollbar, #income-list::-webkit-scrollbar { width: 6px; }
+        #leaderboard-list::-webkit-scrollbar-track, #income-list::-webkit-scrollbar-track { background: transparent; }
+        #leaderboard-list::-webkit-scrollbar-thumb, #income-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        #leaderboard-list::-webkit-scrollbar-thumb:hover, #income-list::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
+        @media (max-width: 1023px) {
+            #sidebar { transform: translateX(-100%) !important; }
+            .sidebar-open #sidebar { transform: translateX(0) !important; }
+        }
+        @media (min-width: 1024px) {
+            #sidebar { transform: translateX(0) !important; }
+        }
+
+        .ad-slot-wrapper {
+            transform-origin: center center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease-in-out;
+        }
+        @media (max-width: 350px) {
+            #ad-slot-lotto-top, #ad-slot-lotto-bottom, #ad-slot-leaderboard, #ad-slot-shop, #ad-slot-stats {
+                transform: scale(0.88);
+                margin-top: -4px;
+                margin-bottom: -4px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-slate-950">
+
+    <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-slate-950/98 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
+        <div class="max-w-md bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl shadow-2xl space-y-6 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 text-3xl shadow-lg">
+                <i class="fa-solid fa-shield-halved animate-pulse"></i>
+            </div>
+            <div class="space-y-2 pt-6">
+                <h2 class="text-2xl font-black text-rose-400 tracking-tight">AdBlocker Detected!</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    To keep this website running for free, advertisements are mandatory. Disable your ad blocker for this website to continue.
+                </p>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-left text-[11px] text-slate-400 space-y-1.5 font-mono">
+                <p class="text-amber-400 font-bold mb-1">// How do I turn it off?</p>
+                <p>1. Click on the AdBlock icon in your browser bar.</p>
+                <p>2. Toggle the switch for this website.</p>
+                <p>3. Click on the reload button below.</p>
+            </div>
+            <button onclick="window.location.reload();" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-rose-950/50 cursor-pointer text-xs uppercase tracking-wider transform active:scale-98">
+                <i class="fa-solid fa-rotate-right mr-2"></i> I turned it off
+            </button>
+        </div>
+    </div>
+
+    <div id="auth-view" class="min-h-screen flex flex-col items-center justify-center p-4 bg-radial from-slate-900 via-slate-950 to-slate-950 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25"></div>
+        
+        <div class="max-w-md w-full bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-8 relative z-10">
+            <div class="space-y-3">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400/10 to-orange-500/10 rounded-2xl border border-amber-500/20 shadow-xl animate-bounce overflow-hidden p-2">
+                    <img src="logo.png" alt="KC Logo" class="w-full h-full object-contain">
+                </div>
+                <h1 class="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">KC-XCHANGE</h1>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">The official KittyCoins trading platform.</p>
+            </div>
+
+            <div class="border-t border-slate-800/60 relative">
+                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/80 px-3 text-xs text-slate-500 uppercase tracking-widest font-semibold rounded-full">Sign In</span>
+            </div>
+
+            <div class="space-y-4">
+                <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-bold py-4 px-4 rounded-xl hover:bg-amber-400 transition-all duration-300 shadow-xl cursor-pointer transform active:scale-95">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-5 h-5">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+        <p class="text-xs text-slate-600 mt-12 relative z-10">&copy; 2026 KittyCoins Exchange &bull; Made by KitaCat</p>
+    </div>
+
+    <div id="app-view" class="hidden min-h-screen flex bg-slate-900/30 relative">
+        
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+            <div class="p-6 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-900 pb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center border border-amber-500/20 overflow-hidden p-1">
+                            <img src="logo.png" alt="KC" class="w-full h-full object-contain">
+                        </div>
+                        <h2 class="font-black tracking-widest text-amber-400 text-sm">KC-XCHANGE</h2>
+                    </div>
+                    <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2 bg-slate-900 rounded-xl cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <nav class="space-y-2">
+                    <button id="nav-dashboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl bg-slate-900 text-amber-400 font-bold border border-slate-800/80 transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-money-bill-transfer w-5"></i> Transfer Center
+                    </button>
+                    <button id="nav-leaderboard" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-trophy w-5 text-amber-500"></i> Global Leaderboard
+                    </button>
+                    <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto
+                    </button>
+                    <button id="nav-games" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-gamepad w-5 text-amber-500"></i> Kitty Runner
+                    </button>
+                    <button id="nav-shop" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-shop w-5 text-amber-500"></i> KC-Shop
+                    </button>
+                    <button id="nav-stats" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-chart-line w-5 text-amber-500"></i> KC-Stats
+                    </button>
+                    <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-gear w-5"></i> Settings
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 m-4 border border-slate-900 bg-slate-950 rounded-2xl space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img id="user-photo" src="" alt="Profile" class="w-10 h-10 rounded-xl border border-amber-400 object-cover">
+                        <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full"></span>
+                    </div>
+                    <div class="truncate max-w-[145px]">
+                        <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@loading...</p>
+                        <p id="user-email" class="text-[10px] text-slate-500 truncate">loading...</p>
+                    </div>
+                </div>
+                <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 text-slate-400 py-3 rounded-xl text-xs font-bold cursor-pointer transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-1 lg:pl-72 min-h-screen flex flex-col">
+            
+            <header class="border-b border-slate-800/80 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 p-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button id="btn-open-sidebar" class="lg:hidden text-slate-400 hover:text-white p-2.5 bg-slate-900 rounded-xl border border-slate-800 cursor-pointer transition">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs text-amber-400 font-mono bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl">
+                    <i class="fa-solid fa-user-astronaut text-slate-500"></i>
+                    <span id="topbar-username" class="font-bold">@guest</span>
+                </div>
+            </header>
+
+            <main class="flex-1 p-4 md:p-8 max-w-5xl w-full mx-auto">
+                
+                <div id="view-dashboard" class="space-y-8 animate-fade-in">
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                            <div class="absolute -right-8 -bottom-8 w-32 h-32 opacity-10 pointer-events-none">
+                                <img src="logo.png" alt="" class="w-full h-full object-contain brightness-0 invert">
+                            </div>
+                            <div class="relative z-10">
+                                <p class="text-xs uppercase tracking-widest text-amber-100 font-bold mb-2">My Balance</p>
+                                <div class="flex items-baseline gap-2">
+                                    <span id="balance-amount" class="text-5xl font-black tracking-tight">0.00</span>
+                                    <span class="text-xl font-bold text-amber-200">KC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-paper-plane text-amber-400"></i> Send & Receive KittyCoins
+                            </h3>
+                            <form id="transfer-form" class="space-y-4">
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1.5 ml-1">Recipient Username</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                            <input type="text" id="receiver-username" required placeholder="username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1.5 ml-1">Amount</label>
+                                        <div class="relative">
+                                            <input type="number" id="transfer-amount" required min="0.01" step="0.01" placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-12 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                            <span class="absolute right-4 top-3.5 text-xs text-slate-500 font-bold">KC</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1.5 ml-1">Attach a Wire Message <span class="text-[10px] text-slate-600">(Swear words filtered)</span></label>
+                                    <input type="text" id="transfer-message" maxlength="120" placeholder="Optional public note..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-400 transition">
+                                </div>
+                                <button type="submit" id="btn-send" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">
+                                    Send Coins
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg mt-6">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-4">
+                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center gap-2">
+                                <i class="fa-solid fa-wallet text-emerald-400"></i> Latest Income Stream
+                            </h3>
+                            <span class="text-[10px] text-slate-500 font-mono">Real-time Receipts</span>
+                        </div>
+                        <div id="income-list" class="space-y-3 transition-all duration-300">
+                            <p class="text-xs text-slate-500 text-center py-4 font-mono">No income receipts processed yet.</p>
+                        </div>
+                        <div class="mt-4 flex justify-center">
+                            <button id="btn-toggle-income" class="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1.5 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer transition">
+                                <span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-leaderboard" class="hidden space-y-6 animate-fade-in">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-trophy"></i> Global Rankings
+                            </h2>
+                            <p class="text-xs text-slate-400">Top performance metrics across the network system.</p>
+                        </div>
+                        <span class="self-start md:self-auto text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live Updates Active
+                        </span>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Rankings Sponsor Frame</span>
+                        <div id="ad-slot-leaderboard" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
+                        <div id="leaderboard-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2"></div>
+                        
+                        <div id="my-ranking-container" class="mt-5 pt-4 border-t border-slate-800">
+                            <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span id="my-rank-tag" class="w-9 h-9 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-sm">#-</span>
+                                    <p class="text-sm font-bold text-white">You (<span id="my-rank-user" class="text-amber-400">@username</span>)</p>
+                                </div>
+                                <p class="text-lg font-black text-amber-400"><span id="my-rank-balance">0.00</span> KC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-get-kc" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-ticket"></i> Kitty Lotto Module
+                        </h2>
+                        <p class="text-xs text-slate-400">Claim free coins! Banners rotate below and above this module to fund platform payouts.</p>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-lotto-top" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                    
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20">
+                                    <i class="fa-solid fa-clover"></i>
+                                </div>
+                                <h3 class="text-md font-bold text-white">Free Daily Draw</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Click the button to activate a scratcher card. You are guaranteed to win a customized micro-allocation fraction of KittyCoins!
+                                </p>
+                                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
+                                    <p class="text-amber-500 font-bold">// Loot Table Configuration:</p>
+                                    <p>&bull; 75% chance of: <span class="text-slate-300">0.10 - 0.50 KC</span></p>
+                                    <p>&bull; 24% chance of: <span class="text-slate-300">1.00 - 5.00 KC</span></p>
+                                    <p>&bull; 1% JACKPOT: <span class="text-emerald-400">20.00 KC!</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[320px]">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)] pointer-events-none"></div>
+                            
+                            <div id="lotto-card" class="space-y-6 max-w-sm w-full bg-slate-900/60 border border-dashed border-slate-700 p-6 rounded-2xl relative z-10 shadow-inner">
+                                <div id="lotto-icon" class="text-5xl text-amber-500 animate-pulse">
+                                    <i class="fa-solid fa-gift"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Are you ready?</h4>
+                                    <p id="lotto-status-desc" class="text-xs text-slate-400">Click the box - Claim the prize!</p>
+                                </div>
+                                
+                                <button id="btn-trigger-lotto" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activate a Scratcher
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-games" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad"></i> Kitty Runner Subsystem
+                        </h2>
+                        <p class="text-xs text-slate-400">Survive dynamic obstacle pathways to generate direct algorithm dividends.</p>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div id="game-stage" class="relative w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden aspect-[2/1]">
+                            <canvas id="gameCanvas" width="800" height="400" class="w-full h-full block"></canvas>
+                            
+                            <div id="game-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 p-6 text-center z-20">
+                                <h3 id="game-overlay-title" class="text-2xl font-black text-amber-400 mb-2">Kitty Runner</h3>
+                                <p id="game-overlay-desc" class="text-xs text-slate-400 mb-6 max-w-sm">Press Spacebar, Up Arrow, or click the canvas to jump. Avoid unpredictable obstacles!</p>
+                                <button id="btn-start-game" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl transition transform active:scale-95 cursor-pointer text-xs uppercase tracking-wider">
+                                    Start Run
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-full max-w-2xl mt-4 grid grid-cols-3 gap-4 text-center">
+                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
+                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Active Time</p>
+                                <p id="game-ui-time" class="text-sm font-mono font-bold text-white">0.0s</p>
+                            </div>
+                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
+                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Rate Tier</p>
+                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.10 KC / 10s</p>
+                            </div>
+                            <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
+                                <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Earned Loot</p>
+                                <p id="game-ui-earned" class="text-sm font-mono font-bold text-emerald-400">0.00 KC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-shop" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-shop"></i> KC-Shop
+                        </h2>
+                        <p class="text-xs text-slate-400">Purchase professional services directly using your KittyCoins balance.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center text-xl border border-amber-500/20 mb-4">
+                                    <i class="fa-solid fa-code"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Portfolio Website</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed mb-4 mt-2">
+                                    Professional setup and configuration of a personal portfolio website. Secure your digital presence.
+                                </p>
+                            </div>
+                            <button id="buy-portfolio" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                Buy
+                            </button>
+                        </div>
+                        
+                        <div class="bg-slate-900/20 border border-dashed border-slate-800 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
+                            <i class="fa-solid fa-boxes-stacked text-slate-700 text-4xl mb-3"></i>
+                            <h3 class="text-sm font-bold text-slate-500">More services coming soon</h3>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-shop" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-stats" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> KC-Stats Market
+                        </h2>
+                        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Circulating Supply</p>
+                            <h3 id="kc-total-supply" class="text-xl font-black text-amber-400 font-mono">0.00 KC</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Network Users (All-Time)</p>
+                            <h3 id="kc-total-users" class="text-xl font-black text-blue-400 font-mono">0</h3>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Active Network (Weekly)</p>
+                            <h3 id="kc-weekly-users" class="text-xl font-black text-indigo-400 font-mono">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-xs uppercase font-bold text-slate-400">Live Algorithmic Exchange Rate</p>
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+                                <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Synced to Database</span>
+                            </div>
+                        </div>
+                        <h3 id="kc-rate-display" class="text-4xl font-black text-emerald-400 font-mono flex items-center gap-3">
+                            Loading... <i class="fa-solid fa-spinner animate-spin text-lg text-slate-500"></i>
+                        </h3>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
+                        <canvas id="rateChart"></canvas>
+                    </div>
+
+                    <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
+                        <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
+                        <div id="ad-slot-stats" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <div id="view-settings" class="hidden space-y-6 animate-fade-in">
+                    <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-gear"></i> Account Settings
+                    </h2>
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl max-w-xl shadow-lg">
+                        <h3 class="text-md font-bold text-white mb-2">Change Username</h3>
+                        <p class="text-xs text-slate-400 mb-6">Choose a unique handle so other users can find you and send you KittyCoins.</p>
+                        <form id="settings-username-form" class="space-y-4">
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                <input type="text" id="settings-username-input" required maxlength="15" placeholder="new_username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                            </div>
+                            <button type="submit" id="btn-save-username" class="bg-amber-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl hover:bg-amber-400 cursor-pointer transition">
+                                Save Username
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ==========================================
+        // DYNAMIC GLOBAL PLATFORM CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            firebase: {
+                apiKey: "AIzaSyDra6ILu1IGCyZ64fTfxKYGoQqEL6CbUFE",
+                authDomain: "kc-xchange.firebaseapp.com",
+                projectId: "kc-xchange",
+                storageBucket: "kc-xchange.firebasestorage.app",
+                messagingSenderId: "25389828665",
+                appId: "1:25389828665:web:0e42a57c7176e06b499be8",
+                measurementId: "G-G7TY0C4T3X"
+            },
+            lotto: {
+                cost: 1.00, 
+                distribution: {
+                    lowChance: 75, 
+                    midChance: 99  
+                },
+                prizes: {
+                    lowMin: 0.10,
+                    lowMax: 0.50,
+                    midMin: 1.00,
+                    midMax: 5.00,
+                    jackpot: 20.00
+                }
+            },
+            shop: {
+                portfolioCost: 350.00, 
+                formspreeUrl: "https://formspree.io/f/mwvjywav" 
+            },
+            ads: {
+                desktopKey: '93b1f9e019c65574bb080932b4771349',
+                mobileKey: 'c0f6e26c4837f4a1220d9115e0a275e6'
+            }
+        };
+
+        const app = initializeApp(CONFIG.firebase);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+
+        function maskProfanity(text) {
+            if (!text) return "";
+            const badWords = ['fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'cunt', 'bastard', 'asshole', 'nigger', 'faggot', 'whore', 'slut'];
+            let filtered = text;
+            badWords.forEach(word => {
+                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                filtered = filtered.replace(regex, '####');
+            });
+            return filtered;
+        }
+
+        function injectAdsterraSafeBanner(containerId, desktopKey, mobileKey) {
+            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') {
+                const container = document.getElementById(containerId);
+                if (container && container.parentElement) container.parentElement.style.display = 'none'; 
+                return; 
+            }
+
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+
+            const isMobile = window.innerWidth < 768;
+            const activeKey = isMobile ? mobileKey : desktopKey;
+            const w = isMobile ? 320 : 728;
+            const h = isMobile ? 50 : 90;
+
+            container.style.width = `${w}px`;
+            container.style.height = `${h}px`;
+
+            if (isLocalDevelopment) {
+                container.innerHTML = `
+                    <div class="w-full h-full rounded-xl border border-dashed border-slate-800 bg-slate-950 flex flex-col items-center justify-center text-center p-1.5 select-none">
+                        <p class="text-[9px] font-mono text-amber-500 font-bold"><i class="fa-solid fa-code-branch mr-1"></i> DEV MOCK GUARD</p>
+                        <p class="text-[8px] text-slate-500 font-mono mt-0.5">${w}x${h} Native Frame</p>
+                    </div>`;
+                return;
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.width = w;
+            iframe.height = h;
+            iframe.style.border = 'none';
+            iframe.style.overflow = 'hidden';
+            iframe.scrolling = 'no';
+            
+            container.appendChild(iframe);
+
+            const iframeDoc = iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }</style>
+                </head>
+                <body>
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : '${activeKey}',
+                            'format' : 'iframe',
+                            'height' : ${h},
+                            'width' : ${w},
+                            'params' : {}
+                        };
+                    <\/script>
+                    <script type="text/javascript" src="//www.highperformanceformat.com/${activeKey}/invoke.js"><\/script>
+                </body>
+                </html>
+            `);
+            iframeDoc.close();
+        }
+
+        function runAdBlockCheck() {
+            if (isLocalDevelopment) return;
+            if (auth.currentUser && auth.currentUser.email.toLowerCase().trim() === 'littendekitten@gmail.com') return;
+
+            const bait = document.createElement('div');
+            bait.className = 'adsbox ad-zone banner-ads premium-ad text-ads ad-placement';
+            bait.style.cssText = 'width:1px !important; height:1px !important; position:absolute !important; left:-9999px !important; top:-9999px !important;';
+            document.body.appendChild(bait);
+            
+            setTimeout(() => {
+                const overlay = document.getElementById('adblock-overlay');
+                let isBlocked = false;
+
+                if (window.getComputedStyle) {
+                    const styles = window.getComputedStyle(bait);
+                    if (styles.getPropertyValue('display') === 'none' || styles.getPropertyValue('visibility') === 'hidden') {
+                        isBlocked = true;
+                    }
+                }
+                if (bait.offsetHeight === 0) isBlocked = true;
+
+                document.body.removeChild(bait);
+
+                if (isBlocked && overlay) {
+                    overlay.classList.remove('hidden');
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-view').classList.add('hidden');
+                }
+            }, 250);
+        }
+
+        const btnTriggerLotto = document.getElementById('btn-trigger-lotto');
+        const lottoIcon = document.getElementById('lotto-icon');
+        const lottoStatusTitle = document.getElementById('lotto-status-title');
+        const lottoStatusDesc = document.getElementById('lotto-status-desc');
+        
+        const authView = document.getElementById('auth-view');
+        const appView = document.getElementById('app-view');
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const balanceAmount = document.getElementById('balance-amount');
+        const transferForm = document.getElementById('transfer-form');
+        const btnSend = document.getElementById('btn-send');
+
+        const userDisplayName = document.getElementById('user-display-name');
+        const userEmail = document.getElementById('user-email');
+        const userPhoto = document.getElementById('user-photo');
+        const topbarUsername = document.getElementById('topbar-username');
+
+        const btnOpenSidebar = document.getElementById('btn-open-sidebar');
+        const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+
+        const navDashboard = document.getElementById('nav-dashboard');
+        const navLeaderboard = document.getElementById('nav-leaderboard');
+        const navGetKc = document.getElementById('nav-get-kc');
+        const navGames = document.getElementById('nav-games');
+        const navShop = document.getElementById('nav-shop');
+        const navStats = document.getElementById('nav-stats');
+        const navSettings = document.getElementById('nav-settings');
+
+        const viewDashboard = document.getElementById('view-dashboard');
+        const viewLeaderboard = document.getElementById('view-leaderboard');
+        const viewGetKc = document.getElementById('view-get-kc');
+        const viewGames = document.getElementById('view-games');
+        const viewShop = document.getElementById('view-shop');
+        const viewStats = document.getElementById('view-stats');
+        const viewSettings = document.getElementById('view-settings');
+
+        const settingsUsernameForm = document.getElementById('settings-username-form');
+        const settingsUsernameInput = document.getElementById('settings-username-input');
+
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const myRankTag = document.getElementById('my-rank-tag');
+        const myRankUser = document.getElementById('my-rank-user');
+        const myRankBalance = document.getElementById('my-rank-balance');
+
+        const incomeList = document.getElementById('income-list');
+        const btnToggleIncome = document.getElementById('btn-toggle-income');
+
+        let leaderboardUnsubscribe = null;
+        let incomeUnsubscribe = null;
+        let historicalRatesUnsubscribe = null;
+        
+        let rawIncomeRecords = [];
+        let historicalRates = [];
+        let showMaxIncome = false;
+        let statsChart = null; 
+
+        // REAL-TIME ECOSYSTEM ENGINE DATA
+        let globalMarketCapEur = 50.00; 
+        let globalTotalSupply = 0; 
+        let globalUsersAllTime = 0;
+        let globalUsersWeeklyActive = 0;
+        let globalTotalKcSpentInShop = 0;
+
+        function setupUIFromConfig() {
+            const buyBtn = document.getElementById('buy-portfolio');
+            if (buyBtn) buyBtn.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`;
+            if (lottoStatusTitle) lottoStatusTitle.innerText = `Are you ready? (${CONFIG.lotto.cost} KC)`;
+        }
+
+        function switchView(activeNav, activeView) {
+            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings];
+            const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings];
+            
+            views.forEach(v => { if(v) v.classList.add('hidden'); });
+            navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
+
+            if(activeView) activeView.classList.remove('hidden');
+            if(activeNav) activeNav.classList.add('bg-slate-900', 'text-amber-400', 'font-bold');
+            
+            document.body.classList.remove('sidebar-open');
+
+            if (activeView === viewGetKc) {
+                injectAdsterraSafeBanner('ad-slot-lotto-top', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
+                setTimeout(() => injectAdsterraSafeBanner('ad-slot-lotto-bottom', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey), 350);
+            } else if (activeView === viewLeaderboard) {
+                injectAdsterraSafeBanner('ad-slot-leaderboard', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
+            } else if (activeView === viewShop) {
+                injectAdsterraSafeBanner('ad-slot-shop', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
+            } else if (activeView === viewStats) {
+                injectAdsterraSafeBanner('ad-slot-stats', CONFIG.ads.desktopKey, CONFIG.ads.mobileKey);
+                updateEconomyUI();
+            } else if (activeView !== viewGames) {
+                stopKittyRunnerEngine();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupUIFromConfig();
+            runAdBlockCheck();
+        });
+        
+        setInterval(runAdBlockCheck, 6000);
+
+        if (btnOpenSidebar) btnOpenSidebar.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.add('sidebar-open'); });
+        if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+
+        if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
+        if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
+        if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
+        if(navGames) navGames.addEventListener('click', () => { switchView(navGames, viewGames); initKittyRunnerEngine(); });
+        if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
+        if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
+        if(navSettings) navSettings.addEventListener('click', () => switchView(navSettings, viewSettings));
+
+        async function generateUniqueGuestName() {
+            let exists = true;
+            let guestName = "";
+            while (exists) {
+                let rand = Math.floor(1000 + Math.random() * 9000);
+                guestName = `kc-guest-${rand}`;
+                const q = query(collection(db, "wallets"), where("username", "==", guestName));
+                try {
+                    const snap = await getDocs(q);
+                    if (snap.empty) exists = false;
+                } catch(e) { exists = false; }
+            }
+            return guestName;
+        }
+
+        onSnapshot(doc(db, "settings", "shop"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.market_cap_eur !== undefined) globalMarketCapEur = data.market_cap_eur;
+                if (data.total_kc_spent_in_shop !== undefined) globalTotalKcSpentInShop = data.total_kc_spent_in_shop;
+            }
+            updateEconomyUI();
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const targetEmailClean = user.email.toLowerCase().trim();
+
+                if (targetEmailClean === 'littendekitten@gmail.com') {
+                    const structuralAdBlocks = ['ad-slot-lotto-top', 'ad-slot-lotto-bottom', 'ad-slot-leaderboard', 'ad-slot-shop', 'ad-slot-stats'];
+                    structuralAdBlocks.forEach(slotId => {
+                        const slotNode = document.getElementById(slotId);
+                        if (slotNode && slotNode.parentElement) slotNode.parentElement.style.setProperty('display', 'none', 'important');
+                    });
+                }
+
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) {
+                    authView.classList.add('hidden');
+                    appView.classList.remove('hidden');
+                }
+
+                userEmail.innerText = targetEmailClean;
+                userPhoto.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=f59e0b&color=fff';
+
+                const userRef = doc(db, "wallets", targetEmailClean);
+                let currentUsername = "";
+
+                try {
+                    let userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        currentUsername = data.username || await generateUniqueGuestName();
+                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                    } else {
+                        currentUsername = await generateUniqueGuestName();
+                        const startBalance = 0.00;
+                        await setDoc(userRef, {
+                            name: user.displayName,
+                            email: targetEmailClean,
+                            username: currentUsername,
+                            balance: startBalance,
+                            createdAt: new Date()
+                        }, { merge: true });
+                        balanceAmount.innerText = startBalance.toFixed(2);
+                    }
+
+                    userDisplayName.innerText = `@${currentUsername}`;
+                    topbarUsername.innerText = `@${currentUsername}`;
+                    settingsUsernameInput.value = currentUsername;
+
+                    startLeaderboardAndEconomy(targetEmailClean);
+                    startIncomeStream(targetEmailClean);
+                    startHistoricalRatesStream();
+                } catch (error) { console.error("Firestore loading fault: ", error); }
+            } else {
+                if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
+                appView.classList.add('hidden');
+                if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+                if (incomeUnsubscribe) incomeUnsubscribe();
+                if (historicalRatesUnsubscribe) historicalRatesUnsubscribe();
+            }
+        });
+
+        if (btnLogin) btnLogin.addEventListener('click', async () => { try { await signInWithPopup(auth, provider); } catch (error) { alert("Authentication failure: " + error.message); }});
+        if (btnLogout) btnLogout.addEventListener('click', async () => { try { await signOut(auth); } catch (error) {} });
+
+        if(settingsUsernameForm) {
+            settingsUsernameForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                let newUsername = settingsUsernameInput.value.trim().toLowerCase().replace(/\s+/g, '');
+                if (!newUsername || newUsername.includes('@')) return alert("Invalid username format.");
+                if (newUsername.length > 15) return alert("Username can be a maximum of 15 characters long.");
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", newUsername));
+                    const querySnap = await getDocs(q);
+                    let isTaken = false;
+                    querySnap.forEach((doc) => { if (doc.id !== myEmail) isTaken = true; });
+
+                    if (isTaken) return alert(`Username @${newUsername} is taken!`);
+
+                    await setDoc(doc(db, "wallets", myEmail), { username: newUsername }, { merge: true });
+                    userDisplayName.innerText = `@${newUsername}`;
+                    topbarUsername.innerText = `@${newUsername}`;
+                    alert(`Public username updated to @${newUsername}!`);
+                } catch (err) { alert(err.message); }
+            });
+        }
+
+        // ==========================================
+        // DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
+        // ==========================================
+
+        function startHistoricalRatesStream() {
+            const q = query(collection(db, "kc-to-eur"), orderBy("timestamp", "asc"));
+            historicalRatesUnsubscribe = onSnapshot(q, (snapshot) => {
+                historicalRates = [];
+                snapshot.forEach(docSnap => historicalRates.push(docSnap.data()));
+                updateEconomyUI();
+            });
+        }
+
+        function startLeaderboardAndEconomy(currentUserEmail) {
+            const q = query(collection(db, "wallets"), orderBy("balance", "desc"));
+            leaderboardUnsubscribe = onSnapshot(q, (snapshot) => {
+                if(!leaderboardList) return;
+                leaderboardList.innerHTML = "";
+                let currentRank = 1, userRank = -1, userCurrentBalance = 0, userCurrentName = "guest";
+                
+                let calculatedTotalSupply = 0; 
+                let usersAllTime = snapshot.size;
+                let usersWeeklyActive = 0;
+
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const email = data.email || docSnap.id;
+                    const uname = data.username || "guest";
+                    const balance = data.balance || 0;
+
+                    calculatedTotalSupply += balance; 
+
+                    let isWeekly = false;
+                    if (data.createdAt) {
+                        const cDate = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                        if (cDate > oneWeekAgo) isWeekly = true;
+                    } else {
+                        isWeekly = true; 
+                    }
+                    if (isWeekly) usersWeeklyActive++;
+
+                    if (email === currentUserEmail) {
+                        userRank = currentRank;
+                        userCurrentBalance = balance;
+                        userCurrentName = uname;
+                        balanceAmount.innerText = balance.toFixed(2);
+                    }
+
+                    let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
+                    if (currentRank === 1) { medal = '🥇'; rowStyle = "bg-amber-500/10 border border-amber-500/30"; badgeStyle = "bg-amber-500 text-slate-950 font-black"; }
+                    else if (currentRank === 2) { medal = '🥈'; rowStyle = "bg-slate-400/10 border border-slate-400/20"; badgeStyle = "bg-slate-300 text-slate-950 font-black"; }
+                    else if (currentRank === 3) { medal = '🥉'; rowStyle = "bg-amber-700/10 border border-amber-700/20"; badgeStyle = "bg-amber-700 text-white font-black"; }
+
+                    if (email === currentUserEmail) rowStyle += " ring-1 ring-amber-400";
+
+                    const rowHtml = `
+                        <div class="flex items-center justify-between p-3 rounded-xl ${rowStyle}">
+                            <div class="flex items-center gap-3">
+                                <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
+                                <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
+                            </div>
+                            <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
+                        </div>`;
+                    leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
+                    currentRank++;
+                });
+
+                if (userRank !== -1) {
+                    myRankTag.innerText = `#${userRank}`;
+                    myRankUser.innerText = `@${userCurrentName}`;
+                    myRankBalance.innerText = userCurrentBalance.toFixed(2);
+                }
+
+                globalTotalSupply = calculatedTotalSupply;
+                globalUsersAllTime = usersAllTime;
+                globalUsersWeeklyActive = usersWeeklyActive;
+                
+                updateEconomyUI();
+            });
+        }
+
+        function updateEconomyUI() {
+            const supplyDisplay = document.getElementById('kc-total-supply');
+            const usersDisplay = document.getElementById('kc-total-users');
+            const weeklyDisplay = document.getElementById('kc-weekly-users');
+            const rateDisplay = document.getElementById('kc-rate-display');
+
+            if (supplyDisplay) supplyDisplay.innerText = globalTotalSupply.toFixed(2) + " KC";
+            if (usersDisplay) usersDisplay.innerText = globalUsersAllTime;
+            if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
+
+            if (globalTotalSupply > 0) {
+                // Algorithmic Base estimate influenced by shop purchases
+                const baseRate = globalMarketCapEur / globalTotalSupply;
+                const networkSizeFactor = Math.log1p(globalUsersAllTime) * 1.8;
+                const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
+                const networkAdoptionMultiplier = 1 + (networkSizeFactor * (0.5 + activityRatio));
+                const shopVelocityFactor = globalTotalKcSpentInShop / CONFIG.shop.portfolioCost;
+                const utilitySinkSummary = 1 + (Math.log1p(shopVelocityFactor) * 0.4);
+
+                const currentRate = baseRate * networkAdoptionMultiplier * utilitySinkSummary;
+                
+                if (rateDisplay) {
+                    rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+                }
+                updateStatsChart(currentRate);
+            } else {
+                if (rateDisplay) rateDisplay.innerHTML = `€0.0000 <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+            }
+        }
+
+        function updateStatsChart(currentLiveRate) {
+            const ctx = document.getElementById('rateChart');
+            if(!ctx) return;
+            
+            if (statsChart) statsChart.destroy();
+
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'ui-sans-serif, system-ui, sans-serif';
+
+            let labelData = [];
+            let rateData = [];
+
+            // Read the manual documents from Firebase
+            if (historicalRates.length > 0) {
+                historicalRates.forEach(record => {
+                    if (record.timestamp) {
+                        const d = record.timestamp.toDate ? record.timestamp.toDate() : new Date(record.timestamp);
+                        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                        labelData.push(`${dateStr} ${timeStr}`);
+                    } else {
+                        labelData.push("Unknown Date");
+                    }
+                    rateData.push(record.rate || 0);
+                });
+            }
+
+            // Append the dynamically estimated Live Algorithmic Price to the very end
+            labelData.push('Live (Estimated)');
+            rateData.push(currentLiveRate);
+
+            statsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labelData,
+                    datasets: [{
+                        label: 'Value of 1 KC (in EUR)',
+                        data: rateData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#020617',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#34d399',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) { return `€${context.parsed.y.toFixed(4)}`; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#1e293b', drawBorder: false } },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // SYSTEM SUBSYSTEMS (Income, Trans, Lotto, Shop)
+        // ==========================================
+        function startIncomeStream(currentUserEmail) {
+            const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(10));
+            incomeUnsubscribe = onSnapshot(q, (snapshot) => {
+                rawIncomeRecords = [];
+                snapshot.forEach(docSnap => rawIncomeRecords.push(docSnap.data()));
+                renderIncomeUI();
+            });
+        }
+
+        function renderIncomeUI() {
+            if(!incomeList) return;
+            incomeList.innerHTML = "";
+            const targetLength = showMaxIncome ? 10 : 3;
+            const recordsToDisplay = rawIncomeRecords.slice(0, targetLength);
+
+            if(recordsToDisplay.length === 0) {
+                incomeList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No income receipts processed yet.</p>`;
+                return;
+            }
+
+            recordsToDisplay.forEach(tx => {
+                const rawMsg = tx.message ? tx.message.trim() : "";
+                const msgBlock = rawMsg ? `<div class="mt-1.5 text-[11px] bg-slate-950/80 border border-slate-800/60 px-2.5 py-1.5 rounded-lg text-slate-300 italic font-sans"><i class="fa-regular fa-comment-dots text-slate-500 mr-1"></i> "${rawMsg}"</div>` : '';
+                const card = `
+                    <div class="p-3 bg-slate-950/50 border border-slate-800/60 rounded-xl flex flex-col justify-center animate-fade-in">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 text-[10px] flex items-center justify-center border border-emerald-500/20"><i class="fa-solid fa-arrow-down"></i></span>
+                                <p class="text-xs text-white font-medium">Received from <span class="text-amber-400 font-bold">@${tx.senderUsername || 'unknown'}</span></p>
+                            </div>
+                            <p class="text-xs font-mono font-black text-emerald-400">+${parseFloat(tx.amount).toFixed(2)} KC</p>
+                        </div>
+                        ${msgBlock}
+                    </div>
+                `;
+                incomeList.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        if(btnToggleIncome) {
+            btnToggleIncome.addEventListener('click', () => {
+                showMaxIncome = !showMaxIncome;
+                btnToggleIncome.innerHTML = showMaxIncome ? `<span>Show Less (Last 3)</span> <i class="fa-solid fa-chevron-up text-[10px]"></i>` : `<span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>`;
+                renderIncomeUI();
+            });
+        }
+
+        if(transferForm) {
+            transferForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUname = document.getElementById('receiver-username').value.trim().toLowerCase().replace('@', '');
+                const amount = parseFloat(document.getElementById('transfer-amount').value);
+                const rawMessage = document.getElementById('transfer-message').value;
+                const myEmail = auth.currentUser.email.toLowerCase();
+
+                if (isNaN(amount) || amount <= 0) return alert("Enter a valid amount.");
+                if(btnSend) { btnSend.disabled = true; btnSend.innerText = "Processing..."; }
+
+                const filteredMessage = maskProfanity(rawMessage);
+
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const targetQuerySnap = await getDocs(q);
+
+                    if (targetQuerySnap.empty) throw new Error(`Profile @${targetUname} not found.`);
+
+                    let targetEmail = "";
+                    targetQuerySnap.forEach((doc) => { targetEmail = doc.id; });
+                    if (targetEmail === myEmail) throw new Error("Self-transfers are prohibited.");
+
+                    const myDocRef = doc(db, "wallets", myEmail);
+                    const targetDocRef = doc(db, "wallets", targetEmail);
+                    const transactionLoggingRef = doc(collection(db, "transactions"));
+
+                    await runTransaction(db, async (transaction) => {
+                        const mySnap = await transaction.get(myDocRef);
+                        const myCurrentBal = mySnap.data().balance || 0;
+                        const myUname = mySnap.data().username || "guest";
+                        if (myCurrentBal < amount) throw new Error("Insufficient trade balance assets.");
+
+                        const targetSnap = await transaction.get(targetDocRef);
+                        const targetCurrentBal = targetSnap.data().balance || 0;
+
+                        transaction.update(myDocRef, { balance: myCurrentBal - amount });
+                        transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
+                        
+                        transaction.set(transactionLoggingRef, {
+                            senderEmail: myEmail,
+                            senderUsername: myUname,
+                            receiverEmail: targetEmail,
+                            receiverUsername: targetUname,
+                            amount: amount,
+                            message: filteredMessage,
+                            timestamp: new Date()
+                        });
+                    });
+
+                    alert(`Successfully transferred ${amount.toFixed(2)} KC to @${targetUname}!`);
+                    transferForm.reset();
+                } catch (err) { alert("Transfer Error: " + err.message); } 
+                finally { if(btnSend) { btnSend.disabled = false; btnSend.innerText = "Send Coins"; } }
+            });
+        }
+
+        if (btnTriggerLotto) {
+            btnTriggerLotto.addEventListener('click', async () => {
+                if (!auth.currentUser) return;
+
+                btnTriggerLotto.disabled = true;
+                btnTriggerLotto.innerText = "Opening scratch card...";
+                lottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+                lottoStatusTitle.innerText = "Drawing result...";
+                lottoStatusDesc.innerText = "Checking your scratch card in the database...";
+
+                const cost = CONFIG.lotto.cost;
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+
+                const rand = Math.random() * 100;
+                let winAmount = 0;
+
+                // custom configuration logic for target user
+                if (myEmail === 'timovanrijn11@gmail.com') {
+                    if (rand < 99.99) {
+                        if (rand < CONFIG.lotto.distribution.lowChance) {
+                            winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.lowMax - CONFIG.lotto.prizes.lowMin) + CONFIG.lotto.prizes.lowMin).toFixed(2));
+                        } else {
+                            winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.midMax - CONFIG.lotto.prizes.midMin) + CONFIG.lotto.prizes.midMin).toFixed(2));
+                        }
+                    } else {
+                        winAmount = CONFIG.lotto.prizes.jackpot; // Exactly 0.01% chance for jackpot
+                    }
+                } else {
+                    // standard configuration for everyone else
+                    if (rand < CONFIG.lotto.distribution.lowChance) {
+                        winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.lowMax - CONFIG.lotto.prizes.lowMin) + CONFIG.lotto.prizes.lowMin).toFixed(2));
+                    } else if (rand < CONFIG.lotto.distribution.midChance) {
+                        winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.midMax - CONFIG.lotto.prizes.midMin) + CONFIG.lotto.prizes.midMin).toFixed(2));
+                    } else {
+                        winAmount = CONFIG.lotto.prizes.jackpot;
+                    }
+                }
+
+                setTimeout(async () => {
+                    try {
+                        await runTransaction(db, async (transaction) => {
+                            const mySnap = await transaction.get(myDocRef);
+                            if (!mySnap.exists()) throw new Error("Wallet does not exist.");
+
+                            const currentBal = mySnap.data().balance || 0;
+                            if (currentBal < cost) throw new Error(`Not enough KC to play (cost is ${cost} KC).`);
+
+                            const newBalance = currentBal - cost + winAmount;
+                            transaction.update(myDocRef, { balance: newBalance });
+                        });
+
+                        if (winAmount === CONFIG.lotto.prizes.jackpot) {
+                            lottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
+                            lottoStatusTitle.innerText = "🎰 JACKPOT WIN! 🎰";
+                            lottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
+                        } else {
+                            lottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
+                            lottoStatusTitle.innerText = `You won +${winAmount.toFixed(2)} KC!`;
+                            lottoStatusTitle.className = "text-xl font-black text-emerald-400";
+                        }
+
+                        lottoStatusDesc.innerText = "Success! Your balance has been updated.";
+                        btnTriggerLotto.innerText = "Play again";
+
+                    } catch (err) {
+                        alert("Lotto Error: " + err.message);
+                        lottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                        lottoStatusTitle.innerText = "Draw failed";
+                        lottoStatusDesc.innerText = "Something went wrong while processing your result.";
+                        btnTriggerLotto.innerText = "Try again";
+                    } finally { btnTriggerLotto.disabled = false; }
+                }, 1500);
+            });
+        }
+
+        const btnBuyPortfolio = document.getElementById('buy-portfolio');
+        if (btnBuyPortfolio) {
+            btnBuyPortfolio.addEventListener('click', async () => {
+                if (!auth.currentUser) return alert("Please sign in first.");
+                
+                const cost = CONFIG.shop.portfolioCost;
+                const confirmation = confirm(`Confirm purchase: Professional Portfolio Setup for ${cost} KC?`);
+                if (!confirmation) return;
+
+                btnBuyPortfolio.disabled = true;
+                btnBuyPortfolio.innerText = "Processing...";
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+                const shopSettingsRef = doc(db, "settings", "shop");
+                let username = "unknown";
+
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        const mySnap = await transaction.get(myDocRef);
+                        if (!mySnap.exists()) throw new Error("Wallet not found in system.");
+
+                        const data = mySnap.data();
+                        const currentBal = data.balance || 0;
+                        username = data.username || "guest";
+
+                        if (currentBal < cost) throw new Error(`Insufficient KittyCoins! You need ${cost} KC.`);
+
+                        const shopSnap = await transaction.get(shopSettingsRef);
+                        let currentSpent = 0;
+                        if (shopSnap.exists()) {
+                            currentSpent = shopSnap.data().total_kc_spent_in_shop || 0;
+                        }
+
+                        transaction.update(myDocRef, { balance: currentBal - cost });
+                        transaction.set(shopSettingsRef, { total_kc_spent_in_shop: currentSpent + cost }, { merge: true });
+                    });
+
+                    await fetch(CONFIG.shop.formspreeUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                        body: JSON.stringify({
+                            subject: "New KC-Shop Order",
+                            item: "Professional Portfolio Setup",
+                            buyer_email: myEmail,
+                            buyer_username: "@" + username,
+                            status: `Paid (${cost} KC removed from their account)`
+                        })
+                    });
+
+                    alert(`✅ Purchase confirmed! KitaCat has been notified and your ${cost} KC has been successfully deducted.`);
+                } catch (err) { alert("❌ Purchase failed: " + err.message); } 
+                finally { btnBuyPortfolio.disabled = false; btnBuyPortfolio.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`; }
+            });
+        }
+
+        // ==========================================
+        // KITTY RUNNER ARCADE ENGINE
+        // ==========================================
+        let gameCanvas = null;
+        let gameCtx = null;
+        let gameAnimFrame = null;
+        let gameRunningState = 'IDLE'; 
+        let gameTimeMetrics = { countdown: 3, grace: 3, running: 0 };
+        let gameLastTimestamp = 0;
+        
+        let kittyState = {
+            x: 80, y: 0, w: 42, h: 42,
+            vy: 0, gravity: 1.1, jumpForce: 16.5,
+            isGrounded: false
+        };
+        
+        let obstaclesCollection = [];
+        let mapGenerationTracker = {
+            baseSpeed: 5.2,
+            currentSpeed: 5.2,
+            nextSpawnTicks: 0,
+            difficultyTier: 1,
+            payoutTally: 0,
+            lastTenSecMilestone: 0
+        };
+
+        function initKittyRunnerEngine() {
+            gameCanvas = document.getElementById('gameCanvas');
+            if (!gameCanvas) return;
+            gameCtx = gameCanvas.getContext('2d');
+            
+            const triggerJump = (e) => {
+                if (gameRunningState === 'COUNTDOWN' || gameRunningState === 'GRACE' || gameRunningState === 'PLAYING') {
+                    if (kittyState.isGrounded) {
+                        kittyState.vy = -kittyState.jumpForce;
+                        kittyState.isGrounded = false;
+                    }
+                }
+            };
+
+            window.removeEventListener('keydown', handleGameKeys);
+            window.addEventListener('keydown', handleGameKeys);
+            gameCanvas.removeEventListener('click', triggerJump);
+            gameCanvas.addEventListener('click', triggerJump);
+
+            document.getElementById('btn-start-game').onclick = () => {
+                if (!auth.currentUser) return alert("Please sign in to earn rewards.");
+                startKittyRunnerRun();
+            };
+
+            resetKittyEngineState();
+            renderKittyEngineStatic();
+        }
+
+        function handleGameKeys(e) {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                if (kittyState.isGrounded && (gameRunningState === 'GRACE' || gameRunningState === 'PLAYING')) {
+                    kittyState.vy = -kittyState.jumpForce;
+                    kittyState.isGrounded = false;
+                }
+            }
+        }
+
+        function stopKittyRunnerEngine() {
+            if (gameAnimFrame) cancelAnimationFrame(gameAnimFrame);
+            gameRunningState = 'IDLE';
+        }
+
+        function resetKittyEngineState() {
+            kittyState.y = 350 - kittyState.h;
+            kittyState.vy = 0;
+            kittyState.isGrounded = true;
+            obstaclesCollection = [];
+            
+            mapGenerationTracker.baseSpeed = 5.2;
+            mapGenerationTracker.currentSpeed = 5.2;
+            mapGenerationTracker.nextSpawnTicks = 0;
+            mapGenerationTracker.difficultyTier = 1;
+            mapGenerationTracker.payoutTally = 0;
+            mapGenerationTracker.lastTenSecMilestone = 0;
+
+            gameTimeMetrics.countdown = 3.0;
+            gameTimeMetrics.grace = 3.0;
+            gameTimeMetrics.running = 0.0;
+
+            updateGameUIPanel();
+        }
+
+        function startKittyRunnerRun() {
+            resetKittyEngineState();
+            document.getElementById('game-overlay').classList.add('hidden');
+            gameRunningState = 'COUNTDOWN';
+            gameLastTimestamp = performance.now();
+            gameAnimFrame = requestAnimationFrame(kittyRunnerLoop);
+        }
+
+        function kittyRunnerLoop(timestamp) {
+            if (gameRunningState === 'IDLE' || gameRunningState === 'GAMEOVER') return;
+
+            let dt = (timestamp - gameLastTimestamp) / 1000;
+            if (dt > 0.1) dt = 0.1; 
+            gameLastTimestamp = timestamp;
+
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            drawKittyRunnerBackground();
+
+            if (gameRunningState === 'COUNTDOWN') {
+                gameTimeMetrics.countdown -= dt;
+                drawKittyRunnerCat();
+                
+                gameCtx.fillStyle = 'rgba(245, 158, 11, 1)';
+                gameCtx.font = 'black 54px sans-serif';
+                gameCtx.textAlign = 'center';
+                gameCtx.textBaseline = 'middle';
+                let displayVal = Math.ceil(gameTimeMetrics.countdown);
+                gameCtx.fillText(displayVal <= 0 ? "GO!" : displayVal, gameCanvas.width / 2, gameCanvas.height / 2);
+
+                if (gameTimeMetrics.countdown <= 0) {
+                    gameRunningState = 'GRACE';
+                }
+            } 
+            else if (gameRunningState === 'GRACE' || gameRunningState === 'PLAYING') {
+                processKittyPhysics();
+                
+                if (gameRunningState === 'GRACE') {
+                    gameTimeMetrics.grace -= dt;
+                    if (gameTimeMetrics.grace <= 0) {
+                        gameRunningState = 'PLAYING';
+                    }
+                } else {
+                    gameTimeMetrics.running += dt;
+                    processEngineDifficultyAndPayouts(dt);
+                    generateMapObstacles();
+                }
+
+                updateObstaclesAndCollisions();
+                drawKittyRunnerCat();
+                drawKittyRunnerObstacles();
+            }
+
+            updateGameUIPanel();
+            if (gameRunningState !== 'GAMEOVER') {
+                gameAnimFrame = requestAnimationFrame(kittyRunnerLoop);
+            }
+        }
+
+        function processKittyPhysics() {
+            kittyState.vy += kittyState.gravity;
+            kittyState.y += kittyState.vy;
+            const floorLine = 350 - kittyState.h;
+
+            if (kittyState.y >= floorLine) {
+                kittyState.y = floorLine;
+                kittyState.vy = 0;
+                kittyState.isGrounded = true;
+            }
+        }
+
+        function processEngineDifficultyAndPayouts(dt) {
+            let currentSecs = gameTimeMetrics.running;
+            
+            // Speed scaling loop: accelerate horizontal pace every 10 seconds
+            let tenSecCycle = Math.floor(currentSecs / 10);
+            mapGenerationTracker.currentSpeed = mapGenerationTracker.baseSpeed + (tenSecCycle * 0.75);
+
+            // Reward Schedule Calculations
+            if (currentSecs < 60) {
+                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
+                    mapGenerationTracker.payoutTally += 0.1;
+                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
+                }
+            } else if (currentSecs >= 60 && currentSecs < 300) {
+                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
+                    mapGenerationTracker.payoutTally += 0.2;
+                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
+                }
+            } else if (currentSecs >= 300) {
+                // 5 Minutes+ Threshold: Hyper-scale allocation to 1.00 KittyCoin per second
+                mapGenerationTracker.payoutTally += (1.0 * dt);
+            }
+
+            // Adaptive Architectural Variance: Make jump frames narrow every 30 seconds
+            mapGenerationTracker.difficultyTier = 1 + Math.floor(currentSecs / 30);
+        }
+
+        function generateMapObstacles() {
+            if (mapGenerationTracker.nextSpawnTicks > 0) {
+                mapGenerationTracker.nextSpawnTicks--;
+                return;
+            }
+
+            // Deterministic safe-bounds matrix balancing maximum launch trajectories
+            let baseInterval = Math.max(35, 80 - (mapGenerationTracker.currentSpeed * 2.5));
+            let randomizedVariance = Math.floor(Math.random() * 55) + 20;
+            mapGenerationTracker.nextSpawnTicks = baseInterval + randomizedVariance;
+
+            // Generate map permutations with explicit anti-autoclicker height adjustments
+            let hWeights = [30, 42, 55, 68];
+            let assignedHeight = hWeights[Math.floor(Math.random() * hWeights.length)];
+            
+            if (mapGenerationTracker.difficultyTier >= 5) {
+                assignedHeight = Math.random() > 0.5 ? 75 : 55; // Terminal velocity wall checks
+            }
+
+            let obsType = Math.random() > 0.5 ? 'yarn' : 'crate';
+
+            obstaclesCollection.push({
+                x: gameCanvas.width + 20,
+                y: 350 - assignedHeight,
+                w: 26 + (Math.random() * 15),
+                h: assignedHeight,
+                type: obsType
+            });
+        }
+
+        function updateObstaclesAndCollisions() {
+            for (let i = obstaclesCollection.length - 1; i >= 0; i--) {
+                let obs = obstaclesCollection[i];
+                obs.x -= mapGenerationTracker.currentSpeed;
+
+                // Absolute AABB bounding-box collision vectors
+                if (
+                    kittyState.x < obs.x + obs.w &&
+                    kittyState.x + kittyState.w > obs.x &&
+                    kittyState.y < obs.y + obs.h &&
+                    kittyState.y + kittyState.h > obs.y
+                ) {
+                    triggerKittyGameOver();
+                    return;
+                }
+
+                if (obs.x + obs.w < 0) {
+                    obstaclesCollection.splice(i, 1);
+                }
+            }
+        }
+
+        async function triggerKittyGameOver() {
+            gameRunningState = 'GAMEOVER';
+            if (gameAnimFrame) cancelAnimationFrame(gameAnimFrame);
+
+            const finalPayout = parseFloat(mapGenerationTracker.payoutTally.toFixed(4));
+            
+            document.getElementById('game-overlay-title').innerText = "Game Over";
+            document.getElementById('game-overlay-title').className = "text-2xl font-black text-rose-500 mb-2";
+            
+            let messageStr = `You survived ${gameTimeMetrics.running.toFixed(1)}s.`;
+            if (finalPayout > 0) {
+                messageStr += ` Processing reward payout of +${finalPayout.toFixed(2)} KC...`;
+                document.getElementById('game-overlay-desc').innerText = messageStr;
+                document.getElementById('game-overlay').classList.remove('hidden');
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        const snap = await transaction.get(myDocRef);
+                        if (!snap.exists()) throw new Error("Wallet context dropped.");
+                        let curBal = snap.data().balance || 0;
+                        transaction.update(myDocRef, { balance: curBal + finalPayout });
+                    });
+                    document.getElementById('game-overlay-desc').innerText = `You survived ${gameTimeMetrics.running.toFixed(1)}s and earned +${finalPayout.toFixed(2)} KC!`;
+                } catch (e) {
+                    alert("Payout logging bypass fault: " + e.message);
+                }
+            } else {
+                messageStr += " Try again to hit the 10-second dividend mark!";
+                document.getElementById('game-overlay-desc').innerText = messageStr;
+                document.getElementById('game-overlay').classList.remove('hidden');
+            }
+        }
+
+        function drawKittyRunnerBackground() {
+            // Sky background fill
+            gameCtx.fillStyle = '#020617';
+            gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+            // Ground pathway plane
+            gameCtx.fillStyle = '#1e293b';
+            gameCtx.fillRect(0, 350, gameCanvas.width, 50);
+
+            gameCtx.strokeStyle = '#334155';
+            gameCtx.lineWidth = 4;
+            gameCtx.beginPath();
+            gameCtx.moveTo(0, 350);
+            gameCtx.lineTo(gameCanvas.width, 350);
+            gameCtx.stroke();
+        }
+
+        function drawKittyRunnerCat() {
+            gameCtx.save();
+            gameCtx.translate(kittyState.x, kittyState.y);
+
+            // Dynamic sprite generator using emojis rendered inside the sub-coordinate matrix
+            gameCtx.font = `${kittyState.w}px sans-serif`;
+            gameCtx.textAlign = 'left';
+            gameCtx.textBaseline = 'top';
+            gameCtx.fillText("🐱", 0, 0);
+
+            gameCtx.restore();
+        }
+
+        function drawKittyRunnerObstacles() {
+            obstaclesCollection.forEach(obs => {
+                gameCtx.save();
+                gameCtx.translate(obs.x, obs.y);
+
+                if (obs.type === 'yarn') {
+                    gameCtx.fillStyle = '#f43f5e';
+                    gameCtx.beginPath();
+                    gameCtx.arc(obs.w / 2, obs.h / 2, Math.min(obs.w, obs.h) / 2, 0, Math.PI * 2);
+                    gameCtx.fill();
+                    gameCtx.strokeStyle = '#fda4af';
+                    gameCtx.lineWidth = 2;
+                    gameCtx.stroke();
+                } else {
+                    gameCtx.fillStyle = '#ea580c';
+                    gameCtx.fillRect(0, 0, obs.w, obs.h);
+                    gameCtx.strokeStyle = '#f97316';
+                    gameCtx.lineWidth = 2;
+                    gameCtx.strokeRect(0, 0, obs.w, obs.h);
+                    
+                    // Cross lines to represent structural hazard reinforcement crates
+                    gameCtx.beginPath();
+                    gameCtx.moveTo(0,0); gameCtx.lineTo(obs.w, obs.h);
+                    gameCtx.moveTo(obs.w, 0); gameCtx.lineTo(0, obs.h);
+                    gameCtx.stroke();
+                }
+
+                gameCtx.restore();
+            });
+        }
+
+        function renderKittyEngineStatic() {
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            drawKittyRunnerBackground();
+            drawKittyRunnerCat();
+        }
+
+        function updateGameUIPanel() {
+            const uiTime = document.getElementById('game-ui-time');
+            const uiTier = document.getElementById('game-ui-tier');
+            const uiEarned = document.getElementById('game-ui-earned');
+
+            if (uiTime) uiTime.innerText = gameTimeMetrics.running.toFixed(1) + "s";
+            if (uiEarned) uiEarned.innerText = mapGenerationTracker.payoutTally.toFixed(2) + " KC";
+            
+            if (uiTier) {
+                if (gameTimeMetrics.running < 60) {
+                    uiTier.innerText = "0.10 KC / 10s";
+                    uiTier.className = "text-xs font-mono font-bold text-amber-400";
+                } else if (gameTimeMetrics.running >= 60 && gameTimeMetrics.running < 300) {
+                    uiTier.innerText = "0.20 KC / 10s";
+                    uiTier.className = "text-xs font-mono font-bold text-orange-400 animate-pulse";
+                } else {
+                    uiTier.innerText = "1.00 KC / SEC";
+                    uiTier.className = "text-xs font-mono font-bold text-rose-400 underline";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
