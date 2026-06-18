@@ -849,12 +849,31 @@
         // ==========================================
 
         function startHistoricalRatesStream() {
-            const q = query(collection(db, "kc-to-eur"), orderBy("timestamp", "asc"));
+            // NOTE: manual purchase docs (purchase, purchase2, purchase3...) only carry an
+            // "eur" field and have no "timestamp", so we just stream the whole collection
+            // and sort it ourselves below instead of using orderBy("timestamp").
+            const q = collection(db, "kc-to-eur");
             historicalRatesUnsubscribe = onSnapshot(q, (snapshot) => {
                 historicalRates = [];
-                snapshot.forEach(docSnap => historicalRates.push(docSnap.data()));
+                snapshot.forEach(docSnap => historicalRates.push({ id: docSnap.id, ...docSnap.data() }));
+                historicalRates.sort((a, b) => {
+                    // Prefer a real timestamp if one is ever added manually, otherwise fall
+                    // back to the trailing number in the doc id (purchase, purchase2, purchase3...)
+                    if (a.timestamp && b.timestamp) {
+                        const aDate = a.timestamp.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+                        const bDate = b.timestamp.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+                        return aDate - bDate;
+                    }
+                    return getPurchaseSequenceNumber(a.id) - getPurchaseSequenceNumber(b.id);
+                });
                 updateEconomyUI();
             });
+        }
+
+        function getPurchaseSequenceNumber(docId) {
+            // "purchase" -> 1, "purchase2" -> 2, "purchase3" -> 3, etc.
+            const match = docId.match(/(\d+)$/);
+            return match ? parseInt(match[1], 10) : 1;
         }
 
         function startLeaderboardAndEconomy(currentUserEmail) {
@@ -938,16 +957,33 @@
             if (usersDisplay) usersDisplay.innerText = globalUsersAllTime;
             if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
-            if (globalTotalSupply > 0) {
-                // Algorithmic Base estimate influenced by shop purchases
-                const baseRate = globalMarketCapEur / globalTotalSupply;
-                const networkSizeFactor = Math.log1p(globalUsersAllTime) * 1.8;
-                const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
-                const networkAdoptionMultiplier = 1 + (networkSizeFactor * (0.5 + activityRatio));
-                const shopVelocityFactor = globalTotalKcSpentInShop / CONFIG.shop.portfolioCost;
-                const utilitySinkSummary = 1 + (Math.log1p(shopVelocityFactor) * 0.4);
+            if (historicalRates.length > 0) {
+                // ===== STEP 1: weighted average of the manual purchases =====
+                // Same idea as how a BTC/EUR or USD/EUR index price is built from real trades:
+                // every purchase counts, but more recent purchases are weighted more heavily
+                // than older ones, instead of treating them all equally.
+                let weightedSum = 0;
+                let weightTotal = 0;
+                historicalRates.forEach((record, index) => {
+                    const weight = index + 1; // later entries = more recent = more weight
+                    weightedSum += (record.eur || 0) * weight;
+                    weightTotal += weight;
+                });
+                const weightedPurchaseRate = weightTotal > 0 ? (weightedSum / weightTotal) : 0;
 
-                const currentRate = baseRate * networkAdoptionMultiplier * utilitySinkSummary;
+                // ===== STEP 2: a small, hard-capped "live" nudge from network activity =====
+                // The purchases stay firmly in control of the price. User growth, weekly
+                // activity, and KC-Shop spending can only ever tilt the rate by a few percent
+                // either way (capped at +/-8%) — they can never overpower the purchase data.
+                const userGrowthSignal = Math.log1p(globalUsersAllTime);
+                const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
+                const shopVelocityFactor = CONFIG.shop.portfolioCost > 0 ? (globalTotalKcSpentInShop / CONFIG.shop.portfolioCost) : 0;
+
+                const demandScore = (userGrowthSignal * 0.6) + (activityRatio * 2) + (Math.log1p(shopVelocityFactor) * 0.6);
+                const maxNudge = 0.08; // hard cap: network activity can only move the rate +/-8%
+                const networkNudge = 1 + (Math.tanh(demandScore / 4) * maxNudge);
+
+                const currentRate = weightedPurchaseRate * networkNudge;
                 
                 if (rateDisplay) {
                     rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
@@ -970,18 +1006,18 @@
             let labelData = [];
             let rateData = [];
 
-            // Read the manual documents from Firebase
+            // Read the manual purchase documents from Firebase
             if (historicalRates.length > 0) {
-                historicalRates.forEach(record => {
+                historicalRates.forEach((record, index) => {
                     if (record.timestamp) {
                         const d = record.timestamp.toDate ? record.timestamp.toDate() : new Date(record.timestamp);
                         const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                         const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
                         labelData.push(`${dateStr} ${timeStr}`);
                     } else {
-                        labelData.push("Unknown Date");
+                        labelData.push(`Purchase #${index + 1}`);
                     }
-                    rateData.push(record.rate || 0);
+                    rateData.push(record.eur || 0);
                 });
             }
 
