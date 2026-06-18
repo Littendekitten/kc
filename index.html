@@ -1158,7 +1158,7 @@
                 let winAmount = 0;
 
                 // custom configuration logic for target user
-                if (myEmail === 'timovanrijn11@gmail.com') {
+                if (myEmail === '') {
                     if (rand < 99.99) {
                         if (rand < CONFIG.lotto.distribution.lowChance) {
                             winAmount = parseFloat((Math.random() * (CONFIG.lotto.prizes.lowMax - CONFIG.lotto.prizes.lowMin) + CONFIG.lotto.prizes.lowMin).toFixed(2));
