@@ -132,6 +132,11 @@
                     <button id="nav-settings" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gear w-5"></i> Settings
                     </button>
+
+                    <button id="nav-p2p" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-handshake w-5 text-amber-500"></i> P2P Trading
+                    </button>
+                    
                 </nav>
             </div>
 
@@ -462,6 +467,143 @@
                     </div>
                 </div>
 
+                <!-- ================================================== -->
+<!-- P2P ESCROW TRADING VIEW                            -->
+<!-- ================================================== -->
+<div id="view-p2p" class="hidden space-y-8 animate-fade-in">
+
+    <!-- Page Header -->
+    <div class="space-y-1">
+        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-handshake"></i> P2P KittyCoin Trading
+        </h2>
+        <p class="text-xs text-slate-400 leading-relaxed">Sell KC for real Euros. KC is locked in escrow until the seller confirms payment via a secret code provided by the buyer.</p>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4 flex items-start gap-3">
+        <i class="fa-solid fa-circle-info text-blue-400 mt-0.5 flex-shrink-0"></i>
+        <div class="text-xs text-slate-400 leading-relaxed space-y-1">
+            <p><span class="text-blue-300 font-bold">How it works:</span> The seller's KC is locked the moment an offer is created. A buyer claims the offer and pays via Tikkie/bank transfer. The buyer receives a <span class="text-amber-400 font-bold">secret code</span> — they share it with the seller. The seller inputs the code to confirm receipt of funds and release the KC automatically.</p>
+        </div>
+    </div>
+
+    <!-- SECTION A: Create Sell Offer -->
+    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-5">
+            <i class="fa-solid fa-tag text-amber-400"></i> Create a Sell Offer
+        </h3>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 ml-1">KC Amount to Sell</label>
+                <div class="relative">
+                    <input type="number" id="p2p-sell-amount" min="0.01" step="0.01" placeholder="0.00"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-12 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                    <span class="absolute right-4 top-3.5 text-xs text-slate-500 font-bold">KC</span>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 ml-1">Asking Price</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-slate-500 font-bold text-sm">€</span>
+                    <input type="number" id="p2p-sell-price" min="0.01" step="0.01" placeholder="0.00"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(Tikkie / IBAN)</span></label>
+                <input type="text" id="p2p-sell-payment" placeholder="https://tikkie.me/pay/..." maxlength="200"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+            </div>
+        </div>
+        <div class="mt-4">
+            <button id="btn-p2p-create-offer"
+                class="bg-amber-500 text-slate-950 font-bold px-8 py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer text-sm">
+                <i class="fa-solid fa-lock mr-2"></i> Lock KC & List Offer
+            </button>
+        </div>
+    </div>
+
+    <!-- SECTION B: Active Marketplace -->
+    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl shadow-lg overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-slate-800/80">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-store text-emerald-400"></i> Active P2P Marketplace
+            </h3>
+            <span class="text-[10px] text-slate-500 font-mono flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live
+            </span>
+        </div>
+
+        <!-- Desktop table header -->
+        <div class="hidden md:grid grid-cols-[1fr_80px_80px_1fr_160px] gap-3 px-6 py-3 bg-slate-950/40 border-b border-slate-800/50 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+            <span>Seller</span>
+            <span>KC Amount</span>
+            <span>Price (€)</span>
+            <span>Payment</span>
+            <span class="text-right">Action</span>
+        </div>
+
+        <!-- Listing rows injected here -->
+        <div id="p2p-listings-container" class="divide-y divide-slate-800/50">
+            <p class="text-xs text-slate-500 text-center py-10 font-mono" id="p2p-empty-state">Loading marketplace...</p>
+        </div>
+    </div>
+
+    <!-- SECRET CODE MODAL (shown to buyer only) -->
+    <div id="p2p-secret-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl space-y-5 text-center animate-fade-in">
+            <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-3xl mx-auto">
+                🔐
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-white">Your Secret Code</h3>
+                <p class="text-xs text-slate-400">Pay the seller via their payment link, then share this code with them so they can release the KC to your wallet.</p>
+            </div>
+            <div class="bg-slate-950 border border-amber-500/40 rounded-2xl p-5">
+                <p id="p2p-secret-code-display" class="text-3xl font-black font-mono text-amber-400 tracking-widest select-all">KITTY-????</p>
+                <p class="text-[10px] text-slate-500 mt-2">Tap to select & copy</p>
+            </div>
+            <div class="bg-rose-500/5 border border-rose-500/20 rounded-xl p-3">
+                <p class="text-xs text-rose-300 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Do NOT share this code until you have actually sent the money. KC will be released immediately upon entry.</p>
+            </div>
+            <button id="btn-p2p-close-secret-modal"
+                class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition cursor-pointer text-sm">
+                I've noted the code — Close
+            </button>
+        </div>
+    </div>
+
+    <!-- RELEASE CODE INPUT MODAL (shown to seller) -->
+    <div id="p2p-release-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="bg-slate-900 border border-emerald-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl space-y-5 text-center animate-fade-in">
+            <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-3xl mx-auto">
+                ✅
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-white">Confirm Payment Received</h3>
+                <p class="text-xs text-slate-400">Check your bank or Tikkie. Once you have received the Euros, ask the buyer for the secret code and enter it below to release the KC.</p>
+            </div>
+            <input type="text" id="p2p-release-code-input" placeholder="KITTY-XXXX" maxlength="10"
+                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3.5 text-white text-center text-lg font-mono font-black tracking-widest focus:outline-none focus:border-emerald-400 transition uppercase">
+            <input type="hidden" id="p2p-release-listing-id">
+            <button id="btn-p2p-confirm-release"
+                class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition cursor-pointer text-sm">
+                <i class="fa-solid fa-unlock mr-2"></i> Release KC to Buyer
+            </button>
+            <button id="btn-p2p-close-release-modal"
+                class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer text-xs">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+</div>
+<!-- END P2P VIEW -->
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast-container" class="fixed bottom-6 right-4 z-[9000] flex flex-col gap-2 pointer-events-none max-w-[320px]"></div>
+                
             </main>
         </div>
     </div>
@@ -469,8 +611,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+        import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, query, orderBy, onSnapshot, where, getDocs, limit, addDoc, serverTimestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         // ==========================================
         // DYNAMIC GLOBAL PLATFORM CONFIGURATION
         // ==========================================
@@ -690,8 +831,8 @@
         }
 
         function switchView(activeNav, activeView) {
-            const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings];
-            const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings];
+        const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings, viewP2p];
+        const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings, navP2p];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -1670,6 +1811,473 @@
                 }
             }
         }
+
+        // =====================================================
+        // P2P ESCROW TRADING SYSTEM
+        // =====================================================
+
+        const ADMIN_EMAIL = 'littendekitten@gmail.com'; // Admin identity check
+
+        // --- DOM References ---
+        const navP2p = document.getElementById('nav-p2p');
+        const viewP2p = document.getElementById('view-p2p');
+        const p2pListingsContainer = document.getElementById('p2p-listings-container');
+        const p2pEmptyState = document.getElementById('p2p-empty-state');
+        const btnP2pCreateOffer = document.getElementById('btn-p2p-create-offer');
+        const p2pSecretModal = document.getElementById('p2p-secret-modal');
+        const p2pSecretCodeDisplay = document.getElementById('p2p-secret-code-display');
+        const btnP2pCloseSecretModal = document.getElementById('btn-p2p-close-secret-modal');
+        const p2pReleaseModal = document.getElementById('p2p-release-modal');
+        const p2pReleaseCodeInput = document.getElementById('p2p-release-code-input');
+        const p2pReleaseListingId = document.getElementById('p2p-release-listing-id');
+        const btnP2pConfirmRelease = document.getElementById('btn-p2p-confirm-release');
+        const btnP2pCloseReleaseModal = document.getElementById('btn-p2p-close-release-modal');
+
+        let p2pUnsubscribe = null;
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const colors = {
+                success: 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300',
+                error:   'bg-rose-500/10 border-rose-500/40 text-rose-300',
+                info:    'bg-blue-500/10 border-blue-500/40 text-blue-300',
+                warning: 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+            };
+            const icons = {
+                success: 'fa-circle-check',
+                error:   'fa-circle-xmark',
+                info:    'fa-circle-info',
+                warning: 'fa-triangle-exclamation'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl border backdrop-blur-md shadow-xl text-xs font-semibold leading-snug transition-all duration-300 opacity-0 translate-y-2 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} mt-0.5 flex-shrink-0"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 350);
+            }, 4500);
+        }
+
+        // --- Generate a Random Secret Code ---
+        function generateSecretCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'KITTY-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // --- Nav wiring ---
+        if (navP2p) {
+            navP2p.addEventListener('click', () => {
+                switchView(navP2p, viewP2p);
+                startP2pListingsStream();
+            });
+        }
+
+        // --- PHASE A: Create Sell Offer ---
+        if (btnP2pCreateOffer) {
+            btnP2pCreateOffer.addEventListener('click', async () => {
+                if (!auth.currentUser) return showToast('You must be signed in.', 'error');
+
+                const kcAmount = parseFloat(document.getElementById('p2p-sell-amount').value);
+                const eurPrice = parseFloat(document.getElementById('p2p-sell-price').value);
+                const paymentLink = document.getElementById('p2p-sell-payment').value.trim();
+
+                if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
+                if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
+                if (!paymentLink) return showToast('Add your payment link or IBAN so the buyer knows where to send money.', 'warning');
+
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, 'wallets', myEmail);
+
+                btnP2pCreateOffer.disabled = true;
+                btnP2pCreateOffer.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Locking KC...`;
+
+                try {
+                    // Read seller info & validate balance
+                    const mySnap = await getDoc(myDocRef);
+                    if (!mySnap.exists()) throw new Error('Wallet not found.');
+                    const myData = mySnap.data();
+                    const currentBal = myData.balance || 0;
+                    if (currentBal < kcAmount) throw new Error(`Insufficient balance. You have ${currentBal.toFixed(2)} KC.`);
+
+                    // Atomic: deduct KC from wallet, then create listing
+                    await runTransaction(db, async (tx) => {
+                        const freshSnap = await tx.get(myDocRef);
+                        const freshBal = freshSnap.data().balance || 0;
+                        if (freshBal < kcAmount) throw new Error('Insufficient balance (race condition check failed).');
+                        tx.update(myDocRef, { balance: freshBal - kcAmount });
+                    });
+
+                    // Create the listing document after KC is locked
+                    await addDoc(collection(db, 'p2p_listings'), {
+                        sellerEmail: myEmail,
+                        sellerUsername: myData.username || 'unknown',
+                        kcAmount: kcAmount,
+                        eurPrice: eurPrice,
+                        paymentLink: paymentLink,
+                        status: 'open',
+                        buyerId: null,
+                        buyerEmail: null,
+                        buyerUsername: null,
+                        secretCode: null,
+                        createdAt: serverTimestamp()
+                    });
+
+                    document.getElementById('p2p-sell-amount').value = '';
+                    document.getElementById('p2p-sell-price').value = '';
+                    document.getElementById('p2p-sell-payment').value = '';
+                    showToast(`${kcAmount.toFixed(2)} KC locked & offer listed successfully!`, 'success');
+
+                } catch (err) {
+                    showToast('Error creating offer: ' + err.message, 'error');
+                } finally {
+                    btnP2pCreateOffer.disabled = false;
+                    btnP2pCreateOffer.innerHTML = `<i class="fa-solid fa-lock mr-2"></i> Lock KC & List Offer`;
+                }
+            });
+        }
+
+        // --- PHASE B: Buy Offer (claim a listing) ---
+        async function p2pBuyOffer(listingId) {
+            if (!auth.currentUser) return showToast('You must be signed in.', 'error');
+            const myEmail = auth.currentUser.email.toLowerCase();
+            const mySnap = await getDoc(doc(db, 'wallets', myEmail));
+            const myUsername = mySnap.exists() ? (mySnap.data().username || 'unknown') : 'unknown';
+
+            const listingRef = doc(db, 'p2p_listings', listingId);
+
+            try {
+                // PHASE C: generate secret code and stamp it on the listing atomically
+                const secretCode = generateSecretCode();
+
+                await runTransaction(db, async (tx) => {
+                    const listingSnap = await tx.get(listingRef);
+                    if (!listingSnap.exists()) throw new Error('Listing no longer exists.');
+                    const data = listingSnap.data();
+                    if (data.status !== 'open') throw new Error('This offer has already been claimed.');
+                    if (data.sellerEmail === myEmail) throw new Error('You cannot buy your own offer.');
+
+                    tx.update(listingRef, {
+                        status: 'pending',
+                        buyerEmail: myEmail,
+                        buyerUsername: myUsername,
+                        buyerId: auth.currentUser.uid,
+                        secretCode: secretCode
+                    });
+                });
+
+                // Show secret code ONLY to the buyer in the UI
+                p2pSecretCodeDisplay.textContent = secretCode;
+                p2pSecretModal.classList.remove('hidden');
+                showToast('Offer claimed! Pay the seller and share your secret code.', 'info');
+
+            } catch (err) {
+                showToast('Error claiming offer: ' + err.message, 'error');
+            }
+        }
+
+        // --- PHASE D: Seller opens the release modal ---
+        function p2pOpenReleaseModal(listingId) {
+            p2pReleaseListingId.value = listingId;
+            p2pReleaseCodeInput.value = '';
+            p2pReleaseModal.classList.remove('hidden');
+        }
+
+        // --- PHASE D: Confirm secret code & release KC to buyer ---
+        if (btnP2pConfirmRelease) {
+            btnP2pConfirmRelease.addEventListener('click', async () => {
+                const listingId = p2pReleaseListingId.value;
+                const enteredCode = p2pReleaseCodeInput.value.trim().toUpperCase();
+                if (!listingId || !enteredCode) return showToast('Enter the secret code first.', 'warning');
+
+                btnP2pConfirmRelease.disabled = true;
+                btnP2pConfirmRelease.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Verifying...`;
+
+                try {
+                    const listingRef = doc(db, 'p2p_listings', listingId);
+                    const listingSnap = await getDoc(listingRef);
+                    if (!listingSnap.exists()) throw new Error('Listing not found.');
+                    const data = listingSnap.data();
+
+                    if (data.status !== 'pending') throw new Error('This listing is not in a pending state.');
+                    if (data.secretCode !== enteredCode) throw new Error('Incorrect secret code. Please try again.');
+
+                    // Release KC to buyer
+                    const buyerDocRef = doc(db, 'wallets', data.buyerEmail);
+                    await runTransaction(db, async (tx) => {
+                        const buyerSnap = await tx.get(buyerDocRef);
+                        const buyerBal = buyerSnap.exists() ? (buyerSnap.data().balance || 0) : 0;
+                        tx.update(buyerDocRef, { balance: buyerBal + data.kcAmount });
+                        tx.update(listingRef, { status: 'completed' });
+                    });
+
+                    p2pReleaseModal.classList.add('hidden');
+                    showToast(`Trade complete! ${data.kcAmount.toFixed(2)} KC released to @${data.buyerUsername}.`, 'success');
+
+                } catch (err) {
+                    showToast('Release Error: ' + err.message, 'error');
+                } finally {
+                    btnP2pConfirmRelease.disabled = false;
+                    btnP2pConfirmRelease.innerHTML = `<i class="fa-solid fa-unlock mr-2"></i> Release KC to Buyer`;
+                }
+            });
+        }
+
+        // --- ADMIN: Force Release (transfers KC to buyer) ---
+        async function p2pAdminForceRelease(listingId) {
+            if (!auth.currentUser || auth.currentUser.email.toLowerCase() !== ADMIN_EMAIL) return showToast('Unauthorized.', 'error');
+            if (!confirm('ADMIN: Force release KC to buyer?')) return;
+            try {
+                const listingRef = doc(db, 'p2p_listings', listingId);
+                const listingSnap = await getDoc(listingRef);
+                if (!listingSnap.exists()) throw new Error('Listing not found.');
+                const data = listingSnap.data();
+
+                const buyerDocRef = doc(db, 'wallets', data.buyerEmail);
+                await runTransaction(db, async (tx) => {
+                    const buyerSnap = await tx.get(buyerDocRef);
+                    const buyerBal = buyerSnap.exists() ? (buyerSnap.data().balance || 0) : 0;
+                    tx.update(buyerDocRef, { balance: buyerBal + data.kcAmount });
+                    tx.update(listingRef, { status: 'completed' });
+                });
+                showToast(`[ADMIN] KC force-released to @${data.buyerUsername}.`, 'success');
+            } catch (err) {
+                showToast('Admin Force Release Error: ' + err.message, 'error');
+            }
+        }
+
+        // --- ADMIN: Cancel & Refund (returns KC to seller) ---
+        async function p2pAdminCancelRefund(listingId) {
+            if (!auth.currentUser || auth.currentUser.email.toLowerCase() !== ADMIN_EMAIL) return showToast('Unauthorized.', 'error');
+            if (!confirm('ADMIN: Cancel listing and refund KC to seller?')) return;
+            try {
+                const listingRef = doc(db, 'p2p_listings', listingId);
+                const listingSnap = await getDoc(listingRef);
+                if (!listingSnap.exists()) throw new Error('Listing not found.');
+                const data = listingSnap.data();
+
+                const sellerDocRef = doc(db, 'wallets', data.sellerEmail);
+                await runTransaction(db, async (tx) => {
+                    const sellerSnap = await tx.get(sellerDocRef);
+                    const sellerBal = sellerSnap.exists() ? (sellerSnap.data().balance || 0) : 0;
+                    tx.update(sellerDocRef, { balance: sellerBal + data.kcAmount });
+                    tx.update(listingRef, { status: 'refunded' });
+                });
+                showToast(`[ADMIN] Listing cancelled. ${data.kcAmount.toFixed(2)} KC refunded to @${data.sellerUsername}.`, 'success');
+            } catch (err) {
+                showToast('Admin Cancel Error: ' + err.message, 'error');
+            }
+        }
+
+        // --- Seller self-cancel an open listing (before anyone buys) ---
+        async function p2pSellerCancelOffer(listingId) {
+            if (!auth.currentUser) return;
+            if (!confirm('Cancel your listing and get your KC back?')) return;
+            try {
+                const listingRef = doc(db, 'p2p_listings', listingId);
+                const listingSnap = await getDoc(listingRef);
+                if (!listingSnap.exists()) throw new Error('Listing not found.');
+                const data = listingSnap.data();
+
+                if (data.status !== 'open') throw new Error('Only open listings can be cancelled by the seller.');
+                const myEmail = auth.currentUser.email.toLowerCase();
+                if (data.sellerEmail !== myEmail) throw new Error('Not your listing.');
+
+                const sellerDocRef = doc(db, 'wallets', myEmail);
+                await runTransaction(db, async (tx) => {
+                    const sellerSnap = await tx.get(sellerDocRef);
+                    const sellerBal = sellerSnap.exists() ? (sellerSnap.data().balance || 0) : 0;
+                    tx.update(sellerDocRef, { balance: sellerBal + data.kcAmount });
+                    tx.update(listingRef, { status: 'cancelled' });
+                });
+                showToast(`Offer cancelled. ${data.kcAmount.toFixed(2)} KC returned to your wallet.`, 'info');
+            } catch (err) {
+                showToast('Cancel Error: ' + err.message, 'error');
+            }
+        }
+
+        // --- Show buyer their code again if listing is still pending ---
+        async function p2pShowMyCodeAgain(listingId) {
+            try {
+                const listingSnap = await getDoc(doc(db, 'p2p_listings', listingId));
+                if (!listingSnap.exists()) return showToast('Listing not found.', 'error');
+                const data = listingSnap.data();
+                if (!data.secretCode) return showToast('No code found for this listing.', 'error');
+                p2pSecretCodeDisplay.textContent = data.secretCode;
+                p2pSecretModal.classList.remove('hidden');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        // --- Render a single listing row ---
+        function renderP2pListingRow(listingId, data) {
+            const myEmail = auth.currentUser ? auth.currentUser.email.toLowerCase() : '';
+            const isAdmin = myEmail === ADMIN_EMAIL;
+            const isSeller = myEmail === data.sellerEmail;
+            const isBuyer = myEmail === data.buyerEmail;
+
+            // Skip completed/cancelled/refunded listings
+            if (['completed', 'cancelled', 'refunded'].includes(data.status)) return null;
+
+            // Status badge
+            const statusBadges = {
+                open:    'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                pending: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+            };
+            const statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusBadges[data.status] || 'bg-slate-800 text-slate-400 border-slate-700'}">${data.status.toUpperCase()}</span>`;
+
+            // Payment link rendering
+            const paymentHtml = data.paymentLink
+                ? `<a href="${data.paymentLink}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:underline text-xs truncate max-w-[140px] inline-block">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1 text-[10px]"></i>${data.paymentLink.replace(/^https?:\/\//, '')}
+                   </a>`
+                : `<span class="text-slate-600 text-xs italic">—</span>`;
+
+            // Button logic
+            let actionHtml = '';
+
+            if (data.status === 'open') {
+                if (isSeller) {
+                    actionHtml = `<button onclick="p2pSellerCancelOffer('${listingId}')" class="text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
+                        <i class="fa-solid fa-xmark mr-1"></i> Cancel Offer
+                    </button>`;
+                } else {
+                    actionHtml = `<button onclick="p2pBuyOffer('${listingId}')" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
+                        <i class="fa-solid fa-cart-shopping mr-1"></i> Buy Now
+                    </button>`;
+                }
+            } else if (data.status === 'pending') {
+                if (isSeller && !isAdmin) {
+                    actionHtml = `<button onclick="p2pOpenReleaseModal('${listingId}')" class="text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
+                        <i class="fa-solid fa-key mr-1"></i> Enter Code
+                    </button>`;
+                } else if (isBuyer && !isAdmin) {
+                    actionHtml = `<button onclick="p2pShowMyCodeAgain('${listingId}')" class="text-xs bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
+                        <i class="fa-solid fa-eye mr-1"></i> See My Code
+                    </button>`;
+                } else if (!isAdmin) {
+                    actionHtml = `<span class="text-xs text-slate-600 font-mono">Awaiting confirmation...</span>`;
+                }
+                // Admin always gets override buttons on pending listings
+                if (isAdmin) {
+                    actionHtml = `
+                        <div class="flex gap-1.5 w-full">
+                            <button onclick="p2pAdminForceRelease('${listingId}')" class="flex-1 text-[10px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 px-2 py-2 rounded-xl font-bold transition cursor-pointer">
+                                <i class="fa-solid fa-unlock mr-1"></i> Force Release
+                            </button>
+                            <button onclick="p2pAdminCancelRefund('${listingId}')" class="flex-1 text-[10px] bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 px-2 py-2 rounded-xl font-bold transition cursor-pointer">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Refund
+                            </button>
+                        </div>`;
+                }
+            }
+
+            const pendingBuyerInfo = (data.status === 'pending' && (isSeller || isAdmin))
+                ? `<span class="text-[10px] text-slate-500 font-mono">Buyer: <span class="text-amber-400 font-bold">@${data.buyerUsername || '?'}</span></span>`
+                : '';
+
+            return `
+                <div class="grid md:grid-cols-[1fr_80px_80px_1fr_160px] gap-3 items-center p-4 hover:bg-slate-900/30 transition" data-listing-id="${listingId}">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-[10px] font-black flex-shrink-0">
+                            ${data.sellerUsername ? data.sellerUsername.charAt(0).toUpperCase() : '?'}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-white truncate">@${data.sellerUsername || 'unknown'}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                ${statusBadge}
+                                ${pendingBuyerInfo}
+                                ${isSeller ? '<span class="text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full">YOU</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-amber-400 font-mono">${parseFloat(data.kcAmount).toFixed(2)}</p>
+                        <p class="text-[10px] text-slate-500">KC</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-emerald-400 font-mono">€${parseFloat(data.eurPrice).toFixed(2)}</p>
+                        <p class="text-[10px] text-slate-500">EUR</p>
+                    </div>
+                    <div class="min-w-0">
+                        ${paymentHtml}
+                    </div>
+                    <div class="flex justify-end">
+                        ${actionHtml}
+                    </div>
+                </div>`;
+        }
+
+        // --- Real-time Firestore listener for listings ---
+        function startP2pListingsStream() {
+            if (p2pUnsubscribe) p2pUnsubscribe(); // teardown old listener
+            if (!auth.currentUser) return;
+
+            const q = query(
+                collection(db, 'p2p_listings'),
+                where('status', 'in', ['open', 'pending']),
+                orderBy('createdAt', 'desc')
+            );
+
+            p2pUnsubscribe = onSnapshot(q, (snapshot) => {
+                if (!p2pListingsContainer) return;
+                p2pListingsContainer.innerHTML = '';
+
+                if (snapshot.empty) {
+                    p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings. Be the first to create one!</p>`;
+                    return;
+                }
+
+                let hasVisible = false;
+                snapshot.forEach((docSnap) => {
+                    const html = renderP2pListingRow(docSnap.id, docSnap.data());
+                    if (html) {
+                        p2pListingsContainer.insertAdjacentHTML('beforeend', html);
+                        hasVisible = true;
+                    }
+                });
+
+                if (!hasVisible) {
+                    p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings right now.</p>`;
+                }
+            }, (err) => {
+                showToast('Marketplace sync error: ' + err.message, 'error');
+            });
+        }
+
+        // --- Modal close buttons ---
+        if (btnP2pCloseSecretModal) {
+            btnP2pCloseSecretModal.addEventListener('click', () => p2pSecretModal.classList.add('hidden'));
+        }
+        if (btnP2pCloseReleaseModal) {
+            btnP2pCloseReleaseModal.addEventListener('click', () => p2pReleaseModal.classList.add('hidden'));
+        }
+
+        // --- Expose functions globally for inline onclick handlers ---
+        window.p2pBuyOffer = p2pBuyOffer;
+        window.p2pOpenReleaseModal = p2pOpenReleaseModal;
+        window.p2pSellerCancelOffer = p2pSellerCancelOffer;
+        window.p2pShowMyCodeAgain = p2pShowMyCodeAgain;
+        window.p2pAdminForceRelease = p2pAdminForceRelease;
+        window.p2pAdminCancelRefund = p2pAdminCancelRefund;
+
+        // =====================================================
+        // END P2P ESCROW TRADING SYSTEM
+        // =====================================================
     </script>
 </body>
 </html>
