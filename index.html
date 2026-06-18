@@ -2015,15 +2015,41 @@
                     if (data.status !== 'pending') throw new Error('This listing is not in a pending state.');
                     if (data.secretCode !== enteredCode) throw new Error('Incorrect secret code. Please try again.');
 
-                    // Release KC to buyer
-                    const buyerDocRef = doc(db, 'wallets', data.buyerEmail);
-                    await runTransaction(db, async (tx) => {
-                        const buyerSnap = await tx.get(buyerDocRef);
-                        const buyerBal = buyerSnap.exists() ? (buyerSnap.data().balance || 0) : 0;
-                        tx.update(buyerDocRef, { balance: buyerBal + data.kcAmount });
-                        tx.update(listingRef, { status: 'completed' });
-                    });
+// Release KC to buyer & Log automatically to transactions ledger
+const buyerDocRef = doc(db, 'wallets', data.buyerEmail);
 
+// Firebase maakt hier automatisch twee nieuwe, unieke transaction documenten aan (zonder oude te overschrijven!)
+const logSellerRef = doc(collection(db, 'transactions'));
+const logBuyerRef = doc(collection(db, 'transactions'));
+
+await runTransaction(db, async (tx) => {
+    const buyerSnap = await tx.get(buyerDocRef);
+    const buyerBal = buyerSnap.exists() ? (buyerSnap.data().balance || 0) : 0;
+    
+    // 1. Balansen updaten
+    tx.update(buyerDocRef, { balance: buyerBal + data.kcAmount });
+    tx.update(listingRef, { status: 'completed' });
+
+    // 2. Transactie loggen voor de VERKOPER (Minus in KC, slaat de EUR prijs op)
+    tx.set(logSellerRef, {
+        userEmail: data.sellerEmail,
+        type: 'P2P Sale',
+        amount: -data.kcAmount,
+        eur: parseFloat(data.eurPrice || 0), // Aangepast naar 'eur' zodat het matcht met je oude data!
+        details: `Sold to @${data.buyerUsername || 'unknown'}`,
+        timestamp: serverTimestamp()
+    });
+
+    // 3. Transactie loggen voor de KOPER (Plus in KC, slaat de EUR prijs op)
+    tx.set(logBuyerRef, {
+        userEmail: data.buyerEmail,
+        type: 'P2P Buy',
+        amount: data.kcAmount,
+        eur: parseFloat(data.eurPrice || 0), // Aangepast naar 'eur' zodat het matcht met je oude data!
+        details: `Bought from @${data.sellerUsername}`,
+        timestamp: serverTimestamp()
+    });
+});
                     p2pReleaseModal.classList.add('hidden');
                     showToast(`Trade complete! ${data.kcAmount.toFixed(2)} KC released to @${data.buyerUsername}.`, 'success');
 
