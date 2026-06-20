@@ -120,6 +120,9 @@
                     <button id="nav-get-kc" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-ticket w-5 text-amber-500"></i> Kitty Lotto
                     </button>
+                    <button id="nav-coupons" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
+                        <i class="fa-solid fa-ticket-simple w-5 text-amber-500"></i> Send Coupons
+                    </button>
                     <button id="nav-games" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-white transition text-sm text-left cursor-pointer">
                         <i class="fa-solid fa-gamepad w-5 text-amber-500"></i> Kitty Runner
                     </button>
@@ -150,6 +153,10 @@
                         <p id="user-display-name" class="text-xs font-black text-amber-400 truncate">@loading...</p>
                         <p id="user-email" class="text-[10px] text-slate-500 truncate">loading...</p>
                     </div>
+                </div>
+                <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-2 rounded-xl">
+                    <i class="fa-solid fa-ticket-simple text-amber-500"></i>
+                    <span id="sidebar-coupons-balance" class="font-bold text-white">0</span> Coupons
                 </div>
                 <button id="btn-logout" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 text-slate-400 py-3 rounded-xl text-xs font-bold cursor-pointer transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
@@ -314,6 +321,19 @@
                                     <h4 id="lotto-status-title" class="text-lg font-black tracking-tight text-white">Are you ready?</h4>
                                     <p id="lotto-status-desc" class="text-xs text-slate-400">Click the box - Claim the prize!</p>
                                 </div>
+
+                                <div class="space-y-1.5">
+                                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Pay with</p>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button type="button" id="btn-lotto-pay-kc" class="flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-amber-400 bg-amber-500/10 text-amber-300 font-bold text-xs cursor-pointer transition">
+                                            <span>1.00 KC</span>
+                                        </button>
+                                        <button type="button" id="btn-lotto-pay-coupon" class="flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs cursor-pointer transition">
+                                            <span>1 Coupon</span>
+                                            <span id="lotto-coupon-available" class="text-[9px] font-normal text-slate-500">0 available</span>
+                                        </button>
+                                    </div>
+                                </div>
                                 
                                 <button id="btn-trigger-lotto" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
                                     <i class="fa-solid fa-ticket mr-1.5"></i> Activate a Scratcher
@@ -356,7 +376,7 @@
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Rate Tier</p>
-                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.10 KC / 10s</p>
+                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.01 KC / 10s</p>
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Earned Loot</p>
@@ -469,6 +489,69 @@
                                 Save Username
                             </button>
                         </form>
+                    </div>
+                </div>
+
+                <div id="view-coupons" class="hidden space-y-6 animate-fade-in">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-ticket-simple"></i> Send Coupons
+                        </h2>
+                        <p class="text-xs text-slate-400">Lottery Coupons let you play Kitty Lotto for free. Whole numbers only — no fractional coupons.</p>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                            <div class="absolute -right-8 -bottom-8 w-32 h-32 opacity-10 pointer-events-none">
+                                <i class="fa-solid fa-ticket-simple text-9xl"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <p class="text-xs uppercase tracking-widest text-amber-100 font-bold mb-2">My Coupon Balance</p>
+                                <div class="flex items-baseline gap-2">
+                                    <span id="coupons-balance-amount" class="text-5xl font-black tracking-tight">0</span>
+                                    <span class="text-xl font-bold text-amber-200">Coupons</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-paper-plane text-amber-400"></i> Send Coupons
+                            </h3>
+                            <form id="coupons-transfer-form" class="space-y-4">
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1.5 ml-1">Recipient Username</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3.5 text-slate-500 font-bold">@</span>
+                                            <input type="text" id="coupons-receiver-username" required placeholder="username" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-slate-400 mb-1.5 ml-1">Amount <span class="text-[10px] text-slate-600">(whole numbers only)</span></label>
+                                        <div class="relative">
+                                            <input type="number" id="coupons-transfer-amount" required min="1" step="1" placeholder="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-20 py-3 text-white focus:outline-none focus:border-amber-400 transition">
+                                            <span class="absolute right-4 top-3.5 text-xs text-slate-500 font-bold">Coupons</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" id="btn-send-coupons" class="w-full bg-amber-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">
+                                    Send Coupons
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg mt-6">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-4">
+                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center gap-2">
+                                <i class="fa-solid fa-wallet text-emerald-400"></i> Coupon Activity
+                            </h3>
+                            <span class="text-[10px] text-slate-500 font-mono">Real-time Receipts</span>
+                        </div>
+                        <div id="coupons-income-list" class="space-y-3 transition-all duration-300">
+                            <p class="text-xs text-slate-500 text-center py-4 font-mono">No coupon receipts processed yet.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -790,6 +873,18 @@
         const lottoIcon = document.getElementById('lotto-icon');
         const lottoStatusTitle = document.getElementById('lotto-status-title');
         const lottoStatusDesc = document.getElementById('lotto-status-desc');
+        const btnLottoPayKc = document.getElementById('btn-lotto-pay-kc');
+        const btnLottoPayCoupon = document.getElementById('btn-lotto-pay-coupon');
+        const lottoCouponAvailable = document.getElementById('lotto-coupon-available');
+
+        const sidebarCouponsBalance = document.getElementById('sidebar-coupons-balance');
+        const couponsBalanceAmount = document.getElementById('coupons-balance-amount');
+        const couponsTransferForm = document.getElementById('coupons-transfer-form');
+        const btnSendCoupons = document.getElementById('btn-send-coupons');
+        const couponsIncomeList = document.getElementById('coupons-income-list');
+
+        let myCouponsBalance = 0;
+        let lottoPaymentMethod = 'kc'; // 'kc' or 'coupon'
         
         const authView = document.getElementById('auth-view');
         const appView = document.getElementById('app-view');
@@ -810,6 +905,7 @@
         const navDashboard = document.getElementById('nav-dashboard');
         const navLeaderboard = document.getElementById('nav-leaderboard');
         const navGetKc = document.getElementById('nav-get-kc');
+        const navCoupons = document.getElementById('nav-coupons');
         const navGames = document.getElementById('nav-games');
         const navShop = document.getElementById('nav-shop');
         const navStats = document.getElementById('nav-stats');
@@ -818,6 +914,7 @@
         const viewDashboard = document.getElementById('view-dashboard');
         const viewLeaderboard = document.getElementById('view-leaderboard');
         const viewGetKc = document.getElementById('view-get-kc');
+        const viewCoupons = document.getElementById('view-coupons');
         const viewGames = document.getElementById('view-games');
         const viewShop = document.getElementById('view-shop');
         const viewStats = document.getElementById('view-stats');
@@ -855,12 +952,55 @@
         function setupUIFromConfig() {
             const buyBtn = document.getElementById('buy-portfolio');
             if (buyBtn) buyBtn.innerText = `Buy (${CONFIG.shop.portfolioCost} KC)`;
-            if (lottoStatusTitle) lottoStatusTitle.innerText = `Are you ready? (${CONFIG.lotto.cost} KC)`;
+            updateLottoCostDisplay();
         }
 
+        function updateLottoCostDisplay() {
+            if (!lottoStatusTitle) return;
+            const costLabel = lottoPaymentMethod === 'coupon' ? '1 Coupon' : `${CONFIG.lotto.cost.toFixed(2)} KC`;
+            lottoStatusTitle.innerText = `Are you ready? (${costLabel})`;
+        }
+
+        function setLottoPaymentMethod(method) {
+            if (method === 'coupon' && myCouponsBalance < 1) return; // can't select a method you can't afford
+            lottoPaymentMethod = method;
+
+            if (btnLottoPayKc && btnLottoPayCoupon) {
+                if (method === 'kc') {
+                    btnLottoPayKc.className = "flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-amber-400 bg-amber-500/10 text-amber-300 font-bold text-xs cursor-pointer transition";
+                    btnLottoPayCoupon.className = "flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs cursor-pointer transition";
+                } else {
+                    btnLottoPayCoupon.className = "flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-amber-400 bg-amber-500/10 text-amber-300 font-bold text-xs cursor-pointer transition";
+                    btnLottoPayKc.className = "flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border-2 border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs cursor-pointer transition";
+                }
+            }
+            updateLottoCostDisplay();
+        }
+
+        function updateCouponUI() {
+            if (sidebarCouponsBalance) sidebarCouponsBalance.innerText = myCouponsBalance;
+            if (couponsBalanceAmount) couponsBalanceAmount.innerText = myCouponsBalance;
+            if (lottoCouponAvailable) lottoCouponAvailable.innerText = `${myCouponsBalance} available`;
+
+            if (btnLottoPayCoupon) {
+                if (myCouponsBalance < 1) {
+                    btnLottoPayCoupon.disabled = true;
+                    btnLottoPayCoupon.classList.add('opacity-40', 'cursor-not-allowed');
+                    // If a coupon was selected but the user no longer has one, fall back to KC.
+                    if (lottoPaymentMethod === 'coupon') setLottoPaymentMethod('kc');
+                } else {
+                    btnLottoPayCoupon.disabled = false;
+                    btnLottoPayCoupon.classList.remove('opacity-40', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        if (btnLottoPayKc) btnLottoPayKc.addEventListener('click', () => setLottoPaymentMethod('kc'));
+        if (btnLottoPayCoupon) btnLottoPayCoupon.addEventListener('click', () => setLottoPaymentMethod('coupon'));
+
         function switchView(activeNav, activeView) {
-        const views = [viewDashboard, viewLeaderboard, viewGetKc, viewGames, viewShop, viewStats, viewSettings, viewP2p];
-        const navs = [navDashboard, navLeaderboard, navGetKc, navGames, navShop, navStats, navSettings, navP2p];
+        const views = [viewDashboard, viewLeaderboard, viewGetKc, viewCoupons, viewGames, viewShop, viewStats, viewSettings, viewP2p];
+        const navs = [navDashboard, navLeaderboard, navGetKc, navCoupons, navGames, navShop, navStats, navSettings, navP2p];
             
             views.forEach(v => { if(v) v.classList.add('hidden'); });
             navs.forEach(n => { if(n) n.classList.remove('bg-slate-900', 'text-amber-400', 'font-bold'); });
@@ -898,6 +1038,7 @@
         if(navDashboard) navDashboard.addEventListener('click', () => switchView(navDashboard, viewDashboard));
         if(navLeaderboard) navLeaderboard.addEventListener('click', () => switchView(navLeaderboard, viewLeaderboard));
         if(navGetKc) navGetKc.addEventListener('click', () => switchView(navGetKc, viewGetKc));
+        if(navCoupons) navCoupons.addEventListener('click', () => switchView(navCoupons, viewCoupons));
         if(navGames) navGames.addEventListener('click', () => { switchView(navGames, viewGames); initKittyRunnerEngine(); });
         if(navShop) navShop.addEventListener('click', () => switchView(navShop, viewShop));
         if(navStats) navStats.addEventListener('click', () => switchView(navStats, viewStats));
@@ -956,6 +1097,8 @@
                         const data = userSnap.data();
                         currentUsername = data.username || await generateUniqueGuestName();
                         balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                        myCouponsBalance = Math.floor(data.coupons || 0);
+                        updateCouponUI();
                     } else {
                         currentUsername = await generateUniqueGuestName();
                         const startBalance = 0.00;
@@ -964,9 +1107,12 @@
                             email: targetEmailClean,
                             username: currentUsername,
                             balance: startBalance,
+                            coupons: 0,
                             createdAt: new Date()
                         }, { merge: true });
                         balanceAmount.innerText = startBalance.toFixed(2);
+                        myCouponsBalance = 0;
+                        updateCouponUI();
                     }
 
                     userDisplayName.innerText = `@${currentUsername}`;
@@ -975,6 +1121,7 @@
 
                     startLeaderboardAndEconomy(targetEmailClean);
                     startIncomeStream(targetEmailClean);
+                    startCouponsIncomeStream(targetEmailClean);
                     startHistoricalRatesStream();
                     startRecentTradesStream();
                 } catch (error) { console.error("Firestore loading fault: ", error); }
@@ -983,6 +1130,7 @@
                 appView.classList.add('hidden');
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
+                if (couponsIncomeUnsubscribe) couponsIncomeUnsubscribe();
                 if (historicalRatesUnsubscribe) historicalRatesUnsubscribe();
                 if (recentTradesUnsubscribe) recentTradesUnsubscribe();
             }
@@ -1116,6 +1264,8 @@
                         userCurrentBalance = balance;
                         userCurrentName = uname;
                         balanceAmount.innerText = balance.toFixed(2);
+                        myCouponsBalance = Math.floor(data.coupons || 0);
+                        updateCouponUI();
                     }
 
                     let medal = "", rowStyle = "bg-slate-950 border border-slate-800", badgeStyle = "bg-slate-800 text-slate-400";
@@ -1321,10 +1471,14 @@
         // SYSTEM SUBSYSTEMS (Income, Trans, Lotto, Shop)
         // ==========================================
         function startIncomeStream(currentUserEmail) {
-            const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(10));
+            const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(20));
             incomeUnsubscribe = onSnapshot(q, (snapshot) => {
                 rawIncomeRecords = [];
-                snapshot.forEach(docSnap => rawIncomeRecords.push(docSnap.data()));
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.type !== 'coupon') rawIncomeRecords.push(data);
+                });
+                rawIncomeRecords = rawIncomeRecords.slice(0, 10);
                 renderIncomeUI();
             });
         }
@@ -1364,6 +1518,109 @@
                 showMaxIncome = !showMaxIncome;
                 btnToggleIncome.innerHTML = showMaxIncome ? `<span>Show Less (Last 3)</span> <i class="fa-solid fa-chevron-up text-[10px]"></i>` : `<span>View More (Last 10)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>`;
                 renderIncomeUI();
+            });
+        }
+
+        // --- Coupon activity feed (Send Coupons page) ---
+        let rawCouponRecords = [];
+        let couponsIncomeUnsubscribe = null;
+
+        function startCouponsIncomeStream(currentUserEmail) {
+            // Reuses the exact same query shape (receiverEmail equality + orderBy(timestamp))
+            // as the KC income stream so it doesn't require a brand-new composite index —
+            // we just filter for type === 'coupon' client-side after fetching.
+            const q = query(collection(db, "transactions"), where("receiverEmail", "==", currentUserEmail), orderBy("timestamp", "desc"), limit(50));
+            couponsIncomeUnsubscribe = onSnapshot(q, (snapshot) => {
+                rawCouponRecords = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.type === 'coupon') rawCouponRecords.push(data);
+                });
+                rawCouponRecords = rawCouponRecords.slice(0, 10);
+                renderCouponsIncomeUI();
+            });
+        }
+
+        function renderCouponsIncomeUI() {
+            if (!couponsIncomeList) return;
+            couponsIncomeList.innerHTML = "";
+
+            if (rawCouponRecords.length === 0) {
+                couponsIncomeList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No coupon receipts processed yet.</p>`;
+                return;
+            }
+
+            rawCouponRecords.forEach(tx => {
+                const card = `
+                    <div class="p-3 bg-slate-950/50 border border-slate-800/60 rounded-xl flex flex-col justify-center animate-fade-in">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 text-[10px] flex items-center justify-center border border-emerald-500/20"><i class="fa-solid fa-arrow-down"></i></span>
+                                <p class="text-xs text-white font-medium">Received from <span class="text-amber-400 font-bold">@${tx.senderUsername || 'unknown'}</span></p>
+                            </div>
+                            <p class="text-xs font-mono font-black text-emerald-400">+${Math.floor(tx.amount || 0)} Coupons</p>
+                        </div>
+                    </div>
+                `;
+                couponsIncomeList.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        if (couponsTransferForm) {
+            couponsTransferForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUname = document.getElementById('coupons-receiver-username').value.trim().toLowerCase().replace('@', '');
+                const rawAmountStr = document.getElementById('coupons-transfer-amount').value.trim();
+                const myEmail = auth.currentUser.email.toLowerCase();
+
+                // Integers only — no doubles. Reject "5.5", "5.0", scientific notation, etc.
+                if (!/^\d+$/.test(rawAmountStr)) return alert("Coupons must be sent in whole numbers only (no decimals).");
+                const amount = parseInt(rawAmountStr, 10);
+                if (!Number.isInteger(amount) || amount <= 0) return alert("Enter a valid whole number of coupons.");
+
+                if (btnSendCoupons) { btnSendCoupons.disabled = true; btnSendCoupons.innerText = "Processing..."; }
+
+                try {
+                    const q = query(collection(db, "wallets"), where("username", "==", targetUname));
+                    const targetQuerySnap = await getDocs(q);
+
+                    if (targetQuerySnap.empty) throw new Error(`Profile @${targetUname} not found.`);
+
+                    let targetEmail = "";
+                    targetQuerySnap.forEach((doc) => { targetEmail = doc.id; });
+                    if (targetEmail === myEmail) throw new Error("Self-transfers are prohibited.");
+
+                    const myDocRef = doc(db, "wallets", myEmail);
+                    const targetDocRef = doc(db, "wallets", targetEmail);
+                    const transactionLoggingRef = doc(collection(db, "transactions"));
+
+                    await runTransaction(db, async (transaction) => {
+                        const mySnap = await transaction.get(myDocRef);
+                        const myCurrentCoupons = Math.floor(mySnap.data().coupons || 0);
+                        const myUname = mySnap.data().username || "guest";
+                        if (myCurrentCoupons < amount) throw new Error("Insufficient coupon balance.");
+
+                        const targetSnap = await transaction.get(targetDocRef);
+                        const targetCurrentCoupons = Math.floor(targetSnap.data().coupons || 0);
+
+                        transaction.update(myDocRef, { coupons: myCurrentCoupons - amount });
+                        transaction.update(targetDocRef, { coupons: targetCurrentCoupons + amount });
+
+                        transaction.set(transactionLoggingRef, {
+                            type: 'coupon',
+                            senderEmail: myEmail,
+                            senderUsername: myUname,
+                            receiverEmail: targetEmail,
+                            receiverUsername: targetUname,
+                            amount: amount,
+                            timestamp: new Date()
+                        });
+                    });
+
+                    alert(`Successfully sent ${amount} Coupon${amount === 1 ? '' : 's'} to @${targetUname}!`);
+                    couponsTransferForm.reset();
+                } catch (err) { alert("Coupon Transfer Error: " + err.message); }
+                finally { if (btnSendCoupons) { btnSendCoupons.disabled = false; btnSendCoupons.innerText = "Send Coupons"; } }
             });
         }
 
@@ -1407,6 +1664,7 @@
                         transaction.update(targetDocRef, { balance: targetCurrentBal + amount });
                         
                         transaction.set(transactionLoggingRef, {
+                            type: 'kc',
                             senderEmail: myEmail,
                             senderUsername: myUname,
                             receiverEmail: targetEmail,
@@ -1427,6 +1685,9 @@
         if (btnTriggerLotto) {
             btnTriggerLotto.addEventListener('click', async () => {
                 if (!auth.currentUser) return;
+
+                const payingWithCoupon = lottoPaymentMethod === 'coupon';
+                if (payingWithCoupon && myCouponsBalance < 1) return alert("You don't have any Lotto Coupons left.");
 
                 btnTriggerLotto.disabled = true;
                 btnTriggerLotto.innerText = "Opening scratch card...";
@@ -1470,10 +1731,18 @@
                             if (!mySnap.exists()) throw new Error("Wallet does not exist.");
 
                             const currentBal = mySnap.data().balance || 0;
-                            if (currentBal < cost) throw new Error(`Not enough KC to play (cost is ${cost} KC).`);
+                            const currentCoupons = Math.floor(mySnap.data().coupons || 0);
 
-                            const newBalance = currentBal - cost + winAmount;
-                            transaction.update(myDocRef, { balance: newBalance });
+                            if (payingWithCoupon) {
+                                if (currentCoupons < 1) throw new Error("Not enough Lotto Coupons to play.");
+                                transaction.update(myDocRef, {
+                                    balance: currentBal + winAmount,
+                                    coupons: currentCoupons - 1
+                                });
+                            } else {
+                                if (currentBal < cost) throw new Error(`Not enough KC to play (cost is ${cost} KC).`);
+                                transaction.update(myDocRef, { balance: currentBal - cost + winAmount });
+                            }
                         });
 
                         if (winAmount === CONFIG.lotto.prizes.jackpot) {
@@ -1725,17 +1994,17 @@
             // Reward Schedule Calculations
             if (currentSecs < 60) {
                 if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.1;
+                    mapGenerationTracker.payoutTally += 0.01;
                     mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
                 }
             } else if (currentSecs >= 60 && currentSecs < 300) {
                 if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.2;
+                    mapGenerationTracker.payoutTally += 0.02;
                     mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
                 }
             } else if (currentSecs >= 300) {
-                // 5 Minutes+ Threshold: Hyper-scale allocation to 1.00 KittyCoin per second
-                mapGenerationTracker.payoutTally += (1.0 * dt);
+                // 5 Minutes+ Threshold: Hyper-scale allocation to 0.10 KittyCoin per second (10x less)
+                mapGenerationTracker.payoutTally += (0.1 * dt);
             }
 
             // Adaptive Architectural Variance: Make jump frames narrow every 30 seconds
@@ -1907,13 +2176,13 @@
             
             if (uiTier) {
                 if (gameTimeMetrics.running < 60) {
-                    uiTier.innerText = "0.10 KC / 10s";
+                    uiTier.innerText = "0.01 KC / 10s";
                     uiTier.className = "text-xs font-mono font-bold text-amber-400";
                 } else if (gameTimeMetrics.running >= 60 && gameTimeMetrics.running < 300) {
-                    uiTier.innerText = "0.20 KC / 10s";
+                    uiTier.innerText = "0.02 KC / 10s";
                     uiTier.className = "text-xs font-mono font-bold text-orange-400 animate-pulse";
                 } else {
-                    uiTier.innerText = "1.00 KC / SEC";
+                    uiTier.innerText = "0.10 KC / SEC";
                     uiTier.className = "text-xs font-mono font-bold text-rose-400 underline";
                 }
             }
