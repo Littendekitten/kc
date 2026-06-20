@@ -1050,19 +1050,27 @@
         // other to find buyers — and THAT real, observed trade data is what drags price down.
         // This mirrors how a real exchange computes price: from the last N actual trades.
         function startRecentTradesStream() {
+            // NOTE: a where()+orderBy()-on-a-different-field query needs a composite Firestore
+            // index that doesn't exist by default — that silently breaks this listener with no
+            // visible error to the user. To avoid depending on a manually-created index, we
+            // instead orderBy(timestamp) alone (no index needed for a single field) and filter
+            // for P2P Sale entries on the client.
             const q = query(
                 collection(db, "transactions"),
-                where("type", "==", "P2P Sale"),
                 orderBy("timestamp", "desc"),
-                limit(30)
+                limit(60)
             );
             recentTradesUnsubscribe = onSnapshot(q, (snapshot) => {
                 recentTrades = [];
-                snapshot.forEach(docSnap => recentTrades.push(docSnap.data()));
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.type === 'P2P Sale') recentTrades.push(data);
+                });
+                recentTrades = recentTrades.slice(0, 30); // most recent 30 actual sales
                 updateEconomyUI();
             }, (err) => {
-                // Likely a missing composite index on first run — fail soft, keep app usable.
                 console.error("Recent trades stream error:", err.message);
+                showToast('Price feed sync error: ' + err.message, 'error');
             });
         }
 
