@@ -407,7 +407,7 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-chart-line"></i> KC-Stats Market
                         </h2>
-                        <p class="text-xs text-slate-400">Track the dynamic exchange rate driven by the live KittyCoin ecosystem.</p>
+                        <p class="text-xs text-slate-400">KC's price is calculated the same way real crypto prices are: Market Cap ÷ Circulating Supply.</p>
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-3">
@@ -427,7 +427,7 @@
 
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                         <div class="flex items-center justify-between mb-2">
-                            <p class="text-xs uppercase font-bold text-slate-400">Live Algorithmic Exchange Rate</p>
+                            <p class="text-xs uppercase font-bold text-slate-400">Live Market Price</p>
                             <div class="bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
                                 <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Synced to Database</span>
@@ -986,7 +986,7 @@
         }
 
         // ==========================================
-        // DYNAMIC ALGORITHMIC VALUTA CALCULATIONS
+        // REAL CRYPTO-STYLE PRICE: MARKET CAP ÷ SUPPLY
         // ==========================================
 
         function startHistoricalRatesStream() {
@@ -1098,41 +1098,19 @@
             if (usersDisplay) usersDisplay.innerText = globalUsersAllTime;
             if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
-            if (historicalRates.length > 0) {
-                // ===== STEP 1: weighted average of the manual purchases =====
-                // Same idea as how a BTC/EUR or USD/EUR index price is built from real trades:
-                // every purchase counts, but more recent purchases are weighted more heavily
-                // than older ones, instead of treating them all equally.
-                let weightedSum = 0;
-                let weightTotal = 0;
-                historicalRates.forEach((record, index) => {
-                    const weight = index + 1; // later entries = more recent = more weight
-                    weightedSum += (record.eur || 0) * weight;
-                    weightTotal += weight;
-                });
-                const weightedPurchaseRate = weightTotal > 0 ? (weightedSum / weightTotal) : 0;
+            // ===== Real crypto-style price: Price = Market Cap ÷ Circulating Supply =====
+            // This is exactly how the live price of an actual cryptocurrency is derived
+            // (e.g. CoinMarketCap / CoinGecko: Price = Market Cap ÷ Circulating Supply).
+            // Old manual purchase records ("kc-to-eur" docs) no longer influence the
+            // current price at all — they're kept purely as historical reference points
+            // on the chart below. Only the admin-set market cap and the live circulating
+            // supply (sum of all wallet balances) drive today's price.
+            const currentRate = globalTotalSupply > 0 ? (globalMarketCapEur / globalTotalSupply) : 0;
 
-                // ===== STEP 2: a small, hard-capped "live" nudge from network activity =====
-                // The purchases stay firmly in control of the price. User growth, weekly
-                // activity, and KC-Shop spending can only ever tilt the rate by a few percent
-                // either way (capped at +/-8%) — they can never overpower the purchase data.
-                const userGrowthSignal = Math.log1p(globalUsersAllTime);
-                const activityRatio = globalUsersAllTime > 0 ? (globalUsersWeeklyActive / globalUsersAllTime) : 0;
-                const shopVelocityFactor = CONFIG.shop.portfolioCost > 0 ? (globalTotalKcSpentInShop / CONFIG.shop.portfolioCost) : 0;
-
-                const demandScore = (userGrowthSignal * 0.6) + (activityRatio * 2) + (Math.log1p(shopVelocityFactor) * 0.6);
-                const maxNudge = 0.08; // hard cap: network activity can only move the rate +/-8%
-                const networkNudge = 1 + (Math.tanh(demandScore / 4) * maxNudge);
-
-                const currentRate = weightedPurchaseRate * networkNudge;
-                
-                if (rateDisplay) {
-                    rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
-                }
-                updateStatsChart(currentRate);
-            } else {
-                if (rateDisplay) rateDisplay.innerHTML = `€0.0000 <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+            if (rateDisplay) {
+                rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
             }
+            updateStatsChart(currentRate);
         }
 
         function updateStatsChart(currentLiveRate) {
@@ -1162,8 +1140,8 @@
                 });
             }
 
-            // Append the dynamically estimated Live Algorithmic Price to the very end
-            labelData.push('Live (Estimated)');
+            // Append today's real price (Market Cap ÷ Circulating Supply) to the very end
+            labelData.push('Live (Market Cap ÷ Supply)');
             rateData.push(currentLiveRate);
 
             statsChart = new Chart(ctx, {
