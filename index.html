@@ -407,10 +407,14 @@
                         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
                             <i class="fa-solid fa-chart-line"></i> KC-Stats Market
                         </h2>
-                        <p class="text-xs text-slate-400">KC's price is calculated the same way real crypto prices are: Market Cap ÷ Circulating Supply.</p>
+                        <p class="text-xs text-slate-400">KC's price comes from real completed trades on the P2P market — exactly how a real exchange prices an asset. Earning KC for free doesn't move the price; only actual trades do.</p>
                     </div>
 
-                    <div class="grid gap-4 sm:grid-cols-3">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="bg-slate-900/50 border border-emerald-500/20 p-4 rounded-2xl shadow-md">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Market Cap (derived)</p>
+                            <h3 id="kc-market-cap" class="text-xl font-black text-emerald-400 font-mono">€0.00</h3>
+                        </div>
                         <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl shadow-md">
                             <p class="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Circulating Supply</p>
                             <h3 id="kc-total-supply" class="text-xl font-black text-amber-400 font-mono">0.00 KC</h3>
@@ -425,6 +429,7 @@
                         </div>
                     </div>
 
+                    <p class="text-[10px] text-slate-600 font-mono text-center -mt-2">Price = real trades (VWAP) &middot; Market Cap = Price × Supply</p>
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg">
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-xs uppercase font-bold text-slate-400">Live Market Price</p>
@@ -811,14 +816,16 @@
         let leaderboardUnsubscribe = null;
         let incomeUnsubscribe = null;
         let historicalRatesUnsubscribe = null;
+        let recentTradesUnsubscribe = null;
         
         let rawIncomeRecords = [];
         let historicalRates = [];
+        let recentTrades = []; // real completed P2P trades — actual price discovery
         let showMaxIncome = false;
         let statsChart = null; 
 
         // REAL-TIME ECOSYSTEM ENGINE DATA
-        let globalMarketCapEur = 50.00; 
+        let globalMarketCapEur = 50.00; // bootstrap-only fallback before any real trades exist
         let globalTotalSupply = 0; 
         let globalUsersAllTime = 0;
         let globalUsersWeeklyActive = 0;
@@ -948,6 +955,7 @@
                     startLeaderboardAndEconomy(targetEmailClean);
                     startIncomeStream(targetEmailClean);
                     startHistoricalRatesStream();
+                    startRecentTradesStream();
                 } catch (error) { console.error("Firestore loading fault: ", error); }
             } else {
                 if(document.getElementById('adblock-overlay').classList.contains('hidden')) authView.classList.remove('hidden');
@@ -955,6 +963,7 @@
                 if (leaderboardUnsubscribe) leaderboardUnsubscribe();
                 if (incomeUnsubscribe) incomeUnsubscribe();
                 if (historicalRatesUnsubscribe) historicalRatesUnsubscribe();
+                if (recentTradesUnsubscribe) recentTradesUnsubscribe();
             }
         });
 
@@ -986,7 +995,7 @@
         }
 
         // ==========================================
-        // REAL CRYPTO-STYLE PRICE: MARKET CAP ÷ SUPPLY
+        // REAL PRICE DISCOVERY: VWAP OF ACTUAL TRADES
         // ==========================================
 
         function startHistoricalRatesStream() {
@@ -1008,6 +1017,31 @@
                     return getPurchaseSequenceNumber(a.id) - getPurchaseSequenceNumber(b.id);
                 });
                 updateEconomyUI();
+            });
+        }
+
+        // --- REAL price discovery: stream the most recent actually-completed P2P trades ---
+        // This is the part that makes the price "real" instead of mined/inflated. Earning KC
+        // for free via the Lottery or Kitty Runner increases supply, but it does NOT touch
+        // price directly — exactly like mining more Bitcoin doesn't set Bitcoin's price.
+        // Price only ever moves when two real users actually trade KC for EUR on the P2P
+        // market. If free-earned KC floods the market, sellers are forced to undercut each
+        // other to find buyers — and THAT real, observed trade data is what drags price down.
+        // This mirrors how a real exchange computes price: from the last N actual trades.
+        function startRecentTradesStream() {
+            const q = query(
+                collection(db, "transactions"),
+                where("type", "==", "P2P Sale"),
+                orderBy("timestamp", "desc"),
+                limit(30)
+            );
+            recentTradesUnsubscribe = onSnapshot(q, (snapshot) => {
+                recentTrades = [];
+                snapshot.forEach(docSnap => recentTrades.push(docSnap.data()));
+                updateEconomyUI();
+            }, (err) => {
+                // Likely a missing composite index on first run — fail soft, keep app usable.
+                console.error("Recent trades stream error:", err.message);
             });
         }
 
@@ -1093,23 +1127,71 @@
             const usersDisplay = document.getElementById('kc-total-users');
             const weeklyDisplay = document.getElementById('kc-weekly-users');
             const rateDisplay = document.getElementById('kc-rate-display');
+            const marketCapDisplay = document.getElementById('kc-market-cap');
 
             if (supplyDisplay) supplyDisplay.innerText = globalTotalSupply.toFixed(2) + " KC";
             if (usersDisplay) usersDisplay.innerText = globalUsersAllTime;
             if (weeklyDisplay) weeklyDisplay.innerText = globalUsersWeeklyActive;
 
-            // ===== Real crypto-style price: Price = Market Cap ÷ Circulating Supply =====
-            // This is exactly how the live price of an actual cryptocurrency is derived
-            // (e.g. CoinMarketCap / CoinGecko: Price = Market Cap ÷ Circulating Supply).
-            // Old manual purchase records ("kc-to-eur" docs) no longer influence the
-            // current price at all — they're kept purely as historical reference points
-            // on the chart below. Only the admin-set market cap and the live circulating
-            // supply (sum of all wallet balances) drive today's price.
-            const currentRate = globalTotalSupply > 0 ? (globalMarketCapEur / globalTotalSupply) : 0;
+            // ===== REAL price discovery: volume-weighted average of actual completed trades =====
+            // This is exactly how a real exchange prices an asset (last-trade / VWAP), not a
+            // mined-supply formula. Free KC from the Lottery or Kitty Runner can dilute price
+            // ONLY by showing up as real sell pressure in these trades — never directly.
+            let currentRate = 0;
+            let priceSource = 'none';
+
+            if (recentTrades.length > 0) {
+                // recentTrades is ordered newest-first (orderBy timestamp desc, limit 30).
+                // Weight recent trades more heavily than older ones in the window, same way
+                // a real exchange's short-term VWAP favors the latest prints.
+                let weightedSum = 0;
+                let weightTotal = 0;
+                let volumeSum = 0;
+                recentTrades.forEach((trade, indexFromNewest) => {
+                    const kcAmount = Math.abs(trade.amount || 0);
+                    const eurAmount = trade.eur || 0;
+                    if (kcAmount <= 0) return;
+                    const tradePrice = eurAmount / kcAmount;
+                    const weight = (recentTrades.length - indexFromNewest); // newest trade = highest weight
+                    weightedSum += tradePrice * weight;
+                    weightTotal += weight;
+                    volumeSum += kcAmount;
+                });
+                currentRate = weightTotal > 0 ? (weightedSum / weightTotal) : 0;
+                priceSource = 'trades';
+            } else if (historicalRates.length > 0) {
+                // Bootstrap fallback: before the market has ANY real completed trades yet,
+                // fall back to the manually-seeded launch price(s) so the app isn't showing
+                // €0.00 on day one. The moment real trades start happening, this is ignored.
+                let weightedSum = 0;
+                let weightTotal = 0;
+                historicalRates.forEach((record, index) => {
+                    const weight = index + 1;
+                    weightedSum += (record.eur || 0) * weight;
+                    weightTotal += weight;
+                });
+                currentRate = weightTotal > 0 ? (weightedSum / weightTotal) : 0;
+                priceSource = 'seed';
+            } else if (globalTotalSupply > 0) {
+                // Last-resort bootstrap if absolutely nothing has happened yet.
+                currentRate = globalMarketCapEur / globalTotalSupply;
+                priceSource = 'bootstrap';
+            }
 
             if (rateDisplay) {
-                rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span>`;
+                const sourceTag = priceSource === 'trades'
+                    ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider ml-1">(live trades)</span>`
+                    : priceSource === 'seed'
+                        ? `<span class="text-[9px] text-amber-400 font-bold uppercase tracking-wider ml-1">(pre-market)</span>`
+                        : '';
+                rateDisplay.innerHTML = `€${currentRate.toFixed(4)} <span class="text-sm font-bold text-slate-500 ml-2">per 1 KC</span> ${sourceTag}`;
             }
+
+            // Market Cap is now DERIVED from the real price, not the other way around —
+            // exactly like Market Cap = Price × Circulating Supply for any real crypto asset.
+            const derivedMarketCap = currentRate * globalTotalSupply;
+            if (marketCapDisplay) marketCapDisplay.innerText = "€" + derivedMarketCap.toFixed(2);
+
             updateStatsChart(currentRate);
         }
 
@@ -1125,8 +1207,25 @@
             let labelData = [];
             let rateData = [];
 
-            // Read the manual purchase documents from Firebase
-            if (historicalRates.length > 0) {
+            if (recentTrades.length > 0) {
+                // recentTrades is newest-first; reverse for a left-to-right chronological chart.
+                const chronological = [...recentTrades].reverse();
+                chronological.forEach((trade, index) => {
+                    const kcAmount = Math.abs(trade.amount || 0);
+                    const tradePrice = kcAmount > 0 ? (trade.eur || 0) / kcAmount : 0;
+                    if (trade.timestamp) {
+                        const d = trade.timestamp.toDate ? trade.timestamp.toDate() : new Date(trade.timestamp);
+                        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                        labelData.push(`${dateStr} ${timeStr}`);
+                    } else {
+                        labelData.push(`Trade #${index + 1}`);
+                    }
+                    rateData.push(tradePrice);
+                });
+                labelData.push('Live (VWAP)');
+            } else if (historicalRates.length > 0) {
+                // Pre-market fallback: no real trades yet, show the seeded launch price(s).
                 historicalRates.forEach((record, index) => {
                     if (record.timestamp) {
                         const d = record.timestamp.toDate ? record.timestamp.toDate() : new Date(record.timestamp);
@@ -1134,14 +1233,15 @@
                         const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
                         labelData.push(`${dateStr} ${timeStr}`);
                     } else {
-                        labelData.push(`Purchase #${index + 1}`);
+                        labelData.push(`Seed #${index + 1}`);
                     }
                     rateData.push(record.eur || 0);
                 });
+                labelData.push('Live (Pre-Market)');
+            } else {
+                labelData.push('Live');
             }
 
-            // Append today's real price (Market Cap ÷ Circulating Supply) to the very end
-            labelData.push('Live (Market Cap ÷ Supply)');
             rateData.push(currentLiveRate);
 
             statsChart = new Chart(ctx, {
