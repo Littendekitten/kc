@@ -498,7 +498,7 @@
         <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-5">
             <i class="fa-solid fa-tag text-amber-400"></i> Create a Sell Offer
         </h3>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">KC Amount to Sell</label>
                 <div class="relative">
@@ -519,6 +519,17 @@
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(Tikkie / IBAN)</span></label>
                 <input type="text" id="p2p-sell-payment" placeholder="https://tikkie.me/pay/..." maxlength="200"
                     class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1.5 ml-1">Expires In <span class="text-[10px] text-slate-600">(Tikkie-style)</span></label>
+                <select id="p2p-sell-expiry"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                    <option value="1">1 hour</option>
+                    <option value="24">24 hours</option>
+                    <option value="72">3 days</option>
+                    <option value="168" selected>7 days</option>
+                    <option value="720">30 days</option>
+                </select>
             </div>
         </div>
         <div class="mt-4">
@@ -647,6 +658,16 @@
             shop: {
                 portfolioCost: 350.00, 
                 formspreeUrl: "https://formspree.io/f/mwvjywav" 
+            },
+            p2p: {
+                defaultExpiryHours: 168, // 7 days — matches a typical Tikkie request lifespan
+                expiryOptions: [
+                    { label: "1 hour",   hours: 1 },
+                    { label: "24 hours", hours: 24 },
+                    { label: "3 days",   hours: 72 },
+                    { label: "7 days",   hours: 168 },
+                    { label: "30 days",  hours: 720 }
+                ]
             },
             ads: {
                 desktopKey: '93b1f9e019c65574bb080932b4771349',
@@ -1912,6 +1933,8 @@
         const btnP2pCloseReleaseModal = document.getElementById('btn-p2p-close-release-modal');
 
         let p2pUnsubscribe = null;
+        const p2pReclaimInFlight = new Set(); // guards against double-firing the auto-refund transaction
+        let p2pCountdownInterval = null; // re-renders listings periodically so countdowns tick down live
 
         // --- Toast Notification System ---
         function showToast(message, type = 'info') {
@@ -1972,10 +1995,13 @@
                 const kcAmount = parseFloat(document.getElementById('p2p-sell-amount').value);
                 const eurPrice = parseFloat(document.getElementById('p2p-sell-price').value);
                 const paymentLink = document.getElementById('p2p-sell-payment').value.trim();
+                const expiryHours = parseFloat(document.getElementById('p2p-sell-expiry').value) || CONFIG.p2p.defaultExpiryHours;
 
                 if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
                 if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
                 if (!paymentLink) return showToast('Add your payment link or IBAN so the buyer knows where to send money.', 'warning');
+
+                const expiresAtDate = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
                 const myEmail = auth.currentUser.email.toLowerCase();
                 const myDocRef = doc(db, 'wallets', myEmail);
@@ -2011,12 +2037,14 @@
                         buyerEmail: null,
                         buyerUsername: null,
                         secretCode: null,
-                        createdAt: serverTimestamp()
+                        createdAt: serverTimestamp(),
+                        expiresAt: expiresAtDate
                     });
 
                     document.getElementById('p2p-sell-amount').value = '';
                     document.getElementById('p2p-sell-price').value = '';
                     document.getElementById('p2p-sell-payment').value = '';
+                    document.getElementById('p2p-sell-expiry').value = String(CONFIG.p2p.defaultExpiryHours);
                     showToast(`${kcAmount.toFixed(2)} KC locked & offer listed successfully!`, 'success');
 
                 } catch (err) {
@@ -2047,6 +2075,10 @@
                     const data = listingSnap.data();
                     if (data.status !== 'open') throw new Error('This offer has already been claimed.');
                     if (data.sellerEmail === myEmail) throw new Error('You cannot buy your own offer.');
+                    if (data.expiresAt) {
+                        const expiresAtDate = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+                        if (Date.now() > expiresAtDate.getTime()) throw new Error('This offer has expired and can no longer be purchased.');
+                    }
 
                     tx.update(listingRef, {
                         status: 'pending',
@@ -2227,22 +2259,99 @@ await runTransaction(db, async (tx) => {
             }
         }
 
-        // --- Render a single listing row ---
+        // --- Tikkie-style expiry helpers ---
+        function getExpiryDate(data) {
+            if (!data.expiresAt) return null;
+            return data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+        }
+
+        function formatTimeRemaining(expiresAtDate) {
+            const msLeft = expiresAtDate.getTime() - Date.now();
+            if (msLeft <= 0) return { expired: true, text: 'Expired' };
+
+            const totalMinutes = Math.floor(msLeft / 60000);
+            const days = Math.floor(totalMinutes / 1440);
+            const hours = Math.floor((totalMinutes % 1440) / 60);
+            const minutes = totalMinutes % 60;
+
+            let text;
+            if (days > 0) text = `Expires in ${days}d ${hours}h`;
+            else if (hours > 0) text = `Expires in ${hours}h ${minutes}m`;
+            else text = `Expires in ${minutes}m`;
+
+            const urgent = msLeft < (1000 * 60 * 60); // under 1 hour left
+            return { expired: false, text, urgent };
+        }
+
+        // --- Auto-reclaim: like a Tikkie request that's no longer payable once expired,
+        // an open listing past its expiresAt can no longer be bought. The seller's own
+        // client (the only one with permission to credit their own wallet) automatically
+        // refunds the locked KC back to them and marks the listing 'expired'. ---
+        async function p2pReclaimExpiredListing(listingId) {
+            if (p2pReclaimInFlight.has(listingId)) return;
+            p2pReclaimInFlight.add(listingId);
+            try {
+                const listingRef = doc(db, 'p2p_listings', listingId);
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const sellerDocRef = doc(db, 'wallets', myEmail);
+
+                await runTransaction(db, async (tx) => {
+                    const listingSnap = await tx.get(listingRef);
+                    if (!listingSnap.exists()) return;
+                    const data = listingSnap.data();
+                    if (data.status !== 'open') return; // already handled (bought/cancelled) — nothing to do
+                    if (data.sellerEmail !== myEmail) return; // not ours to reclaim
+
+                    const expiresAtDate = getExpiryDate(data);
+                    if (!expiresAtDate || Date.now() <= expiresAtDate.getTime()) return; // not actually expired
+
+                    const sellerSnap = await tx.get(sellerDocRef);
+                    const sellerBal = sellerSnap.exists() ? (sellerSnap.data().balance || 0) : 0;
+                    tx.update(sellerDocRef, { balance: sellerBal + data.kcAmount });
+                    tx.update(listingRef, { status: 'expired' });
+                });
+            } catch (err) {
+                console.error('Auto-reclaim error:', err.message);
+            } finally {
+                p2pReclaimInFlight.delete(listingId);
+            }
+        }
+
+
         function renderP2pListingRow(listingId, data) {
             const myEmail = auth.currentUser ? auth.currentUser.email.toLowerCase() : '';
             const isAdmin = myEmail === ADMIN_EMAIL;
             const isSeller = myEmail === data.sellerEmail;
             const isBuyer = myEmail === data.buyerEmail;
 
-            // Skip completed/cancelled/refunded listings
-            if (['completed', 'cancelled', 'refunded'].includes(data.status)) return null;
+            // Skip fully-finalized listings (expired ones disappear once the refund lands)
+            if (['completed', 'cancelled', 'refunded', 'expired'].includes(data.status)) return null;
+
+            // --- Tikkie-style expiry check (only applies while still 'open' / unclaimed) ---
+            const expiresAtDate = getExpiryDate(data);
+            const expiryInfo = (data.status === 'open' && expiresAtDate) ? formatTimeRemaining(expiresAtDate) : null;
+            const isExpired = !!(expiryInfo && expiryInfo.expired);
+
+            if (isExpired && isSeller) {
+                // Only the seller's own client can credit their own wallet back — fire and forget.
+                p2pReclaimExpiredListing(listingId);
+            }
 
             // Status badge
             const statusBadges = {
                 open:    'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
                 pending: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
             };
-            const statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusBadges[data.status] || 'bg-slate-800 text-slate-400 border-slate-700'}">${data.status.toUpperCase()}</span>`;
+            const displayStatusLabel = isExpired ? 'EXPIRED' : data.status.toUpperCase();
+            const statusBadgeClass = isExpired ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : (statusBadges[data.status] || 'bg-slate-800 text-slate-400 border-slate-700');
+            const statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusBadgeClass}">${displayStatusLabel}</span>`;
+
+            // Tikkie-style countdown badge (only shown on still-open, unexpired listings)
+            const expiryBadge = (expiryInfo && !expiryInfo.expired)
+                ? `<span class="text-[10px] font-mono px-2 py-0.5 rounded-full border ${expiryInfo.urgent ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-slate-800/60 text-slate-400 border-slate-700'}">
+                        <i class="fa-regular fa-clock mr-1"></i>${expiryInfo.text}
+                   </span>`
+                : '';
 
             // Payment link rendering
             const paymentHtml = data.paymentLink
@@ -2254,7 +2363,17 @@ await runTransaction(db, async (tx) => {
             // Button logic
             let actionHtml = '';
 
-            if (data.status === 'open') {
+            if (isExpired) {
+                actionHtml = isSeller
+                    ? `<span class="text-xs text-rose-400 font-mono"><i class="fa-solid fa-rotate-right mr-1 animate-spin"></i> Reclaiming KC...</span>`
+                    : `<span class="text-xs text-slate-600 font-mono italic">No longer payable</span>`;
+                // Admin can force it through immediately if the seller is offline
+                if (isAdmin) {
+                    actionHtml = `<button onclick="p2pAdminCancelRefund('${listingId}')" class="text-[10px] bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 px-2 py-2 rounded-xl font-bold transition cursor-pointer w-full">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Force Expire & Refund
+                    </button>`;
+                }
+            } else if (data.status === 'open') {
                 if (isSeller) {
                     actionHtml = `<button onclick="p2pSellerCancelOffer('${listingId}')" class="text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
                         <i class="fa-solid fa-xmark mr-1"></i> Cancel Offer
@@ -2302,8 +2421,9 @@ await runTransaction(db, async (tx) => {
                         </div>
                         <div class="min-w-0">
                             <p class="text-xs font-bold text-white truncate">@${data.sellerUsername || 'unknown'}</p>
-                            <div class="flex items-center gap-1.5 mt-0.5">
+                            <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 ${statusBadge}
+                                ${expiryBadge}
                                 ${pendingBuyerInfo}
                                 ${isSeller ? '<span class="text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full">YOU</span>' : ''}
                             </div>
@@ -2327,8 +2447,34 @@ await runTransaction(db, async (tx) => {
         }
 
         // --- Real-time Firestore listener for listings ---
+        let p2pLatestSnapshot = null;
+
+        function renderAllP2pListings() {
+            if (!p2pListingsContainer || !p2pLatestSnapshot) return;
+            p2pListingsContainer.innerHTML = '';
+
+            if (p2pLatestSnapshot.empty) {
+                p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings. Be the first to create one!</p>`;
+                return;
+            }
+
+            let hasVisible = false;
+            p2pLatestSnapshot.forEach((docSnap) => {
+                const html = renderP2pListingRow(docSnap.id, docSnap.data());
+                if (html) {
+                    p2pListingsContainer.insertAdjacentHTML('beforeend', html);
+                    hasVisible = true;
+                }
+            });
+
+            if (!hasVisible) {
+                p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings right now.</p>`;
+            }
+        }
+
         function startP2pListingsStream() {
             if (p2pUnsubscribe) p2pUnsubscribe(); // teardown old listener
+            if (p2pCountdownInterval) clearInterval(p2pCountdownInterval);
             if (!auth.currentUser) return;
 
             const q = query(
@@ -2338,29 +2484,17 @@ await runTransaction(db, async (tx) => {
             );
 
             p2pUnsubscribe = onSnapshot(q, (snapshot) => {
-                if (!p2pListingsContainer) return;
-                p2pListingsContainer.innerHTML = '';
-
-                if (snapshot.empty) {
-                    p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings. Be the first to create one!</p>`;
-                    return;
-                }
-
-                let hasVisible = false;
-                snapshot.forEach((docSnap) => {
-                    const html = renderP2pListingRow(docSnap.id, docSnap.data());
-                    if (html) {
-                        p2pListingsContainer.insertAdjacentHTML('beforeend', html);
-                        hasVisible = true;
-                    }
-                });
-
-                if (!hasVisible) {
-                    p2pListingsContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-10 font-mono">No active listings right now.</p>`;
-                }
+                p2pLatestSnapshot = snapshot;
+                renderAllP2pListings();
             }, (err) => {
                 showToast('Marketplace sync error: ' + err.message, 'error');
             });
+
+            // Listing data only changes in Firestore when someone acts on it, but the
+            // "Expires in Xm" countdown needs to tick on its own — re-render every 30s
+            // off the cached snapshot so countdowns stay live and expiries get caught
+            // even if nobody touches the listing.
+            p2pCountdownInterval = setInterval(renderAllP2pListings, 30000);
         }
 
         // --- Modal close buttons ---
