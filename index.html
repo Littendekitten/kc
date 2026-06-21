@@ -464,7 +464,23 @@
                     </div>
 
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-lg h-[300px] relative">
-                        <canvas id="rateChart"></canvas>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs uppercase font-bold text-slate-400 flex items-center gap-1.5">
+                                Price History
+                                <span class="flex items-center gap-1 text-[9px] text-emerald-400 font-bold normal-case">
+                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Live
+                                </span>
+                            </p>
+                            <div id="chart-range-selector" class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-xl p-1">
+                                <button type="button" data-range="1h" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1H</button>
+                                <button type="button" data-range="1w" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1W</button>
+                                <button type="button" data-range="1m" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1M</button>
+                                <button type="button" data-range="life" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">Lifetime</button>
+                            </div>
+                        </div>
+                        <div class="relative h-[210px]">
+                            <canvas id="rateChart"></canvas>
+                        </div>
                     </div>
 
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center mt-6">
@@ -939,8 +955,11 @@
         let rawIncomeRecords = [];
         let historicalRates = [];
         let recentTrades = []; // real completed P2P trades — actual price discovery
+        let allFetchedTrades = []; // full fetched trade history (for chart range filtering), newest-first
+        let chartRange = '1w'; // '1h' | '1w' | '1m' | 'life'
         let showMaxIncome = false;
         let statsChart = null; 
+        let lastComputedRate = 0; // cached so range buttons can re-render the chart instantly without recomputing economy stats
 
         // REAL-TIME ECOSYSTEM ENGINE DATA
         let globalMarketCapEur = 50.00; // bootstrap-only fallback before any real trades exist
@@ -1028,6 +1047,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             setupUIFromConfig();
             runAdBlockCheck();
+            setChartRange('1w');
         });
         
         setInterval(runAdBlockCheck, 6000);
@@ -1202,19 +1222,22 @@
             // index that doesn't exist by default — that silently breaks this listener with no
             // visible error to the user. To avoid depending on a manually-created index, we
             // instead orderBy(timestamp) alone (no index needed for a single field) and filter
-            // for P2P Sale entries on the client.
+            // for P2P Sale entries on the client. The limit is large enough to cover most
+            // "Lifetime" chart views; if trade volume ever exceeds it, the oldest history
+            // simply drops off the chart's lifetime view (the live price calc is unaffected,
+            // since that only ever looks at the most recent 30 trades anyway).
             const q = query(
                 collection(db, "transactions"),
                 orderBy("timestamp", "desc"),
-                limit(60)
+                limit(500)
             );
             recentTradesUnsubscribe = onSnapshot(q, (snapshot) => {
-                recentTrades = [];
+                allFetchedTrades = [];
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    if (data.type === 'P2P Sale') recentTrades.push(data);
+                    if (data.type === 'P2P Sale') allFetchedTrades.push(data);
                 });
-                recentTrades = recentTrades.slice(0, 30); // most recent 30 actual sales
+                recentTrades = allFetchedTrades.slice(0, 30); // most recent 30 actual sales — drives the live VWAP price
                 updateEconomyUI();
             }, (err) => {
                 console.error("Recent trades stream error:", err.message);
@@ -1371,8 +1394,51 @@
             const derivedMarketCap = currentRate * globalTotalSupply;
             if (marketCapDisplay) marketCapDisplay.innerText = "€" + derivedMarketCap.toFixed(2);
 
+            lastComputedRate = currentRate;
             updateStatsChart(currentRate);
         }
+
+        const CHART_RANGE_MS = {
+            '1h': 60 * 60 * 1000,
+            '1w': 7 * 24 * 60 * 60 * 1000,
+            '1m': 30 * 24 * 60 * 60 * 1000,
+            'life': Infinity
+        };
+        const CHART_RANGE_LABELS = { '1h': '1 Hour', '1w': '1 Week', '1m': '1 Month', 'life': 'Lifetime' };
+
+        function getTradeDate(trade) {
+            if (!trade.timestamp) return null;
+            return trade.timestamp.toDate ? trade.timestamp.toDate() : new Date(trade.timestamp);
+        }
+
+        function formatChartLabel(d, range) {
+            if (range === '1h') {
+                return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            }
+            const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            if (range === 'life') return dateStr;
+            const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            return `${dateStr} ${timeStr}`;
+        }
+
+        function setChartRange(range) {
+            if (!CHART_RANGE_MS[range]) return;
+            chartRange = range;
+            document.querySelectorAll('.chart-range-btn').forEach(btn => {
+                if (btn.dataset.range === range) {
+                    btn.classList.add('bg-amber-500', 'text-slate-950');
+                    btn.classList.remove('text-slate-400', 'hover:text-white');
+                } else {
+                    btn.classList.remove('bg-amber-500', 'text-slate-950');
+                    btn.classList.add('text-slate-400', 'hover:text-white');
+                }
+            });
+            updateStatsChart(lastComputedRate);
+        }
+
+        document.querySelectorAll('.chart-range-btn').forEach(btn => {
+            btn.addEventListener('click', () => setChartRange(btn.dataset.range));
+        });
 
         function updateStatsChart(currentLiveRate) {
             const ctx = document.getElementById('rateChart');
@@ -1386,37 +1452,44 @@
             let labelData = [];
             let rateData = [];
 
-            if (recentTrades.length > 0) {
-                // recentTrades is newest-first; reverse for a left-to-right chronological chart.
-                const chronological = [...recentTrades].reverse();
-                chronological.forEach((trade, index) => {
+            // allFetchedTrades is newest-first — filter to the selected window, then flip
+            // to chronological (oldest -> newest, left to right) for the chart.
+            const windowMs = CHART_RANGE_MS[chartRange];
+            const cutoff = windowMs === Infinity ? null : (Date.now() - windowMs);
+
+            const tradesInRange = allFetchedTrades.filter(trade => {
+                if (!cutoff) return true; // Lifetime — keep everything we have
+                const d = getTradeDate(trade);
+                return d ? d.getTime() >= cutoff : false;
+            });
+
+            if (tradesInRange.length > 0) {
+                const chronological = [...tradesInRange].reverse();
+                chronological.forEach((trade) => {
                     const kcAmount = Math.abs(trade.amount || 0);
                     const tradePrice = kcAmount > 0 ? (trade.eur || 0) / kcAmount : 0;
-                    if (trade.timestamp) {
-                        const d = trade.timestamp.toDate ? trade.timestamp.toDate() : new Date(trade.timestamp);
-                        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                        const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-                        labelData.push(`${dateStr} ${timeStr}`);
-                    } else {
-                        labelData.push(`Trade #${index + 1}`);
-                    }
+                    const d = getTradeDate(trade);
+                    labelData.push(d ? formatChartLabel(d, chartRange) : 'Trade');
                     rateData.push(tradePrice);
                 });
                 labelData.push('Live (VWAP)');
-            } else if (historicalRates.length > 0) {
-                // Pre-market fallback: no real trades yet, show the seeded launch price(s).
+            } else if (chartRange === 'life' && historicalRates.length > 0) {
+                // Pre-market fallback: no real trades yet at all, show the seeded launch price(s).
                 historicalRates.forEach((record, index) => {
                     if (record.timestamp) {
                         const d = record.timestamp.toDate ? record.timestamp.toDate() : new Date(record.timestamp);
-                        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                        const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-                        labelData.push(`${dateStr} ${timeStr}`);
+                        labelData.push(formatChartLabel(d, chartRange));
                     } else {
                         labelData.push(`Seed #${index + 1}`);
                     }
                     rateData.push(record.eur || 0);
                 });
                 labelData.push('Live (Pre-Market)');
+            } else if (allFetchedTrades.length > 0) {
+                // There IS trade history overall, just none inside this shorter window.
+                labelData.push(`No trades in last ${CHART_RANGE_LABELS[chartRange]}`);
+                rateData.push(currentLiveRate);
+                labelData.push('Live');
             } else {
                 labelData.push('Live');
             }
