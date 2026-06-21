@@ -956,6 +956,10 @@
         let historicalRates = [];
         let recentTrades = []; // real completed P2P trades — actual price discovery
         let allFetchedTrades = []; // full fetched trade history (for chart range filtering), newest-first
+        let lifetimeTrades = []; // TRUE full lifetime trade history (separate query, no 500-doc cap), newest-first
+        let lifetimeTradesUnsubscribe = null;
+        let lifetimeStreamStarted = false;
+        let lifetimeLoading = false;
         let chartRange = '1w'; // '1h' | '1w' | '1m' | 'life'
         let showMaxIncome = false;
         let statsChart = null; 
@@ -1153,6 +1157,9 @@
                 if (couponsIncomeUnsubscribe) couponsIncomeUnsubscribe();
                 if (historicalRatesUnsubscribe) historicalRatesUnsubscribe();
                 if (recentTradesUnsubscribe) recentTradesUnsubscribe();
+                if (lifetimeTradesUnsubscribe) lifetimeTradesUnsubscribe();
+                lifetimeStreamStarted = false;
+                lifetimeTrades = [];
             }
         });
 
@@ -1242,6 +1249,34 @@
             }, (err) => {
                 console.error("Recent trades stream error:", err.message);
                 showToast('Price feed sync error: ' + err.message, 'error');
+            });
+        }
+
+        // --- TRUE lifetime trade history (separate from the 500-doc rolling window above) ---
+        // This queries P2P Sale trades directly (where + orderBy on different fields), which
+        // needs a composite Firestore index on (type, timestamp). Without that index this
+        // listener will fail silently in the console with a "query requires an index" error
+        // and a clickable link to auto-create it — see the note left for KitaCat below.
+        function startLifetimeTradesStream() {
+            if (lifetimeStreamStarted) return; // only ever start this once per session
+            lifetimeStreamStarted = true;
+            lifetimeLoading = true;
+
+            const q = query(
+                collection(db, "transactions"),
+                where("type", "==", "P2P Sale"),
+                orderBy("timestamp", "desc")
+                // Intentionally NO limit() — this is the real, complete lifetime trade history.
+            );
+            lifetimeTradesUnsubscribe = onSnapshot(q, (snapshot) => {
+                lifetimeTrades = [];
+                snapshot.forEach(docSnap => lifetimeTrades.push(docSnap.data()));
+                lifetimeLoading = false;
+                if (chartRange === 'life') updateStatsChart(lastComputedRate);
+            }, (err) => {
+                lifetimeLoading = false;
+                console.error("Lifetime trades stream error (likely missing composite index on type+timestamp):", err.message);
+                showToast('Lifetime chart needs a Firestore index — see console for the create-index link.', 'error');
             });
         }
 
@@ -1424,6 +1459,7 @@
         function setChartRange(range) {
             if (!CHART_RANGE_MS[range]) return;
             chartRange = range;
+            if (range === 'life') startLifetimeTradesStream();
             document.querySelectorAll('.chart-range-btn').forEach(btn => {
                 if (btn.dataset.range === range) {
                     btn.classList.add('bg-amber-500', 'text-slate-950');
@@ -1453,17 +1489,24 @@
             let rateData = [];
 
             // allFetchedTrades is newest-first — filter to the selected window, then flip
-            // to chronological (oldest -> newest, left to right) for the chart.
+            // to chronological (oldest -> newest, left to right) for the chart. "Lifetime"
+            // uses the separate, uncapped lifetimeTrades stream instead of the 500-doc window.
             const windowMs = CHART_RANGE_MS[chartRange];
             const cutoff = windowMs === Infinity ? null : (Date.now() - windowMs);
 
-            const tradesInRange = allFetchedTrades.filter(trade => {
-                if (!cutoff) return true; // Lifetime — keep everything we have
-                const d = getTradeDate(trade);
-                return d ? d.getTime() >= cutoff : false;
-            });
+            const isLifetime = chartRange === 'life';
+            const tradesInRange = isLifetime
+                ? lifetimeTrades
+                : allFetchedTrades.filter(trade => {
+                    const d = getTradeDate(trade);
+                    return d ? d.getTime() >= cutoff : false;
+                });
 
-            if (tradesInRange.length > 0) {
+            if (isLifetime && lifetimeLoading && tradesInRange.length === 0) {
+                labelData.push('Loading full lifetime history…');
+                rateData.push(currentLiveRate);
+                labelData.push('Live');
+            } else if (tradesInRange.length > 0) {
                 const chronological = [...tradesInRange].reverse();
                 chronological.forEach((trade) => {
                     const kcAmount = Math.abs(trade.amount || 0);
