@@ -1253,10 +1253,14 @@
         }
 
         // --- TRUE lifetime trade history (separate from the 500-doc rolling window above) ---
-        // This queries P2P Sale trades directly (where + orderBy on different fields), which
-        // needs a composite Firestore index on (type, timestamp). Without that index this
-        // listener will fail silently in the console with a "query requires an index" error
-        // and a clickable link to auto-create it — see the note left for KitaCat below.
+        // NOTE: orderBy("timestamp") was previously applied server-side, but Firestore
+        // silently EXCLUDES any document missing the orderBy field from the results. The
+        // very first transaction ever made (and any other legacy trade docs without a
+        // "timestamp" field) was getting filtered out before it ever reached the chart.
+        // Fix: only filter by type == "P2P Sale" (a single where(), no composite index
+        // needed) and sort everything client-side instead, falling back to the trailing
+        // number in the doc id (purchase, purchase2, purchase3...) for any trade that has
+        // no timestamp — same pattern already used for kc-to-eur in startHistoricalRatesStream.
         function startLifetimeTradesStream() {
             if (lifetimeStreamStarted) return; // only ever start this once per session
             lifetimeStreamStarted = true;
@@ -1264,19 +1268,31 @@
 
             const q = query(
                 collection(db, "transactions"),
-                where("type", "==", "P2P Sale"),
-                orderBy("timestamp", "desc")
-                // Intentionally NO limit() — this is the real, complete lifetime trade history.
+                where("type", "==", "P2P Sale")
+                // Intentionally NO orderBy() and NO limit() — this is the real, complete
+                // lifetime trade history, including trades with no "timestamp" field.
             );
             lifetimeTradesUnsubscribe = onSnapshot(q, (snapshot) => {
                 lifetimeTrades = [];
-                snapshot.forEach(docSnap => lifetimeTrades.push(docSnap.data()));
+                snapshot.forEach(docSnap => lifetimeTrades.push({ id: docSnap.id, ...docSnap.data() }));
+                // Sort newest-first (matches the old orderBy("timestamp", "desc") behavior),
+                // but fall back to the doc-id sequence number when timestamp is missing so
+                // untimestamped legacy/first trades still land in the right spot instead of
+                // being dropped.
+                lifetimeTrades.sort((a, b) => {
+                    const aDate = getTradeDate(a);
+                    const bDate = getTradeDate(b);
+                    if (aDate && bDate) return bDate - aDate;
+                    if (aDate) return -1;
+                    if (bDate) return 1;
+                    return getPurchaseSequenceNumber(b.id) - getPurchaseSequenceNumber(a.id);
+                });
                 lifetimeLoading = false;
                 if (chartRange === 'life') updateStatsChart(lastComputedRate);
             }, (err) => {
                 lifetimeLoading = false;
-                console.error("Lifetime trades stream error (likely missing composite index on type+timestamp):", err.message);
-                showToast('Lifetime chart needs a Firestore index — see console for the create-index link.', 'error');
+                console.error("Lifetime trades stream error:", err.message);
+                showToast('Lifetime chart sync error: ' + err.message, 'error');
             });
         }
 
