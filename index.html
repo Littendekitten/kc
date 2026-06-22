@@ -342,6 +342,44 @@
                         </div>
                     </div>
 
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-xl border border-purple-500/20">
+                                    <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                                </div>
+                                <h3 class="text-md font-bold text-white">Micro Lotto</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    A scaled-down version of the Daily Draw. Same odds as the normal lotto, but it only costs 0.10 KC to play and every prize is divided by 20.
+                                </p>
+                                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-[11px] font-mono text-slate-500 space-y-1">
+                                    <p class="text-purple-400 font-bold">// Loot Table Configuration:</p>
+                                    <p>&bull; 75% chance of: <span class="text-slate-300">0.005 - 0.025 KC</span></p>
+                                    <p>&bull; 24% chance of: <span class="text-slate-300">0.05 - 0.25 KC</span></p>
+                                    <p>&bull; 1% JACKPOT: <span class="text-emerald-400">1.00 KC!</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[260px]">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.06)_0%,transparent_70%)] pointer-events-none"></div>
+
+                            <div id="microlotto-card" class="space-y-6 max-w-sm w-full bg-slate-900/60 border border-dashed border-slate-700 p-6 rounded-2xl relative z-10 shadow-inner">
+                                <div id="microlotto-icon" class="text-5xl text-purple-400 animate-pulse">
+                                    <i class="fa-solid fa-gift"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 id="microlotto-status-title" class="text-lg font-black tracking-tight text-white">Are you ready? (0.10 KC)</h4>
+                                    <p id="microlotto-status-desc" class="text-xs text-slate-400">Click the box - Claim the prize!</p>
+                                </div>
+
+                                <button id="btn-trigger-microlotto" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 text-slate-950 font-black py-4 rounded-xl shadow-lg hover:brightness-110 transition active:scale-98 cursor-pointer text-xs uppercase tracking-wider">
+                                    <i class="fa-solid fa-ticket mr-1.5"></i> Activate a Micro Scratcher
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="w-full bg-slate-900/40 border border-slate-800/80 rounded-3xl p-3 relative overflow-hidden min-h-[75px] md:min-h-[110px] flex flex-col items-center justify-center">
                         <span class="absolute top-1 left-3 text-[8px] uppercase tracking-widest text-slate-600 font-bold">Sponsor Banner</span>
                         <div id="ad-slot-lotto-bottom" class="ad-slot-wrapper text-center overflow-hidden flex items-center justify-center"></div>
@@ -376,7 +414,7 @@
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Rate Tier</p>
-                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.01 KC / 10s</p>
+                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.0001 KC / 10s</p>
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Earned Loot</p>
@@ -729,6 +767,21 @@
                     jackpot: 20.00
                 }
             },
+            microLotto: {
+                cost: 0.10,
+                distribution: {
+                    lowChance: 75,
+                    midChance: 99
+                },
+                prizes: {
+                    // Same odds as the normal Kitty Lotto, prizes divided by 20
+                    lowMin: 0.10 / 20,
+                    lowMax: 0.50 / 20,
+                    midMin: 1.00 / 20,
+                    midMax: 5.00 / 20,
+                    jackpot: 20.00 / 20
+                }
+            },
             shop: {
                 portfolioCost: 350.00, 
                 formspreeUrl: "https://formspree.io/f/mwvjywav" 
@@ -867,6 +920,11 @@
         const btnLottoPayKc = document.getElementById('btn-lotto-pay-kc');
         const btnLottoPayCoupon = document.getElementById('btn-lotto-pay-coupon');
         const lottoCouponAvailable = document.getElementById('lotto-coupon-available');
+
+        const btnTriggerMicroLotto = document.getElementById('btn-trigger-microlotto');
+        const microLottoIcon = document.getElementById('microlotto-icon');
+        const microLottoStatusTitle = document.getElementById('microlotto-status-title');
+        const microLottoStatusDesc = document.getElementById('microlotto-status-desc');
 
         const sidebarCouponsBalance = document.getElementById('sidebar-coupons-balance');
         const couponsBalanceAmount = document.getElementById('coupons-balance-amount');
@@ -1876,6 +1934,67 @@
             });
         }
 
+        // --- Micro Lotto: same odds as the normal Kitty Lotto, 0.10 KC to play, prizes / 20 ---
+        if (btnTriggerMicroLotto) {
+            btnTriggerMicroLotto.addEventListener('click', async () => {
+                if (!auth.currentUser) return;
+
+                btnTriggerMicroLotto.disabled = true;
+                btnTriggerMicroLotto.innerText = "Opening scratch card...";
+                microLottoIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+                microLottoStatusTitle.innerText = "Drawing result...";
+                microLottoStatusDesc.innerText = "Checking your scratch card in the database...";
+
+                const cost = CONFIG.microLotto.cost;
+                const myEmail = auth.currentUser.email.toLowerCase();
+                const myDocRef = doc(db, "wallets", myEmail);
+
+                const rand = Math.random() * 100;
+                let winAmount = 0;
+
+                if (rand < CONFIG.microLotto.distribution.lowChance) {
+                    winAmount = parseFloat((Math.random() * (CONFIG.microLotto.prizes.lowMax - CONFIG.microLotto.prizes.lowMin) + CONFIG.microLotto.prizes.lowMin).toFixed(4));
+                } else if (rand < CONFIG.microLotto.distribution.midChance) {
+                    winAmount = parseFloat((Math.random() * (CONFIG.microLotto.prizes.midMax - CONFIG.microLotto.prizes.midMin) + CONFIG.microLotto.prizes.midMin).toFixed(4));
+                } else {
+                    winAmount = CONFIG.microLotto.prizes.jackpot;
+                }
+
+                setTimeout(async () => {
+                    try {
+                        await runTransaction(db, async (transaction) => {
+                            const mySnap = await transaction.get(myDocRef);
+                            if (!mySnap.exists()) throw new Error("Wallet does not exist.");
+
+                            const currentBal = mySnap.data().balance || 0;
+                            if (currentBal < cost) throw new Error(`Not enough KC to play (cost is ${cost.toFixed(2)} KC).`);
+                            transaction.update(myDocRef, { balance: currentBal - cost + winAmount });
+                        });
+
+                        if (winAmount === CONFIG.microLotto.prizes.jackpot) {
+                            microLottoIcon.innerHTML = `<i class="fa-solid fa-trophy text-amber-400 animate-bounce"></i>`;
+                            microLottoStatusTitle.innerText = "🎰 JACKPOT WIN! 🎰";
+                            microLottoStatusTitle.className = "text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse";
+                        } else {
+                            microLottoIcon.innerHTML = `<i class="fa-solid fa-coins text-emerald-400"></i>`;
+                            microLottoStatusTitle.innerText = `You won +${winAmount.toFixed(4)} KC!`;
+                            microLottoStatusTitle.className = "text-xl font-black text-emerald-400";
+                        }
+
+                        microLottoStatusDesc.innerText = "Success! Your balance has been updated.";
+                        btnTriggerMicroLotto.innerText = "Play again";
+
+                    } catch (err) {
+                        alert("Micro Lotto Error: " + err.message);
+                        microLottoIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                        microLottoStatusTitle.innerText = "Draw failed";
+                        microLottoStatusDesc.innerText = "Something went wrong while processing your result.";
+                        btnTriggerMicroLotto.innerText = "Try again";
+                    } finally { btnTriggerMicroLotto.disabled = false; }
+                }, 1500);
+            });
+        }
+
         const btnBuyPortfolio = document.getElementById('buy-portfolio');
         if (btnBuyPortfolio) {
             btnBuyPortfolio.addEventListener('click', async () => {
@@ -2098,20 +2217,10 @@
             let tenSecCycle = Math.floor(currentSecs / 10);
             mapGenerationTracker.currentSpeed = mapGenerationTracker.baseSpeed + (tenSecCycle * 0.75);
 
-            // Reward Schedule Calculations
-            if (currentSecs < 60) {
-                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.01;
-                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
-                }
-            } else if (currentSecs >= 60 && currentSecs < 300) {
-                if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                    mapGenerationTracker.payoutTally += 0.02;
-                    mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
-                }
-            } else if (currentSecs >= 300) {
-                // 5 Minutes+ Threshold: Hyper-scale allocation to 0.10 KittyCoin per second (10x less)
-                mapGenerationTracker.payoutTally += (0.1 * dt);
+            // Reward Schedule: flat micro-payout every 10 seconds, regardless of run length
+            if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
+                mapGenerationTracker.payoutTally += 0.0001;
+                mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
             }
 
             // Adaptive Architectural Variance: Make jump frames narrow every 30 seconds
@@ -2181,7 +2290,7 @@
             
             let messageStr = `You survived ${gameTimeMetrics.running.toFixed(1)}s.`;
             if (finalPayout > 0) {
-                messageStr += ` Processing reward payout of +${finalPayout.toFixed(2)} KC...`;
+                messageStr += ` Processing reward payout of +${finalPayout.toFixed(4)} KC...`;
                 document.getElementById('game-overlay-desc').innerText = messageStr;
                 document.getElementById('game-overlay').classList.remove('hidden');
 
@@ -2195,7 +2304,7 @@
                         let curBal = snap.data().balance || 0;
                         transaction.update(myDocRef, { balance: curBal + finalPayout });
                     });
-                    document.getElementById('game-overlay-desc').innerText = `You survived ${gameTimeMetrics.running.toFixed(1)}s and earned +${finalPayout.toFixed(2)} KC!`;
+                    document.getElementById('game-overlay-desc').innerText = `You survived ${gameTimeMetrics.running.toFixed(1)}s and earned +${finalPayout.toFixed(4)} KC!`;
                 } catch (e) {
                     alert("Payout logging bypass fault: " + e.message);
                 }
@@ -2279,19 +2388,11 @@
             const uiEarned = document.getElementById('game-ui-earned');
 
             if (uiTime) uiTime.innerText = gameTimeMetrics.running.toFixed(1) + "s";
-            if (uiEarned) uiEarned.innerText = mapGenerationTracker.payoutTally.toFixed(2) + " KC";
-            
+            if (uiEarned) uiEarned.innerText = mapGenerationTracker.payoutTally.toFixed(4) + " KC";
+
             if (uiTier) {
-                if (gameTimeMetrics.running < 60) {
-                    uiTier.innerText = "0.01 KC / 10s";
-                    uiTier.className = "text-xs font-mono font-bold text-amber-400";
-                } else if (gameTimeMetrics.running >= 60 && gameTimeMetrics.running < 300) {
-                    uiTier.innerText = "0.02 KC / 10s";
-                    uiTier.className = "text-xs font-mono font-bold text-orange-400 animate-pulse";
-                } else {
-                    uiTier.innerText = "0.10 KC / SEC";
-                    uiTier.className = "text-xs font-mono font-bold text-rose-400 underline";
-                }
+                uiTier.innerText = "0.0001 KC / 10s";
+                uiTier.className = "text-xs font-mono font-bold text-amber-400";
             }
         }
 
