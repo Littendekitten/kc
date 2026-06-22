@@ -1428,8 +1428,10 @@
 
             if (recentTrades.length > 0) {
                 // recentTrades is ordered newest-first (orderBy timestamp desc, limit 30).
-                // Weight recent trades more heavily than older ones in the window, same way
-                // a real exchange's short-term VWAP favors the latest prints.
+                // TRUE VWAP: weight each trade by its actual KC volume (a 500 KC trade should
+                // move the price far more than a 0.01 KC trade), on top of a recency multiplier
+                // so the most recent prints still matter more — same way a real exchange's
+                // short-term VWAP favors both bigger size AND fresher prints.
                 let weightedSum = 0;
                 let weightTotal = 0;
                 let volumeSum = 0;
@@ -1438,7 +1440,8 @@
                     const eurAmount = trade.eur || 0;
                     if (kcAmount <= 0) return;
                     const tradePrice = eurAmount / kcAmount;
-                    const weight = (recentTrades.length - indexFromNewest); // newest trade = highest weight
+                    const recencyMultiplier = (recentTrades.length - indexFromNewest); // newest trade = highest multiplier
+                    const weight = kcAmount * recencyMultiplier; // size AND recency both count
                     weightedSum += tradePrice * weight;
                     weightTotal += weight;
                     volumeSum += kcAmount;
