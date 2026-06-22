@@ -511,8 +511,9 @@
                             </p>
                             <div id="chart-range-selector" class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-xl p-1">
                                 <button type="button" data-range="1h" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1H</button>
+                                <button type="button" data-range="1d" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1D</button>
                                 <button type="button" data-range="1w" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1W</button>
-                                <button type="button" data-range="1m" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">1M</button>
+                                <button type="button" data-range="1m" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">Mth</button>
                                 <button type="button" data-range="life" class="chart-range-btn px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer text-slate-400 hover:text-white">Lifetime</button>
                             </div>
                         </div>
@@ -651,12 +652,13 @@
                     <input type="number" id="p2p-sell-price" min="0.01" step="0.01" placeholder="0.00"
                         class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
                 </div>
+                <p id="p2p-price-fairness-hint" class="text-[10px] mt-1 ml-1 font-mono text-slate-600">Enter an amount to see the live market value.</p>
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(PayPal / Tikkie only)</span></label>
-                <input type="text" id="p2p-sell-payment" placeholder="https://paypal.me/you or https://tikkie.me/pay/..." maxlength="200"
+                <input type="text" id="p2p-sell-payment" placeholder="https://paypal.me/you or https://tikkie.me/pay/Tikkie/yourToken" maxlength="200"
                     class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
-                <p class="text-[10px] text-slate-600 mt-1 ml-1">Only paypal.me / paypal.com or tikkie.me links are accepted.</p>
+                <p class="text-[10px] text-slate-600 mt-1 ml-1">Only real paypal.me / paypal.com or tikkie.me/pay/&lt;name&gt;/&lt;token&gt; links are accepted — fake or malformed links are rejected automatically.</p>
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Expires In <span class="text-[10px] text-slate-600">(Tikkie-style)</span></label>
@@ -794,7 +796,10 @@
                     { label: "3 days",   hours: 72 },
                     { label: "7 days",   hours: 168 },
                     { label: "30 days",  hours: 720 }
-                ]
+                ],
+                // How far (in %) a listing's price-per-KC may drift from the live VWAP
+                // market rate before it gets flagged as over/underpriced.
+                fairnessWarnThresholdPct: 25
             },
             ads: {
                 desktopKey: '93b1f9e019c65574bb080932b4771349',
@@ -1487,11 +1492,12 @@
 
         const CHART_RANGE_MS = {
             '1h': 60 * 60 * 1000,
+            '1d': 24 * 60 * 60 * 1000,
             '1w': 7 * 24 * 60 * 60 * 1000,
             '1m': 30 * 24 * 60 * 60 * 1000,
             'life': Infinity
         };
-        const CHART_RANGE_LABELS = { '1h': '1 Hour', '1w': '1 Week', '1m': '1 Month', 'life': 'Lifetime' };
+        const CHART_RANGE_LABELS = { '1h': '1 Hour', '1d': '24 Hours', '1w': '1 Week', '1m': '1 Month', 'life': 'Lifetime' };
 
         function getTradeDate(trade) {
             if (!trade.timestamp) return null;
@@ -1499,7 +1505,7 @@
         }
 
         function formatChartLabel(d, range) {
-            if (range === '1h') {
+            if (range === '1h' || range === '1d') {
                 return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
             }
             const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -2478,9 +2484,11 @@
                     );
                 }
 
-                // tikkie.me/pay/<token>
+                // Real Tikkie payment links always have a merchant/account segment AND a
+                // token segment after /pay/ — e.g. tikkie.me/pay/Tikkie/qzdnzr8hnVWTgXXcFRLUMc.
+                // A bare /pay/<token> is NOT a real Tikkie link shape, so it's rejected.
                 if (host === 'tikkie.me') {
-                    return /^\/pay\/[A-Za-z0-9]{4,40}$/.test(path);
+                    return /^\/pay\/[A-Za-z0-9_-]{2,40}\/[A-Za-z0-9_-]{8,40}$/.test(path);
                 }
 
                 return false;
@@ -2488,6 +2496,68 @@
                 return false; // not even a valid URL
             }
         }
+
+        // --- Automatic listing price sanity check ---
+        // Compares a listing's price-per-KC against the live VWAP market rate
+        // (lastComputedRate, kept in sync by startLeaderboardAndEconomy) so we can
+        // flag listings that are wildly mispriced — either a typo or an attempt to
+        // scam/undercut the real market.
+        function getPriceFairness(kcAmount, eurPrice) {
+            if (!lastComputedRate || lastComputedRate <= 0 || !kcAmount || kcAmount <= 0) {
+                return { known: false };
+            }
+            const fairPrice = kcAmount * lastComputedRate;
+            if (fairPrice <= 0) return { known: false };
+            const diffPct = ((eurPrice - fairPrice) / fairPrice) * 100;
+            const threshold = CONFIG.p2p.fairnessWarnThresholdPct;
+            return {
+                known: true,
+                fairPrice,
+                diffPct,
+                flagged: Math.abs(diffPct) >= threshold,
+                direction: diffPct > 0 ? 'above' : 'below'
+            };
+        }
+
+        // --- Live "is this a fair price?" hint under the Asking Price field ---
+        function updatePriceFairnessHint() {
+            const hintEl = document.getElementById('p2p-price-fairness-hint');
+            if (!hintEl) return;
+            const kcAmount = parseFloat(document.getElementById('p2p-sell-amount').value);
+            const eurPrice = parseFloat(document.getElementById('p2p-sell-price').value);
+
+            if (isNaN(kcAmount) || kcAmount <= 0) {
+                hintEl.textContent = 'Enter an amount to see the live market value.';
+                hintEl.className = 'text-[10px] mt-1 ml-1 font-mono text-slate-600';
+                return;
+            }
+
+            const fairness = getPriceFairness(kcAmount, isNaN(eurPrice) ? 0 : eurPrice);
+            if (!fairness.known) {
+                hintEl.textContent = 'Market rate not available yet — price will not be auto-checked.';
+                hintEl.className = 'text-[10px] mt-1 ml-1 font-mono text-slate-600';
+                return;
+            }
+
+            const fairStr = `€${fairness.fairPrice.toFixed(2)}`;
+            if (isNaN(eurPrice) || eurPrice <= 0) {
+                hintEl.textContent = `Market value for ${kcAmount.toFixed(2)} KC: ${fairStr}`;
+                hintEl.className = 'text-[10px] mt-1 ml-1 font-mono text-slate-500';
+                return;
+            }
+
+            if (fairness.flagged) {
+                hintEl.textContent = `⚠ ${Math.abs(fairness.diffPct).toFixed(0)}% ${fairness.direction} the live market value (${fairStr}).`;
+                hintEl.className = 'text-[10px] mt-1 ml-1 font-mono text-amber-400 font-bold';
+            } else {
+                hintEl.textContent = `✓ Fair price — close to the live market value (${fairStr}).`;
+                hintEl.className = 'text-[10px] mt-1 ml-1 font-mono text-emerald-400';
+            }
+        }
+        const p2pSellAmountInput = document.getElementById('p2p-sell-amount');
+        const p2pSellPriceInput = document.getElementById('p2p-sell-price');
+        if (p2pSellAmountInput) p2pSellAmountInput.addEventListener('input', updatePriceFairnessHint);
+        if (p2pSellPriceInput) p2pSellPriceInput.addEventListener('input', updatePriceFairnessHint);
 
         // --- Nav wiring ---
         if (navP2p) {
@@ -2510,7 +2580,14 @@
                 if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
                 if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
                 if (!paymentLink) return showToast('Add your PayPal or Tikkie payment link.', 'warning');
-                if (!isAllowedPaymentLink(paymentLink)) return showToast('Invalid payment link. Use a real paypal.me/yourname, paypal.com/paypalme/yourname, or tikkie.me/pay/... link.', 'warning');
+                if (!isAllowedPaymentLink(paymentLink)) return showToast('Invalid payment link. Use a real paypal.me/yourname, paypal.com/paypalme/yourname, or tikkie.me/pay/<name>/<token> link.', 'warning');
+
+                // Automatic check: flag (but don't block) listings priced far away
+                // from the live market rate, in case of a fat-finger price typo.
+                const fairness = getPriceFairness(kcAmount, eurPrice);
+                if (fairness.known && fairness.flagged) {
+                    showToast(`Heads up: this price is ${Math.abs(fairness.diffPct).toFixed(0)}% ${fairness.direction} the live market value (€${fairness.fairPrice.toFixed(2)}). Listing anyway.`, 'warning');
+                }
 
                 const expiresAtDate = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
@@ -2555,6 +2632,7 @@
                     document.getElementById('p2p-sell-price').value = '';
                     document.getElementById('p2p-sell-payment').value = '';
                     document.getElementById('p2p-sell-expiry').value = String(CONFIG.p2p.defaultExpiryHours);
+                    updatePriceFairnessHint();
                     showToast(`${kcAmount.toFixed(2)} KC locked & offer listed successfully!`, 'success');
 
                 } catch (err) {
@@ -2814,6 +2892,15 @@ await runTransaction(db, async (tx) => {
             // Skip fully-finalized listings (expired ones disappear once the refund lands)
             if (['completed', 'cancelled', 'refunded', 'expired'].includes(data.status)) return null;
 
+            // --- Automatic price-vs-market check, shown as a small badge under the price ---
+            const listingFairness = getPriceFairness(parseFloat(data.kcAmount), parseFloat(data.eurPrice));
+            let listingFairnessBadge = '';
+            if (listingFairness.known) {
+                listingFairnessBadge = listingFairness.flagged
+                    ? `<span class="text-[9px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full" title="Live market value: €${listingFairness.fairPrice.toFixed(2)}">⚠ ${Math.abs(listingFairness.diffPct).toFixed(0)}% ${listingFairness.direction}</span>`
+                    : `<span class="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full" title="Live market value: €${listingFairness.fairPrice.toFixed(2)}">✓ Fair</span>`;
+            }
+
             // --- Tikkie-style expiry check (only applies while still 'open' / unclaimed) ---
             const expiresAtDate = getExpiryDate(data);
             const expiryInfo = (data.status === 'open' && expiresAtDate) ? formatTimeRemaining(expiresAtDate) : null;
@@ -2921,6 +3008,7 @@ await runTransaction(db, async (tx) => {
                     <div>
                         <p class="text-sm font-black text-emerald-400 font-mono">€${parseFloat(data.eurPrice).toFixed(2)}</p>
                         <p class="text-[10px] text-slate-500">EUR</p>
+                        ${listingFairnessBadge}
                     </div>
                     <div class="min-w-0">
                         ${paymentHtml}
