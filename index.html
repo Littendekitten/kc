@@ -581,14 +581,14 @@
         <h2 class="text-2xl font-black text-amber-400 flex items-center gap-2">
             <i class="fa-solid fa-handshake"></i> P2P KittyCoin Trading
         </h2>
-        <p class="text-xs text-slate-400 leading-relaxed">Sell KC for real Euros. KC is locked in escrow until the seller confirms payment via a secret code provided by the buyer.</p>
+        <p class="text-xs text-slate-400 leading-relaxed">Sell KC for real Euros. KC is locked in escrow until the seller manually confirms they received payment via PayPal or Tikkie.</p>
     </div>
 
     <!-- Info Banner -->
     <div class="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4 flex items-start gap-3">
         <i class="fa-solid fa-circle-info text-blue-400 mt-0.5 flex-shrink-0"></i>
         <div class="text-xs text-slate-400 leading-relaxed space-y-1">
-            <p><span class="text-blue-300 font-bold">How it works:</span> The seller's KC is locked the moment an offer is created. A buyer claims the offer and pays via Tikkie/bank transfer. The buyer receives a <span class="text-amber-400 font-bold">secret code</span> — they share it with the seller. The seller inputs the code to confirm receipt of funds and release the KC automatically.</p>
+            <p><span class="text-blue-300 font-bold">How it works:</span> The seller's KC is locked the moment an offer is created. A buyer claims the offer and pays via the seller's <span class="text-amber-400 font-bold">PayPal or Tikkie</span> link. Once the seller checks their account and sees the money has arrived, they confirm receipt in the app and the KC is released to the buyer automatically.</p>
         </div>
     </div>
 
@@ -615,9 +615,10 @@
                 </div>
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(Tikkie / IBAN)</span></label>
-                <input type="text" id="p2p-sell-payment" placeholder="https://tikkie.me/pay/..." maxlength="200"
+                <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(PayPal / Tikkie only)</span></label>
+                <input type="text" id="p2p-sell-payment" placeholder="https://paypal.me/you or https://tikkie.me/pay/..." maxlength="200"
                     class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
+                <p class="text-[10px] text-slate-600 mt-1 ml-1">Only paypal.me / paypal.com or tikkie.me links are accepted.</p>
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Expires In <span class="text-[10px] text-slate-600">(Tikkie-style)</span></label>
@@ -665,31 +666,7 @@
         </div>
     </div>
 
-    <!-- SECRET CODE MODAL (shown to buyer only) -->
-    <div id="p2p-secret-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl space-y-5 text-center animate-fade-in">
-            <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-3xl mx-auto">
-                🔐
-            </div>
-            <div class="space-y-1">
-                <h3 class="text-xl font-black text-white">Your Secret Code</h3>
-                <p class="text-xs text-slate-400">Pay the seller via their payment link, then share this code with them so they can release the KC to your wallet.</p>
-            </div>
-            <div class="bg-slate-950 border border-amber-500/40 rounded-2xl p-5">
-                <p id="p2p-secret-code-display" class="text-3xl font-black font-mono text-amber-400 tracking-widest select-all">KITTY-????</p>
-                <p class="text-[10px] text-slate-500 mt-2">Tap to select & copy</p>
-            </div>
-            <div class="bg-rose-500/5 border border-rose-500/20 rounded-xl p-3">
-                <p class="text-xs text-rose-300 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Do NOT share this code until you have actually sent the money. KC will be released immediately upon entry.</p>
-            </div>
-            <button id="btn-p2p-close-secret-modal"
-                class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition cursor-pointer text-sm">
-                I've noted the code — Close
-            </button>
-        </div>
-    </div>
-
-    <!-- RELEASE CODE INPUT MODAL (shown to seller) -->
+    <!-- RELEASE MODAL (shown to seller) -->
     <div id="p2p-release-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
         <div class="bg-slate-900 border border-emerald-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl space-y-5 text-center animate-fade-in">
             <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-3xl mx-auto">
@@ -697,10 +674,8 @@
             </div>
             <div class="space-y-1">
                 <h3 class="text-xl font-black text-white">Confirm Payment Received</h3>
-                <p class="text-xs text-slate-400">Check your bank or Tikkie. Once you have received the Euros, ask the buyer for the secret code and enter it below to release the KC.</p>
+                <p class="text-xs text-slate-400">Check your PayPal or Tikkie account. Only confirm once the Euros have actually arrived — releasing KC cannot be undone.</p>
             </div>
-            <input type="text" id="p2p-release-code-input" placeholder="KITTY-XXXX" maxlength="10"
-                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3.5 text-white text-center text-lg font-mono font-black tracking-widest focus:outline-none focus:border-emerald-400 transition uppercase">
             <input type="hidden" id="p2p-release-listing-id">
             <button id="btn-p2p-confirm-release"
                 class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition cursor-pointer text-sm">
@@ -2332,11 +2307,7 @@
         const p2pListingsContainer = document.getElementById('p2p-listings-container');
         const p2pEmptyState = document.getElementById('p2p-empty-state');
         const btnP2pCreateOffer = document.getElementById('btn-p2p-create-offer');
-        const p2pSecretModal = document.getElementById('p2p-secret-modal');
-        const p2pSecretCodeDisplay = document.getElementById('p2p-secret-code-display');
-        const btnP2pCloseSecretModal = document.getElementById('btn-p2p-close-secret-modal');
         const p2pReleaseModal = document.getElementById('p2p-release-modal');
-        const p2pReleaseCodeInput = document.getElementById('p2p-release-code-input');
         const p2pReleaseListingId = document.getElementById('p2p-release-listing-id');
         const btnP2pConfirmRelease = document.getElementById('btn-p2p-confirm-release');
         const btnP2pCloseReleaseModal = document.getElementById('btn-p2p-close-release-modal');
@@ -2378,14 +2349,21 @@
             }, 4500);
         }
 
-        // --- Generate a Random Secret Code ---
-        function generateSecretCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'KITTY-';
-            for (let i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
+        // --- Validate that a payment link is PayPal or Tikkie only ---
+        function isAllowedPaymentLink(link) {
+            try {
+                const url = new URL(link);
+                if (url.protocol !== 'https:') return false;
+                const host = url.hostname.toLowerCase().replace(/^www\./, '');
+                const allowedHosts = [
+                    'paypal.me',
+                    'paypal.com',
+                    'tikkie.me'
+                ];
+                return allowedHosts.some(h => host === h || host.endsWith('.' + h));
+            } catch (e) {
+                return false; // not even a valid URL
             }
-            return code;
         }
 
         // --- Nav wiring ---
@@ -2408,7 +2386,8 @@
 
                 if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
                 if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
-                if (!paymentLink) return showToast('Add your payment link or IBAN so the buyer knows where to send money.', 'warning');
+                if (!paymentLink) return showToast('Add your PayPal or Tikkie payment link.', 'warning');
+                if (!isAllowedPaymentLink(paymentLink)) return showToast('Only PayPal (paypal.me / paypal.com) or Tikkie (tikkie.me) links are accepted.', 'warning');
 
                 const expiresAtDate = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
@@ -2445,7 +2424,6 @@
                         buyerId: null,
                         buyerEmail: null,
                         buyerUsername: null,
-                        secretCode: null,
                         createdAt: serverTimestamp(),
                         expiresAt: expiresAtDate
                     });
@@ -2475,9 +2453,6 @@
             const listingRef = doc(db, 'p2p_listings', listingId);
 
             try {
-                // PHASE C: generate secret code and stamp it on the listing atomically
-                const secretCode = generateSecretCode();
-
                 await runTransaction(db, async (tx) => {
                     const listingSnap = await tx.get(listingRef);
                     if (!listingSnap.exists()) throw new Error('Listing no longer exists.');
@@ -2493,37 +2468,31 @@
                         status: 'pending',
                         buyerEmail: myEmail,
                         buyerUsername: myUsername,
-                        buyerId: auth.currentUser.uid,
-                        secretCode: secretCode
+                        buyerId: auth.currentUser.uid
                     });
                 });
 
-                // Show secret code ONLY to the buyer in the UI
-                p2pSecretCodeDisplay.textContent = secretCode;
-                p2pSecretModal.classList.remove('hidden');
-                showToast('Offer claimed! Pay the seller and share your secret code.', 'info');
+                showToast('Offer claimed! Pay the seller via their PayPal/Tikkie link, then wait for them to confirm receipt.', 'info');
 
             } catch (err) {
                 showToast('Error claiming offer: ' + err.message, 'error');
             }
         }
 
-        // --- PHASE D: Seller opens the release modal ---
+        // --- Seller opens the release confirmation modal ---
         function p2pOpenReleaseModal(listingId) {
             p2pReleaseListingId.value = listingId;
-            p2pReleaseCodeInput.value = '';
             p2pReleaseModal.classList.remove('hidden');
         }
 
-        // --- PHASE D: Confirm secret code & release KC to buyer ---
+        // --- Confirm payment & release KC to buyer ---
         if (btnP2pConfirmRelease) {
             btnP2pConfirmRelease.addEventListener('click', async () => {
                 const listingId = p2pReleaseListingId.value;
-                const enteredCode = p2pReleaseCodeInput.value.trim().toUpperCase();
-                if (!listingId || !enteredCode) return showToast('Enter the secret code first.', 'warning');
+                if (!listingId) return showToast('No listing selected.', 'warning');
 
                 btnP2pConfirmRelease.disabled = true;
-                btnP2pConfirmRelease.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Verifying...`;
+                btnP2pConfirmRelease.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Releasing...`;
 
                 try {
                     const listingRef = doc(db, 'p2p_listings', listingId);
@@ -2532,7 +2501,7 @@
                     const data = listingSnap.data();
 
                     if (data.status !== 'pending') throw new Error('This listing is not in a pending state.');
-                    if (data.secretCode !== enteredCode) throw new Error('Incorrect secret code. Please try again.');
+                    if (!auth.currentUser || auth.currentUser.email.toLowerCase() !== data.sellerEmail) throw new Error('Only the seller can release this listing.');
 
 // Release KC to buyer & Log automatically to transactions ledger
 const buyerDocRef = doc(db, 'wallets', data.buyerEmail);
@@ -2651,20 +2620,6 @@ await runTransaction(db, async (tx) => {
                 showToast(`Offer cancelled. ${data.kcAmount.toFixed(2)} KC returned to your wallet.`, 'info');
             } catch (err) {
                 showToast('Cancel Error: ' + err.message, 'error');
-            }
-        }
-
-        // --- Show buyer their code again if listing is still pending ---
-        async function p2pShowMyCodeAgain(listingId) {
-            try {
-                const listingSnap = await getDoc(doc(db, 'p2p_listings', listingId));
-                if (!listingSnap.exists()) return showToast('Listing not found.', 'error');
-                const data = listingSnap.data();
-                if (!data.secretCode) return showToast('No code found for this listing.', 'error');
-                p2pSecretCodeDisplay.textContent = data.secretCode;
-                p2pSecretModal.classList.remove('hidden');
-            } catch (err) {
-                showToast('Error: ' + err.message, 'error');
             }
         }
 
@@ -2795,12 +2750,10 @@ await runTransaction(db, async (tx) => {
             } else if (data.status === 'pending') {
                 if (isSeller && !isAdmin) {
                     actionHtml = `<button onclick="p2pOpenReleaseModal('${listingId}')" class="text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
-                        <i class="fa-solid fa-key mr-1"></i> Enter Code
+                        <i class="fa-solid fa-check mr-1"></i> Confirm Payment
                     </button>`;
                 } else if (isBuyer && !isAdmin) {
-                    actionHtml = `<button onclick="p2pShowMyCodeAgain('${listingId}')" class="text-xs bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 px-3 py-2 rounded-xl font-bold transition cursor-pointer w-full">
-                        <i class="fa-solid fa-eye mr-1"></i> See My Code
-                    </button>`;
+                    actionHtml = `<span class="text-xs text-slate-600 font-mono italic">Awaiting seller confirmation...</span>`;
                 } else if (!isAdmin) {
                     actionHtml = `<span class="text-xs text-slate-600 font-mono">Awaiting confirmation...</span>`;
                 }
@@ -2907,9 +2860,6 @@ await runTransaction(db, async (tx) => {
         }
 
         // --- Modal close buttons ---
-        if (btnP2pCloseSecretModal) {
-            btnP2pCloseSecretModal.addEventListener('click', () => p2pSecretModal.classList.add('hidden'));
-        }
         if (btnP2pCloseReleaseModal) {
             btnP2pCloseReleaseModal.addEventListener('click', () => p2pReleaseModal.classList.add('hidden'));
         }
@@ -2918,7 +2868,6 @@ await runTransaction(db, async (tx) => {
         window.p2pBuyOffer = p2pBuyOffer;
         window.p2pOpenReleaseModal = p2pOpenReleaseModal;
         window.p2pSellerCancelOffer = p2pSellerCancelOffer;
-        window.p2pShowMyCodeAgain = p2pShowMyCodeAgain;
         window.p2pAdminForceRelease = p2pAdminForceRelease;
         window.p2pAdminCancelRefund = p2pAdminCancelRefund;
 
