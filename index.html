@@ -656,9 +656,9 @@
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Your Payment Link <span class="text-[10px] text-slate-600">(PayPal / Tikkie only)</span></label>
-                <input type="text" id="p2p-sell-payment" placeholder="https://paypal.me/you or https://tikkie.me/pay/Tikkie/yourToken" maxlength="200"
+                <input type="text" id="p2p-sell-payment" placeholder="https://paypal.me/you or https://tikkie.me/pay/yourToken" maxlength="200"
                     class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 transition text-sm">
-                <p class="text-[10px] text-slate-600 mt-1 ml-1">Only real paypal.me / paypal.com or tikkie.me/pay/&lt;name&gt;/&lt;token&gt; links are accepted — fake or malformed links are rejected automatically.</p>
+                <p class="text-[10px] text-slate-600 mt-1 ml-1">Only real paypal.me / paypal.com or tikkie.me/pay/&lt;token&gt; links are accepted — fake or malformed links are rejected automatically.</p>
             </div>
             <div>
                 <label class="block text-xs text-slate-400 mb-1.5 ml-1">Expires In <span class="text-[10px] text-slate-600">(Tikkie-style)</span></label>
@@ -2484,11 +2484,13 @@
                     );
                 }
 
-                // Real Tikkie payment links always have a merchant/account segment AND a
-                // token segment after /pay/ — e.g. tikkie.me/pay/Tikkie/qzdnzr8hnVWTgXXcFRLUMc.
-                // A bare /pay/<token> is NOT a real Tikkie link shape, so it's rejected.
+                // Real Tikkie links come in two genuine shapes:
+                //  - consumer app share links: tikkie.me/pay/<token>          e.g. /pay/3i899441nb8fbj9sglig
+                //  - business API links:       tikkie.me/pay/<merchant>/<token>  e.g. /pay/Tikkie/qzdnzr8hnVWTgXXcFRLUMc
+                // Both are accepted; a bare /pay/ with no token, or anything else, is rejected.
                 if (host === 'tikkie.me') {
-                    return /^\/pay\/[A-Za-z0-9_-]{2,40}\/[A-Za-z0-9_-]{8,40}$/.test(path);
+                    return /^\/pay\/[A-Za-z0-9_-]{8,40}$/.test(path) ||
+                           /^\/pay\/[A-Za-z0-9_-]{2,40}\/[A-Za-z0-9_-]{8,40}$/.test(path);
                 }
 
                 return false;
@@ -2580,7 +2582,7 @@
                 if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
                 if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
                 if (!paymentLink) return showToast('Add your PayPal or Tikkie payment link.', 'warning');
-                if (!isAllowedPaymentLink(paymentLink)) return showToast('Invalid payment link. Use a real paypal.me/yourname, paypal.com/paypalme/yourname, or tikkie.me/pay/<name>/<token> link.', 'warning');
+                if (!isAllowedPaymentLink(paymentLink)) return showToast('Invalid payment link. Use a real paypal.me/yourname, paypal.com/paypalme/yourname, or tikkie.me/pay/<token> link.', 'warning');
 
                 // Automatic check: flag (but don't block) listings priced far away
                 // from the live market rate, in case of a fat-finger price typo.
