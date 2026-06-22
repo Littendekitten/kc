@@ -414,7 +414,7 @@
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Rate Tier</p>
-                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.0001 KC / 10s</p>
+                                <p id="game-ui-tier" class="text-xs font-mono font-bold text-amber-400">0.001 KC / 10s</p>
                             </div>
                             <div class="bg-slate-950 p-3 border border-slate-800 rounded-xl">
                                 <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Earned Loot</p>
@@ -1153,7 +1153,7 @@
                     if (userSnap.exists()) {
                         const data = userSnap.data();
                         currentUsername = data.username || await generateUniqueGuestName();
-                        balanceAmount.innerText = (data.balance || 0).toFixed(2);
+                        balanceAmount.innerText = (data.balance || 0).toFixed(4);
                         myCouponsBalance = Math.floor(data.coupons || 0);
                         updateCouponUI();
                     } else {
@@ -1167,7 +1167,7 @@
                             coupons: 0,
                             createdAt: new Date()
                         }, { merge: true });
-                        balanceAmount.innerText = startBalance.toFixed(2);
+                        balanceAmount.innerText = startBalance.toFixed(4);
                         myCouponsBalance = 0;
                         updateCouponUI();
                     }
@@ -1370,7 +1370,7 @@
                         userRank = currentRank;
                         userCurrentBalance = balance;
                         userCurrentName = uname;
-                        balanceAmount.innerText = balance.toFixed(2);
+                        balanceAmount.innerText = balance.toFixed(4);
                         myCouponsBalance = Math.floor(data.coupons || 0);
                         updateCouponUI();
                     }
@@ -1388,7 +1388,7 @@
                                 <span class="w-7 h-7 flex items-center justify-center text-xs rounded-lg ${badgeStyle}">#${currentRank}</span>
                                 <p class="text-sm font-semibold text-white">@${uname} ${medal}</p>
                             </div>
-                            <p class="text-sm font-bold text-amber-400">${balance.toFixed(2)} <span class="text-[10px] text-slate-500">KC</span></p>
+                            <p class="text-sm font-bold text-amber-400">${balance.toFixed(4)} <span class="text-[10px] text-slate-500">KC</span></p>
                         </div>`;
                     leaderboardList.insertAdjacentHTML('beforeend', rowHtml);
                     currentRank++;
@@ -1397,7 +1397,7 @@
                 if (userRank !== -1) {
                     myRankTag.innerText = `#${userRank}`;
                     myRankUser.innerText = `@${userCurrentName}`;
-                    myRankBalance.innerText = userCurrentBalance.toFixed(2);
+                    myRankBalance.innerText = userCurrentBalance.toFixed(4);
                 }
 
                 globalTotalSupply = calculatedTotalSupply;
@@ -2219,7 +2219,7 @@
 
             // Reward Schedule: flat micro-payout every 10 seconds, regardless of run length
             if (tenSecCycle > mapGenerationTracker.lastTenSecMilestone) {
-                mapGenerationTracker.payoutTally += 0.0001;
+                mapGenerationTracker.payoutTally += 0.001;
                 mapGenerationTracker.lastTenSecMilestone = tenSecCycle;
             }
 
@@ -2391,7 +2391,7 @@
             if (uiEarned) uiEarned.innerText = mapGenerationTracker.payoutTally.toFixed(4) + " KC";
 
             if (uiTier) {
-                uiTier.innerText = "0.0001 KC / 10s";
+                uiTier.innerText = "0.001 KC / 10s";
                 uiTier.className = "text-xs font-mono font-bold text-amber-400";
             }
         }
