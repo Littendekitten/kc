@@ -2453,18 +2453,37 @@
             }, 4500);
         }
 
-        // --- Validate that a payment link is PayPal or Tikkie only ---
+        // --- Validate that a payment link is a genuine PayPal or Tikkie payment link ---
+        // Checking the domain alone isn't enough — paypal.com/hiimafakelink passes a
+        // domain-only check but isn't a real payment link. Real payment links always
+        // follow a specific path shape per provider, so we check that too.
         function isAllowedPaymentLink(link) {
             try {
                 const url = new URL(link);
                 if (url.protocol !== 'https:') return false;
                 const host = url.hostname.toLowerCase().replace(/^www\./, '');
-                const allowedHosts = [
-                    'paypal.me',
-                    'paypal.com',
-                    'tikkie.me'
-                ];
-                return allowedHosts.some(h => host === h || host.endsWith('.' + h));
+                const path = url.pathname.replace(/\/+$/, '') || '/'; // strip trailing slash
+
+                // paypal.me/<username> or paypal.me/<username>/<amount>
+                if (host === 'paypal.me') {
+                    return /^\/[A-Za-z0-9_.]{1,30}(\/\d+(\.\d{1,2})?)?$/.test(path);
+                }
+
+                // paypal.com only has a couple of real payment-link shapes — a bare
+                // slug like /hiimafakelink is NOT one of them and gets rejected.
+                if (host === 'paypal.com') {
+                    return (
+                        /^\/paypalme\/[A-Za-z0-9_.]{1,30}(\/\d+(\.\d{1,2})?)?$/.test(path) ||
+                        /^\/ncp\/payment\/[A-Za-z0-9]{4,40}$/.test(path)
+                    );
+                }
+
+                // tikkie.me/pay/<token>
+                if (host === 'tikkie.me') {
+                    return /^\/pay\/[A-Za-z0-9]{4,40}$/.test(path);
+                }
+
+                return false;
             } catch (e) {
                 return false; // not even a valid URL
             }
@@ -2491,7 +2510,7 @@
                 if (isNaN(kcAmount) || kcAmount <= 0) return showToast('Enter a valid KC amount.', 'warning');
                 if (isNaN(eurPrice) || eurPrice <= 0) return showToast('Enter a valid Euro price.', 'warning');
                 if (!paymentLink) return showToast('Add your PayPal or Tikkie payment link.', 'warning');
-                if (!isAllowedPaymentLink(paymentLink)) return showToast('Only PayPal (paypal.me / paypal.com) or Tikkie (tikkie.me) links are accepted.', 'warning');
+                if (!isAllowedPaymentLink(paymentLink)) return showToast('Invalid payment link. Use a real paypal.me/yourname, paypal.com/paypalme/yourname, or tikkie.me/pay/... link.', 'warning');
 
                 const expiresAtDate = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
